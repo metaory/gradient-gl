@@ -5,20 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>GradientGL</title>
     <style>
+      :root {
+        color-scheme: light dark;
+        color: rgba(255, 255, 255, 0.87);
+        background-color: #242424;
+      }
       body {
         margin: 0;
+        padding: 0;
         overflow: hidden;
-        background: #000;
+        font-family: system-ui, -apple-system, sans-serif;
       }
       canvas {
         width: 100vw;
         height: 100vh;
         display: block;
       }
+      #seed-display {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: monospace;
+        font-size: 2rem;
+        color: rgba(255, 255, 255, 0.8);
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        pointer-events: none;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+      #seed-display.visible {
+        opacity: 1;
+      }
     </style>
   </head>
   <body>
-    <canvas></canvas>
-    <script type="module" src="/src/main.js"></script>
+    <div id="seed-display"></div>
+    <script type="module" src="/demo.js"></script>
   </body>
 </html>
