@@ -4,7 +4,7 @@ const vertexShaderSource = `#version 300 es
         gl_Position = vec4(position, 0.0, 1.0);
     }`;
 
-import fragmentShaderSource from './shader.js' assert { type: 'text' };
+import fragmentShaderSource from './shader.js';
 
 export default (canvas, shaderId, shaderOpts) => {
 	// Create WebGL context

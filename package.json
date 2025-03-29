@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "sideEffects": false,
   "bugs": "https://github.com/metaory/gradient-gl/issues",
-  "homepage": "https://github.com/metaory/gradient-gl#readme",
+  "homepage": "https://metaory.github.io/gradient-gl/",
   "repository": "git+https://github.com/metaory/gradient-gl.git",
   "type": "module",
   "exports": {

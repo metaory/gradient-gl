@@ -8,7 +8,6 @@ on:
 permissions:
   pages: write
   id-token: write
-  contents: write
 
 concurrency:
   group: pages
@@ -23,51 +22,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: latest
-
-      - name: Configure Git
-        run: |
-          git config --local user.name github-actions
-          git config --local user.email github-actions@github.com
-
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Bump version
-        run: |
-          # Get and validate current version
-          CURRENT_VERSION=$(jq -r '.version' package.json)
-          [[ "$CURRENT_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid version format"; exit 1; }
-          
-          # Bump patch version
-          NEW_VERSION=$(jq -r '.version | split(".") | .[2]=((.[2]|tonumber)+1) | join(".")' package.json)
-          echo "Bumping version: $CURRENT_VERSION -> $NEW_VERSION"
-          
-          # Update package.json
-          jq --arg v "$NEW_VERSION" '.version=$v' package.json > tmp.json && mv tmp.json package.json
-          
-          # Verify update
-          VERIFY_VERSION=$(jq -r '.version' package.json)
-          [[ "$VERIFY_VERSION" == "$NEW_VERSION" ]] || { echo "Version update failed"; exit 1; }
-          
-          # Commit and tag
-          git commit -am "Bump version to $NEW_VERSION [skip ci]"
-          git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
-          git push origin HEAD:master --tags
-          
-          # Export for next steps
-          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
-      
-      - name: Build
-        # env:
-        #   VITE_APP_VERSION: ${{ env.VERSION }}
-        run: npm run build
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -75,7 +29,13 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: .
+          exclude: |
+            .git
+            .github
+            .dev
+            README.md
+            LICENSE
       
       - name: Deploy to GitHub Pages
         id: deployment

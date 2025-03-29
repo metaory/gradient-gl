@@ -1,4 +1,10 @@
-#version 300 es
+/**
+ * WebGL fragment shader source for gradient effects
+ * Contains multiple shader variations controlled by the currentShader uniform
+ * Each shader uses common uniforms: iResolution, iTime, iFrame, currentShader, timeScale
+ */
+
+export default /* glsl */ `#version 300 es
 precision highp float;
 out vec4 fragColor;
 
@@ -591,4 +597,4 @@ void main() {
 
         case 12: fragColor = shader_flow1(gl_FragCoord.xy); break;
     }
-} 
+}`

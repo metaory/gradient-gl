@@ -1,6 +1,6 @@
 import gradientGL from "./index.js";
 
 // Create a gradient with a specific seed
-gradientGL("body", "1abc");
+gradientGL();
 
 console.log("MAIN");
