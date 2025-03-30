@@ -20,27 +20,34 @@ With a **5-character seed**, it balances **uniqueness and reproducibility**. **Z
 
 ---
 
-```js
-// 1. Default usage (Mounts to <body> with a random seed)
+```javascript
+// Object function call  
+import gradientGL from 'https://cdn.com/gradient-gl';  
 gradientGL();
+gradientGL({ seed: 'w2.678' });
+gradientGL({ seed: 'w2.678', selector: '#app' });
 
-// 2. Mount to a specific element with a random seed
-gradientGL('#app');
+// Seed function call  
+import gradientGL from 'https://cdn.com/gradient-gl';  
+gradientGL('w2.678');
+gradientGL('w2.678', '#app');
 
-// 3. Mount with a custom seed (5-char: type + variation + hex params)
-gradientGL('#app', 'w1abc'); // warp type, variation 1, params abc
+// ES Module usage
+import 'https://cdn.com/gradient-gl?seed=w2.678';
+import 'https://cdn.com/gradient-gl?seed=w2.678&selector=#app';
+
+// Dynamic import
+import(`https://cdn.com/gradient-gl?seed=w2.678`);
+import(`https://cdn.com/gradient-gl?seed=w2.678&selector=#app`);
 ```
 
-### Seed Format
-A 5-character string (e.g., 'w1abc'):
-- First character → Shader type:
-  - 'w': warp
-  - 's': soft
-  - 'f': fuse
-  - 'n': neon
-  - 'l': flow
-- Second character → Variation number (1-5)
-- Last 3 characters → Shader parameters (hex: 0-f)
+```html
+<!-- HTML usage -->
+<script src="https://cdn.com/gradient-gl?seed=w2.678"></script>
+<script src="https://cdn.com/gradient-gl?seed=w2.678&selector=#app"></script>
+```
+
+---
 
 <div align="center">
     <h5><kbd>Gradient GL</kbd></h5>
