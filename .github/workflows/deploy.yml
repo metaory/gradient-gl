@@ -34,12 +34,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
-          exclude: |
-            .git
-            .github
-            .dev
-            README.md
-            LICENSE
 
       - name: Deploy to GitHub Pages
         id: deployment
