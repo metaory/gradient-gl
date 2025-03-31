@@ -8,10 +8,16 @@
   "repository": "git+https://github.com/metaory/gradient-gl.git",
   "type": "module",
   "exports": {
-    ".": "./index.js",
-    "./canvas": "./canvas.js",
-    "./shader": "./shader.js"
+    ".": "./index.js"
   },
+  "files": [
+    "index.js",
+    "shaders/*.js",
+    "dom.js",
+    "gl.js",
+    "seed.js",
+    "LICENSE"
+  ],
   "browserslist": [
     "last 2 Chrome versions",
     "last 2 Firefox versions",

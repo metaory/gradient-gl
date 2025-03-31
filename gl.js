@@ -1,12 +1,13 @@
-const vertexShaderSource = `#version 300 es
+const vertex = /* glsl */ `#version 300 es
     in vec2 position;
     void main() {
         gl_Position = vec4(position, 0.0, 1.0);
     }`;
 
-import fragmentShaderSource from './shader.js';
 
-export default (canvas, shaderId, shaderOpts) => {
+export default (canvas, fragment, uniforms) => {
+    console.log(uniforms)
+
 	// Create WebGL context
 	const gl = canvas.getContext("webgl2");
 
@@ -15,8 +16,8 @@ export default (canvas, shaderId, shaderOpts) => {
 	const vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 
-	gl.shaderSource(vertexShader, vertexShaderSource);
-	gl.shaderSource(fragmentShader, fragmentShaderSource);
+	gl.shaderSource(vertexShader, vertex);
+	gl.shaderSource(fragmentShader, fragment);
 	gl.compileShader(vertexShader);
 	gl.compileShader(fragmentShader);
 
@@ -52,9 +53,9 @@ export default (canvas, shaderId, shaderOpts) => {
 	const iResolutionLocation = gl.getUniformLocation(program, "iResolution");
 	const iTimeLocation = gl.getUniformLocation(program, "iTime");
 	const iFrameLocation = gl.getUniformLocation(program, "iFrame");
-	const currentShaderLocation = gl.getUniformLocation(program, "currentShader");
+	// const currentShaderLocation = gl.getUniformLocation(program, "currentShader");
 	const timeScaleLocation = gl.getUniformLocation(program, "timeScale");
-	const shaderOptsLocation = gl.getUniformLocation(program, "shaderOpts");
+	// const shaderOptsLocation = gl.getUniformLocation(program, "shaderOpts");
 
 	// Set up vertex attributes
 	gl.useProgram(program);
@@ -62,8 +63,8 @@ export default (canvas, shaderId, shaderOpts) => {
 	gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
 
 	// Set static uniforms
-	gl.uniform1i(currentShaderLocation, shaderId);
-	gl.uniform3f(shaderOptsLocation, ...shaderOpts);
+	// gl.uniform1i(currentShaderLocation, shaderId);
+	// gl.uniform3f(shaderOptsLocation, ...shaderOpts);
 	gl.uniform1f(timeScaleLocation, 0.9);
 
 	// Animation loop
