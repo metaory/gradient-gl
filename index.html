@@ -5,66 +5,51 @@
     <link rel="icon" type="image/svg+xml" href="public/logo.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="public/logo.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="public/logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <base href="/gradient-gl/">
-
-    <!-- Primary Meta Tags -->
+    <link rel="stylesheet" href="demo/style.css">
     <title>GradientGL - WebGL Gradient Generator</title>
+    <base href="/gradient-gl/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="title" content="GradientGL - WebGL Gradient Generator">
     <meta name="description" content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
-
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://metaory.github.io/gradient-gl/">
     <meta property="og:title" content="GradientGL - WebGL Gradient Generator">
     <meta property="og:description" content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
     <meta property="og:image" content="https://metaory.github.io/gradient-gl/public/logo.svg">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://metaory.github.io/gradient-gl/">
-    <meta property="twitter:title" content="GradientGL - WebGL Gradient Generator">
-    <meta property="twitter:description" content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
-    <meta property="twitter:image" content="https://metaory.github.io/gradient-gl/public/logo.svg">
-
-    <style>
-      :root {
-        color-scheme: light dark;
-        color: rgba(255, 255, 255, 0.87);
-        background-color: #242424;
-      }
-      body {
-        margin: 0;
-        padding: 0;
-        overflow: hidden;
-        font-family: system-ui, -apple-system, sans-serif;
-      }
-      canvas {
-        width: 100vw;
-        height: 100vh;
-        display: block;
-      }
-      #seed-display {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        font-family: monospace;
-        font-size: 2rem;
-        color: rgba(255, 255, 255, 0.8);
-        text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        pointer-events: none;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-      }
-      #seed-display.visible {
-        opacity: 1;
-      }
-    </style>
   </head>
   <body>
-    <div id="seed-display"></div>
-    <script type="module" src="demo.js"></script>
+    <main>
+      <div class="seed-display">
+        <span id="seed"></span>
+      </div>
+      <div class="disclaimer">
+        <span>Work in progress - inputs don't affect rendering yet</span>
+      </div>
+      <div class="controls">
+        <fieldset class="shader-select">
+          <legend>Shader</legend>
+          <div id="shader-options"></div>
+        </fieldset>
+        <div class="universals">
+          <div class="control">
+            <label for="speed">Speed</label>
+            <input type="range" id="speed" min="0" max="15" value="8">
+          </div>
+          <div class="control">
+            <label for="hue">Hue</label>
+            <input type="range" id="hue" min="0" max="15" value="8">
+          </div>
+          <div class="control">
+            <label for="saturation">Saturation</label>
+            <input type="range" id="saturation" min="0" max="15" value="7">
+          </div>
+          <div class="control">
+            <label for="lightness">Lightness</label>
+            <input type="range" id="lightness" min="0" max="15" value="3">
+          </div>
+        </div>
+      h4div>
+    </main>
+    <script type="module" src="demo/main.js"></script>
   </body>
 </html>

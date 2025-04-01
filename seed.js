@@ -24,4 +24,4 @@ export default (seed) => {
     return [shader, createUniformArray(hex)]
 }
 
-// [ speed, saturation, lightness, tweak1, tweak2, tweak3, ... ]
+// [ speed, hue, saturation, lightness, tweak1, tweak2, tweak3, ... ]
