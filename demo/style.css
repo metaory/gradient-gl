@@ -5,9 +5,107 @@
     /* Base Colors */
     --h: 270;
 
+    /* colors from https://github.com/metaory/hexocd-colorscheme */
+
+    --cy1: #FF5599;
+    --c09: #FF4488;
+    --c01: #EE3377;
+    --cc1: #EE2266;
+    --cx1: #DD1155;
+    --cz1: #DD0044;
+
+    --cy2: #55EE77;
+    --c10: #44DD66;
+    --c02: #33CC55;
+    --cc2: #22BB44;
+    --cx2: #11AA33;
+    --cz2: #009922;
+
+    --cy3: #CCEE44;
+    --c11: #BBDD33;
+    --c03: #AACC22;
+    --cc3: #99BB11;
+    --cx3: #88AA00;
+    --cz3: #779900;
+
+    --cy4: #44DDFF;
+    --c12: #44BBEE;
+    --c04: #4433DD;
+    --cc4: #4422CC;
+    --cx4: #4411BB;
+    --cz4: #4400AA;
+
+    --cy5: #CC55BB;
+    --c13: #AA44BB;
+    --c05: #7733BB;
+    --cc5: #6622BB;
+    --cx5: #5511AA;
+    --cz5: #5500AA;
+
+    --cy6: #55FFDD;
+    --c14: #44EECC;
+    --c06: #33DDBB;
+    --cc6: #22CCAA;
+    --cx6: #11BB99;
+    --cz6: #00AA88;
+
+    --cy7: #CCBBEE;
+    --c15: #BBAAEE;
+    --c07: #AA99EE;
+    --cc7: #9988DD;
+    --cx7: #8877DD;
+    --cz7: #7766DD;
+
+
+    --zk0: #BB44AA;
+    --zk1: #BB55BB;
+    --zk2: #CC66CC;
+    --zk3: #CC77DD;
+    --zk4: #DD88DD;
+    --zk5: #DD99EE;
+    --zk6: #EEAAEE;
+    --zk7: #EEBBFF;
+    --zk8: #FFCCFF;
+    --zk9: #FFDDFF;
+
+    --pk0: #FF4488;
+    --pk1: #EE4499;
+    --pk2: #DD44AA;
+    --pk3: #CC44BB;
+    --pk4: #BB44CC;
+    --pk5: #AA44DD;
+    --pk6: #9944EE;
+    --pk7: #8844FF;
+    --pk8: #7755FF;
+    --pk9: #6655FF;
+
+    --sk0: #1A002A76;
+    --sk1: #22003376;
+    --sk2: #33114476;
+    --sk3: #441A5576;
+    --sk4: #55226676;
+    --sk5: #662A7776;
+    --sk6: #77338876;
+    --sk7: #88449976;
+    --sk8: #AA55BB76;
+    --sk9: #BB66CC76;
+
+    --wk0: #11002276;
+    --wk1: #22004476;
+    --wk2: #33116676;
+    --wk3: #441A8876;
+    --wk4: #5522AA76;
+    --wk5: #6633BB76;
+    --wk6: #7744CC76;
+    --wk7: #8855DD76;
+    --wk8: #9955EE76;
+    --wk9: #AA55FF76;
+
+
     --cc: hsl(var(--h) 70% 40%);
     --cl: hsl(var(--h) 70% 60%);
     --bg: hsl(var(--h) 50% 10% / 0.5);
+    --li: hsl(var(--h) 40% 30% / 0.2);
     --fg: hsl(var(--h) 0% 100%);
     --fg-m: hsl(var(--h) 0% 80%);
     --br: hsl(var(--h) 0% 10%);
@@ -18,11 +116,11 @@
     --dis: hsl(var(--h) 0% 100% / 0.4);
 
     /* Spacing */
-    --xs: 0.5rem;
-    --sm: 0.75rem;
+    --xs: 0.6rem;
+    --sm: 0.8rem;
     --md: 1rem;
-    --lg: 1.5rem;
-    --xl: 2rem;
+    --lg: 1.4rem;
+    --xl: 1.6rem;
 
     /* Border Radius */
     --r-sm: .5rem;
@@ -40,14 +138,23 @@
     --th: 1rem;
 }
 
+@font-face {
+    font-family: 'pixelify';
+    font-style: normal;
+    font-display: swap;
+    font-weight: 500;
+    src: url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff) format('woff');
+    unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+
 body {
-    margin: 0;
-    padding: 0;
+    margin: auto;
     overflow: hidden;
     font-family: system-ui, -apple-system, sans-serif;
     min-height: 100vh;
     display: grid;
     place-items: center;
+    user-select: none;
 }
 
 canvas {
@@ -67,17 +174,19 @@ main {
     border-radius: var(--r-lg);
     box-shadow: var(--sh-lg);
     z-index: 1;
-    backdrop-filter: blur(var(--bl));
     color: var(--fg);
     min-width: 20rem;
+    margin: 1em;
 }
 
 .seed-display {
+    color: var(--pk0);
     margin-bottom: var(--lg);
     padding: var(--xs);
-    background: var(--ov);
+    background-color: var(--li);
     border-radius: var(--r-md);
-    font-family: monospace;
+    text-transform: uppercase;
+    font-family: pixelify, monospace;
     font-size: 3rem;
     text-align: center;
 }
@@ -86,8 +195,9 @@ main {
     margin-bottom: var(--lg);
     text-align: center;
     font-size: 0.8rem;
-    color: var(--dis);
+    color: var(--sk8);
     font-style: italic;
+    transition: color 0.6s ease;
 }
 
 .controls {
@@ -131,20 +241,24 @@ main {
 }
 
 .control {
-    display: flex;
-    flex-direction: column;
-    gap: var(--xs);
+    display: grid;
+    grid-template-columns: 10px 1fr;
+    align-items: center;
+    gap: var(--md);
 }
 
 label {
+    color: var(--zk2);
     font-size: 0.9rem;
     opacity: 0.8;
+    white-space: nowrap;
+    font-family: pixelify, monospace;
 }
 
 input[type="range"] {
     width: 100%;
     height: var(--in-h);
-    background: var(--in);
+    background-color: var(--sk3);
     border-radius: var(--r-sm);
     -webkit-appearance: none;
 }
@@ -153,16 +267,18 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     width: var(--th);
     height: var(--th);
-    background: var(--cl);
+    background-color: var(--pk0);
+    opacity: 0.4;
+    backdrop-filter: blur(var(--bl));
     border-radius: 50%;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 0 0.5rem var(--sh);
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
     transform: scale(1.2);
-    background: var(--fg-m);
+    background: var(--pk0);
+    opacity: 1;
 }
 
 input[type="range"]::-moz-range-thumb {
@@ -177,7 +293,8 @@ input[type="range"]::-moz-range-thumb {
 
 input[type="range"]::-moz-range-thumb:hover {
     transform: scale(1.2);
-    background: var(--fg-m);
+    background: var(--pk0);
+    opacity: 1;
 }
 
 input[type="radio"] {
@@ -188,14 +305,20 @@ input[type="radio"] + label {
     display: block;
     padding: var(--xs);
     text-align: center;
-    background: var(--in);
+    text-transform: uppercase;
+    background: var(--sk3);
     border-radius: var(--r-md);
     cursor: pointer;
+    color: var(--pk0);
     transition: background 0.2s;
     min-width: 2.5rem;
-    font-family: monospace;
+    font-family: pixelify, monospace;
+    opacity: 0.6;
 }
 
 input[type="radio"]:checked + label {
-    background: var(--in-a);
+    background: var(--pk0);
+    color: black;
+    font-weight: bold;
+    opacity: 1;
 }
