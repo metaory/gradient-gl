@@ -1,121 +1,116 @@
 import gradient from '../index.js'
 import shaders from '../shaders/index.js'
 
-// Random shader selection with session storage
-const rnd = (k, v) => {
-    const p = (sessionStorage[k] || v).split`,`
-    sessionStorage[k] = p.length > 1 ? p.slice(1).join() : v
-    return p.at(0)
-}
-
-// Pure functions for DOM creation
-const createRadio = (id, name, value) => {
-    const radio = document.createElement('input')
-    radio.type = 'radio'
-    radio.id = id
-    radio.name = name
-    radio.value = value
-    return radio
-}
-
-const createLabel = (htmlFor, text) => {
-    const label = document.createElement('label')
-    label.htmlFor = htmlFor
-    label.textContent = text
-    return label
-}
-
-// Create shader option with radio and label
-const createShaderOption = (shader) => {
-    const radio = createRadio(shader, 'shader', shader)
-    const label = createLabel(shader, shader)
-    return [radio, label]
-}
-
-// Create a row of shader options
-const createShaderRow = (variations) => {
-    const row = document.createElement('div')
-    row.className = 'shader-type'
-    for (const shader of variations) {
-        const [radio, label] = createShaderOption(shader)
-        row.appendChild(radio)
-        row.appendChild(label)
+const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x)
+const setDataset = (el, dataset) => {
+    if (!dataset) return el
+    for (const [k, v] of Object.entries(dataset)) {
+        el.dataset[k] = v
     }
-    return row
+    return el
+}
+const setProps = (el, props) => {
+    if (!props) return el
+    for (const [k, v] of Object.entries(props)) {
+        if (k === 'dataset') {
+            setDataset(el, v)
+        } else {
+            el[k] = v
+        }
+    }
+    return el
+}
+const appendChildren = (el, children) => {
+    if (!children?.length) return el
+    for (const child of children) el.append(child)
+    return el
+}
+const createEl = (tag, props = {}, children = []) => {
+    const el = document.createElement(tag)
+    return pipe(
+        el => setProps(el, props),
+        el => appendChildren(el, children)
+    )(el)
 }
 
-// Group shaders by type and create UI
-const createShaderUI = (shaders) => {
-    const container = document.getElementById('shader-options')
+// State management
+const state = {
+    seed: '',
+    update: () => {
+        const shader = document.querySelector('.shader-option[data-selected="true"]')?.dataset.shader
+        const values = ['speed', 'hue', 'saturation', 'lightness']
+            .map(id => document.getElementById(id)?.value || '4')
 
-    // Group shaders by type
-    const shadersByType = shaders.reduce((acc, shader) => {
-        const type = shader[0]
-        acc[type] = acc[type] || []
-        acc[type].push(shader)
-        return acc
-    }, {})
+        state.seed = shader ? `${shader}.${values.join('')}` : state.seed
+        document.getElementById('seed').textContent = state.seed
+        gradient(state.seed)
 
-    // Create and append rows
-    for (const row of Object.values(shadersByType).map(createShaderRow)) {
-        container.appendChild(row)
+        // Visual feedback
+        const disclaimer = document.querySelector('.disclaimer')
+        const color = disclaimer.style.color
+        disclaimer.style.color = 'var(--pk0)'
+        setTimeout(() => { disclaimer.style.color = color }, 600)
     }
 }
 
-// Create seed string from form values
-const createSeedString = (shader, speed, hue, saturation, lightness) =>
-    `${shader}.${speed}${hue}${saturation}${lightness}`
+// UI Components
+const createRangeInput = ({ id, label }) => createEl('div', { className: 'control' }, [
+    createEl('label', { htmlFor: id, title: label, textContent: label[0].toUpperCase() }),
+    createEl('input', {
+        type: 'range',
+        id,
+        title: label,
+        min: 0,
+        max: 9,
+        value: 4,
+        oninput: state.update
+    })
+])
 
-// Update seed display
-const updateSeed = () => {
-    const selectedShader = document.querySelector('input[name="shader"]:checked')
-    if (!selectedShader) return
+const createShaderOption = shader => createEl('button', {
+    className: 'shader-option',
+    textContent: shader,
+    dataset: { shader },
+    onclick: (e) => {
+        const target = e.target
+        const options = document.querySelectorAll('.shader-option')
+        for (const opt of options) {
+            opt.dataset.selected = opt === target ? 'true' : 'false'
+        }
+        state.update()
+    }
+})
 
-    const shader = selectedShader.value
-    const speed = document.getElementById('speed').value
-    const hue = document.getElementById('hue').value
-    const saturation = document.getElementById('saturation').value
-    const lightness = document.getElementById('lightness').value
-
-    document.getElementById('seed').textContent = createSeedString(shader, speed, hue, saturation, lightness)
-
-    // Highlight disclaimer
-    const disclaimer = document.querySelector('.disclaimer')
-    disclaimer.style.color = 'var(--pk0)'
-    setTimeout(() => {
-        disclaimer.style.color = 'var(--sk8)'
-    }, 600)
+if (!shaders?.length) {
+    console.error('No shaders available')
+    process.exit(1)
 }
 
-// Initialize UI
-const init = () => {
-    if (!shaders?.length) {
-        console.error('No shaders available')
-        return
-    }
+// Create shader UI
+const shadersByType = shaders.reduce((acc, shader) => {
+    acc[shader[0]] = [...(acc[shader[0]] || []), shader]
+    return acc
+}, {})
 
-    createShaderUI(shaders)
+document.getElementById('shader-options').append(
+    ...Object.values(shadersByType).map(variations =>
+        createEl('div', { className: 'shader-type' },
+            variations.map(createShaderOption)))
+)
 
-    // Select random shader using session storage
-    const randomShader = rnd('gl', shaders.join())
-    const shaderElement = document.getElementById(randomShader)
-    if (shaderElement) {
-        shaderElement.checked = true
-    }
+// Create range controls
+document.getElementById('range-controls').append(
+    ...['speed', 'hue', 'saturation', 'lightness'].map(id =>
+        createRangeInput({ id, label: id }))
+)
 
-    // Add event listeners to all inputs
-    for (const input of document.querySelectorAll('input')) {
-        input.addEventListener('input', updateSeed)
-    }
-
-    // Set initial seed
-    const seed = `${randomShader}.4873`
-    document.getElementById('seed').textContent = seed
-    gradient(seed)
+// Set initial state
+const randomShader = (sessionStorage.gl || shaders.join()).split(',')[0]
+const initialOption = document.querySelector(`.shader-option[data-shader="${randomShader}"]`)
+if (initialOption) {
+    initialOption.dataset.selected = 'true'
 }
-
-// Start the application
-init()
+state.update()
 
 // gradient({ seed: 'w2.678' });
 // gradient('w2.678');
