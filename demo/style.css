@@ -108,9 +108,10 @@
     --thumb-size: 1rem;
 
     /* Border Radius */
-    --radius-sm: .5rem;
-    --radius-md: 1rem;
-    --radius-lg: 2rem;
+    --radius-sm: .6rem;
+    --radius-md: .8rem;
+    --radius-lg: 1.4rem;
+    --radius-xl: 1.6rem;
 
     /* Effects */
     --blur-amount: 20px;
@@ -128,13 +129,17 @@
 }
 
 body {
-    margin: auto;
+    margin: 0;
     overflow: hidden;
     font-family: pixelify, monospace;
     min-height: 100vh;
     display: grid;
     place-items: center;
     user-select: none;
+}
+
+* {
+    font-family: pixelify, monospace;
 }
 
 canvas {
@@ -153,7 +158,8 @@ main {
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
     display: grid;
-    place-content: center;
+    gap: var(--spacing-lg);
+    place-content: stretch;
     justify-items: center;
     z-index: 1;
     color: var(--fg);
@@ -161,8 +167,16 @@ main {
     margin: 1em;
 }
 
+#seed {
+    background: var(--sk3);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-lg);
+    font-size: 2rem;
+    text-align: center;
+    color: var(--pk0);
+}
+
 #info {
-    margin-bottom: var(--spacing-lg);
     text-align: center;
     font-size: 0.8rem;
     color: var(--sk8);
@@ -170,61 +184,51 @@ main {
     transition: color 0.6s ease;
 }
 
-button {
-    display: block;
+#shaders {
+    display: grid;
+    gap: var(--spacing-xs);
+    width: 100%;
+}
+
+.shader-type {
+    display: grid;
+    grid-auto-flow: column;
+    gap: var(--spacing-md);
+    width: 100%;
+}
+
+.shader {
+    opacity: 0.6;
     padding: var(--spacing-xs);
     text-align: center;
     text-transform: uppercase;
     background: var(--sk3);
     border-radius: var(--radius-md);
     transition: all 0.2s;
-    min-width: 2.5rem;
     cursor: pointer;
     color: var(--pk0);
-    border: 2px solid transparent;
-}
+    box-shadow: 0 0 0.5rem var(--sk2);
+    border:none;
+    font-size: 1.2rem;
 
-#shaders {
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-xs);
-
-    & .shader-type {
-        display: flex;
-        gap: var(--spacing-xs);
-        flex-wrap: wrap;
+    &:hover {
+        opacity: 0.8;
+        box-shadow: 0 0 1rem var(--pk0);
     }
 
-
-    .shader {
-        opacity: 0.6;
-
-        &:hover {
-            opacity: 0.8;
-            border-color: var(--pk0);
-        }
-
-        &[data-selected="true"] {
-            background: var(--pk0);
-            color: black;
-            font-weight: bold;
-            opacity: 1;
-            box-shadow: 0 0 1rem var(--pk0);
-        }
+    &[data-selected="true"] {
+        background: var(--pk0);
+        color: black;
+        font-weight: bold;
+        opacity: 1;
+        box-shadow: 0 0 1rem var(--pk0);
     }
 }
 
-.control {
+#options {
     display: grid;
-    grid-template-columns: 10px 1fr;
-    align-items: center;
     gap: var(--spacing-md);
-}
-
-.control label {
-    color: var(--zk2);
-    font-size: 0.9rem;
-    opacity: 0.8;
+    width: 100%;
 }
 
 input[type="range"] {
@@ -233,8 +237,20 @@ input[type="range"] {
     background-color: var(--sk3);
     border-radius: var(--radius-sm);
     appearance: none;
+    position: relative;
+    margin-top: 1.2rem;
 
-    &::slider-thumb {
+    &::before {
+        content: attr(title);
+        position: absolute;
+        left: 0;
+        top: -1.2rem;
+        color: var(--zk2);
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    &::-webkit-slider-thumb {
         appearance: none;
         width: var(--thumb-size);
         height: var(--thumb-size);
@@ -245,10 +261,30 @@ input[type="range"] {
         cursor: pointer;
         transition: all 0.2s ease;
         box-shadow: 0 0 0.5rem var(--sh);
+        border: none;
 
         &:hover {
             transform: scale(1.2);
-            background: var(--pk0);
+            background: var(--pk1);
+            opacity: 1;
+        }
+    }
+
+    &::-moz-range-thumb {
+        width: var(--thumb-size);
+        height: var(--thumb-size);
+        background-color: var(--pk0);
+        opacity: 0.4;
+        backdrop-filter: blur(var(--blur-amount));
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 0.5rem var(--sh);
+        border: none;
+
+        &:hover {
+            transform: scale(1.2);
+            background: var(--pk1);
             opacity: 1;
         }
     }

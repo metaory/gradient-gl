@@ -56,18 +56,15 @@ const state = {
 }
 
 // UI Components
-const createRangeInput = ({ id, label }) => mkEl('div', { className: 'control' }, [
-    mkEl('label', { htmlFor: id, title: label, textContent: label[0].toUpperCase() }),
-    mkEl('input', {
-        type: 'range',
-        id,
-        title: label,
-        min: 0,
-        max: 9,
-        value: 4,
-        oninput: state.update
-    })
-])
+const createRangeInput = ({ id, label }) => mkEl('input', {
+    type: 'range',
+    id,
+    title: label,
+    min: 0,
+    max: 9,
+    value: 4,
+    oninput: state.update
+})
 
 const createShaderOption = shader => mkEl('button', {
     className: 'shader',
