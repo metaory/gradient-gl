@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-  <head>
+
+<head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="public/logo.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="public/logo.png" />
@@ -10,28 +11,24 @@
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="title" content="GradientGL - WebGL Gradient Generator">
-    <meta name="description" content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
+    <meta name="description"
+        content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://metaory.github.io/gradient-gl/">
     <meta property="og:title" content="GradientGL - WebGL Gradient Generator">
-    <meta property="og:description" content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
+    <meta property="og:description"
+        content="GPU-accelerated WebGL library for generating blurry, meshy, smooth gradients with structured randomness and controlled variation.">
     <meta property="og:image" content="https://metaory.github.io/gradient-gl/public/logo.svg">
-  </head>
-  <body>
+</head>
+
+<body>
     <main>
-      <div class="seed-display">
         <span id="seed"></span>
-      </div>
-      <div class="disclaimer">
-        <span>Work in progress - inputs don't affect rendering yet</span>
-      </div>
-      <div class="controls">
-        <fieldset class="shader-select">
-          <div id="shader-options"></div>
-        </fieldset>
-        <div class="universals" id="range-controls"></div>
-      </div>
+        <span id="disclaimer"> Work in progress - inputs don't affect rendering yet </span>
+        <div id="shader-options"></div>
+        <div id="range-controls"></div>
     </main>
     <script type="module" src="demo/main.js"></script>
-  </body>
+</body>
+
 </html>

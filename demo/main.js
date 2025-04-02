@@ -25,6 +25,7 @@ const appendChildren = (el, children) => {
     for (const child of children) el.append(child)
     return el
 }
+const getEl = id => document.getElementById(id)
 const createEl = (tag, props = {}, children = []) => {
     const el = document.createElement(tag)
     return pipe(
@@ -39,14 +40,14 @@ const state = {
     update: () => {
         const shader = document.querySelector('.shader-option[data-selected="true"]')?.dataset.shader
         const values = ['speed', 'hue', 'saturation', 'lightness']
-            .map(id => document.getElementById(id)?.value || '4')
+            .map(id => getEl(id)?.value || '4')
 
         state.seed = shader ? `${shader}.${values.join('')}` : state.seed
-        document.getElementById('seed').textContent = state.seed
+        getEl('seed').textContent = state.seed
         gradient(state.seed)
 
         // Visual feedback
-        const disclaimer = document.querySelector('.disclaimer')
+        const disclaimer = getEl('disclaimer')
         const color = disclaimer.style.color
         disclaimer.style.color = 'var(--pk0)'
         setTimeout(() => { disclaimer.style.color = color }, 600)

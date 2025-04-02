@@ -6,7 +6,6 @@
     --h: 270;
 
     /* colors from https://github.com/metaory/hexocd-colorscheme */
-
     --cy1: #FF5599;
     --c09: #FF4488;
     --c01: #EE3377;
@@ -56,7 +55,6 @@
     --cx7: #8877DD;
     --cz7: #7766DD;
 
-
     --zk0: #BB44AA;
     --zk1: #BB55BB;
     --zk2: #CC66CC;
@@ -101,7 +99,7 @@
     --wk8: #9955EE76;
     --wk9: #AA55FF76;
 
-
+    /* Theme Colors */
     --cc: hsl(var(--h) 70% 40%);
     --cl: hsl(var(--h) 70% 60%);
     --bg: hsl(var(--h) 50% 10% / 0.5);
@@ -134,27 +132,17 @@
     /* Effects */
     --blur-amount: 20px;
     --shadow-lg: 0 0 2rem var(--sh);
-
-    /* Theme Colors */
-    --fg: hsl(var(--h) 0% 100%);
-    --fg-muted: hsl(var(--h) 0% 80%);
-    --border: hsl(var(--h) 0% 10%);
-    --shadow: hsl(var(--h) 0% 0% / 0.5);
-    --overlay: hsl(var(--h) 0% 0% / 0.2);
-    --input-bg: hsl(var(--h) 0% 100% / 0.1);
-    --input-active: hsl(var(--h) 0% 100% / 0.2);
-    --disabled: hsl(var(--h) 0% 100% / 0.4);
 }
 
-/* Note: This file should be postprocessed with autoprefixer for browser compatibility */
-
+/* Fonts */
 @font-face {
     font-family: 'pixelify';
     font-style: normal;
     font-display: swap;
     font-weight: 500;
-    src: url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff) format('woff');
-    unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+    src: url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff2) format('woff2'),
+        url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff) format('woff');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 /* Base Layout */
@@ -185,27 +173,16 @@ main {
     padding: var(--spacing-xl);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-lg);
+    display: grid;
+    place-content: center;
+    justify-items: center;
     z-index: 1;
     color: var(--fg);
     min-width: 20rem;
     margin: 1em;
 }
 
-/* Seed Display */
-.seed-display {
-    color: var(--pk0);
-    margin-bottom: var(--spacing-lg);
-    padding: var(--spacing-xs);
-    background-color: var(--li);
-    border-radius: var(--radius-md);
-    text-transform: uppercase;
-    font-family: pixelify, monospace;
-    font-size: 3rem;
-    text-align: center;
-}
-
-/* Disclaimer */
-.disclaimer {
+#disclaimer {
     margin-bottom: var(--spacing-lg);
     text-align: center;
     font-size: 0.8rem;
@@ -214,107 +191,88 @@ main {
     transition: color 0.6s ease;
 }
 
-/* Controls Section */
-.controls {
+#shader-options {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-lg);
+    gap: var(--spacing-xs);
 
-    & .shader-select {
-        border: none;
-        padding: 0;
-
-        & legend {
-            margin-bottom: var(--spacing-xs);
-            font-weight: 500;
-        }
-
-        & #shader-options {
-            display: flex;
-            flex-direction: column;
-            gap: var(--spacing-xs);
-
-            & .shader-type,
-            & .shader-variations {
-                display: flex;
-                gap: var(--spacing-xs);
-                flex-wrap: wrap;
-            }
-        }
+    & .shader-type {
+        display: flex;
+        gap: var(--spacing-xs);
+        flex-wrap: wrap;
     }
 
-    & .universals {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-md);
 
-        & .control {
-            display: grid;
-            grid-template-columns: 10px 1fr;
-            align-items: center;
-            gap: var(--spacing-md);
+.shader-option {
+    display: block;
+        padding: var(--spacing-xs);
+        text-align: center;
+        text-transform: uppercase;
+        background: var(--sk3);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--pk0);
+        transition: all 0.2s;
+        min-width: 2.5rem;
+        font-family: pixelify, monospace;
+        opacity: 0.6;
+        border: 2px solid transparent;
 
-            & label {
-                color: var(--zk2);
-                font-size: 0.9rem;
-                opacity: 0.8;
-                white-space: nowrap;
-                font-family: pixelify, monospace;
-            }
+        &:hover {
+            opacity: 0.8;
+            border-color: var(--pk0);
+        }
 
-            & input[type="range"] {
-                width: 100%;
-                height: var(--input-height);
-                background-color: var(--sk3);
-                border-radius: var(--radius-sm);
-                appearance: none;
+        &[data-selected="true"] {
+            background: var(--pk0);
+            color: black;
+            font-weight: bold;
+            opacity: 1;
+            border-color: var(--pk0);
+            transform: scale(1.05);
+            box-shadow: 0 0 1rem var(--pk0);
+        }
+    }
+}
 
-                &::slider-thumb {
-                    appearance: none;
-                    width: var(--thumb-size);
-                    height: var(--thumb-size);
-                    background-color: var(--pk0);
-                    opacity: 0.4;
-                    backdrop-filter: blur(var(--blur-amount));
-                    border-radius: 50%;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    box-shadow: 0 0 0.5rem var(--sh);
+.control {
+    display: grid;
+    grid-template-columns: 10px 1fr;
+    align-items: center;
+    gap: var(--spacing-md);
+}
 
-                    &:hover {
-                        transform: scale(1.2);
-                        background: var(--pk0);
-                        opacity: 1;
-                    }
-                }
-            }
+.control label {
+    color: var(--zk2);
+    font-size: 0.9rem;
+    opacity: 0.8;
+    white-space: nowrap;
+    font-family: pixelify, monospace;
+}
 
-            & .shader-option {
-                display: block;
-                padding: var(--spacing-xs);
-                text-align: center;
-                text-transform: uppercase;
-                background: var(--sk3);
-                border-radius: var(--radius-md);
-                cursor: pointer;
-                color: var(--pk0);
-                transition: background 0.2s;
-                min-width: 2.5rem;
-                font-family: pixelify, monospace;
-                opacity: 0.6;
-                border: none;
+input[type="range"] {
+    width: 100%;
+    height: var(--input-height);
+    background-color: var(--sk3);
+    border-radius: var(--radius-sm);
+    appearance: none;
 
-                &:hover {
-                    opacity: 0.8;
-                }
+    &::slider-thumb {
+        appearance: none;
+        width: var(--thumb-size);
+        height: var(--thumb-size);
+        background-color: var(--pk0);
+        opacity: 0.4;
+        backdrop-filter: blur(var(--blur-amount));
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 0 0.5rem var(--sh);
 
-                &[data-selected="true"] {
-                    background: var(--pk0);
-                    color: black;
-                    font-weight: bold;
-                    opacity: 1;
-                }
-            }
+        &:hover {
+            transform: scale(1.2);
+            background: var(--pk0);
+            opacity: 1;
         }
     }
 }
