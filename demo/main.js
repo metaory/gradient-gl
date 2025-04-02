@@ -25,10 +25,11 @@ const appendChildren = (el, children) => {
     for (const child of children) el.append(child)
     return el
 }
+
 const query = document.querySelector.bind(document)
 const getEl = document.getElementById.bind(document)
 const getEls = document.querySelectorAll.bind(document)
-const createEl = (tag, props = {}, children = []) => {
+const mkEl = (tag, props = {}, children = []) => {
     const el = document.createElement(tag)
     return pipe(
         el => setProps(el, props),
@@ -55,9 +56,9 @@ const state = {
 }
 
 // UI Components
-const createRangeInput = ({ id, label }) => createEl('div', { className: 'control' }, [
-    createEl('label', { htmlFor: id, title: label, textContent: label[0].toUpperCase() }),
-    createEl('input', {
+const createRangeInput = ({ id, label }) => mkEl('div', { className: 'control' }, [
+    mkEl('label', { htmlFor: id, title: label, textContent: label[0].toUpperCase() }),
+    mkEl('input', {
         type: 'range',
         id,
         title: label,
@@ -68,14 +69,13 @@ const createRangeInput = ({ id, label }) => createEl('div', { className: 'contro
     })
 ])
 
-const createShaderOption = shader => createEl('button', {
+const createShaderOption = shader => mkEl('button', {
     className: 'shader',
     textContent: shader,
     dataset: { shader },
     onclick: (e) => {
         const target = e.target
-        const options = getEls('.shader')
-        for (const opt of options) {
+        for (const opt of getEls('.shader')) {
             opt.dataset.selected = opt === target ? 'true' : 'false'
         }
         state.update()
@@ -84,7 +84,6 @@ const createShaderOption = shader => createEl('button', {
 
 if (!shaders?.length) {
     console.error('No shaders available')
-    process.exit(1)
 }
 
 // Create shader UI
@@ -95,7 +94,7 @@ const shadersByType = shaders.reduce((acc, shader) => {
 
 getEl('shaders').append(
     ...Object.values(shadersByType).map(variations =>
-        createEl('div', { className: 'shader-type' },
+        mkEl('div', { className: 'shader-type' },
             variations.map(createShaderOption)))
 )
 
@@ -104,7 +103,7 @@ getEl('options').append(
         createRangeInput({ id, label: id }))
 )
 
-const randomShader = (sessionStorage.gl || shaders.join()).split(',')[0]
+const randomShader = shaders[0]
 const initialOption = query(`.shader[data-shader="${randomShader}"]`)
 if (initialOption) {
     initialOption.dataset.selected = 'true'

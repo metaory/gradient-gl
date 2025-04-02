@@ -55,17 +55,7 @@
     --cx7: #8877DD;
     --cz7: #7766DD;
 
-    --zk0: #BB44AA;
-    --zk1: #BB55BB;
-    --zk2: #CC66CC;
-    --zk3: #CC77DD;
-    --zk4: #DD88DD;
-    --zk5: #DD99EE;
-    --zk6: #EEAAEE;
-    --zk7: #EEBBFF;
-    --zk8: #FFCCFF;
-    --zk9: #FFDDFF;
-
+    /* Primary Colors */
     --pk0: #FF4488;
     --pk1: #EE4499;
     --pk2: #DD44AA;
@@ -77,6 +67,7 @@
     --pk8: #7755FF;
     --pk9: #6655FF;
 
+    /* Secondary Colors */
     --sk0: #1A002A76;
     --sk1: #22003376;
     --sk2: #33114476;
@@ -88,43 +79,40 @@
     --sk8: #AA55BB76;
     --sk9: #BB66CC76;
 
-    --wk0: #11002276;
-    --wk1: #22004476;
-    --wk2: #33116676;
-    --wk3: #441A8876;
-    --wk4: #5522AA76;
-    --wk5: #6633BB76;
-    --wk6: #7744CC76;
-    --wk7: #8855DD76;
-    --wk8: #9955EE76;
-    --wk9: #AA55FF76;
+    /* Accent Colors */
+    --zk0: #BB44AA;
+    --zk1: #BB55BB;
+    --zk2: #CC66CC;
+    --zk3: #CC77DD;
+    --zk4: #DD88DD;
+    --zk5: #DD99EE;
+    --zk6: #EEAAEE;
+    --zk7: #EEBBFF;
+    --zk8: #FFCCFF;
+    --zk9: #FFDDFF;
 
-    --cc: hsl(var(--h) 70% 40%);
-    --cl: hsl(var(--h) 70% 60%);
+    /* UI Colors */
     --bg: hsl(var(--h) 50% 10% / 0.5);
-    --li: hsl(var(--h) 40% 30% / 0.2);
     --fg: hsl(var(--h) 0% 100%);
-    --fg-m: hsl(var(--h) 0% 80%);
-    --br: hsl(var(--h) 0% 10%);
     --sh: hsl(var(--h) 0% 0% / 0.5);
-    --ov: hsl(var(--h) 0% 0% / 0.2);
-    --in: hsl(var(--h) 0% 100% / 0.1);
-    --in-a: hsl(var(--h) 0% 100% / 0.2);
-    --dis: hsl(var(--h) 0% 100% / 0.4);
 
+    /* Spacing */
     --spacing-xs: 0.6rem;
     --spacing-sm: 0.8rem;
     --spacing-md: 1rem;
     --spacing-lg: 1.4rem;
     --spacing-xl: 1.6rem;
 
+    /* Input */
     --input-height: 0.5rem;
     --thumb-size: 1rem;
 
+    /* Border Radius */
     --radius-sm: .5rem;
     --radius-md: 1rem;
     --radius-lg: 2rem;
 
+    /* Effects */
     --blur-amount: 20px;
     --shadow-lg: 0 0 2rem var(--sh);
 }
