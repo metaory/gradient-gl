@@ -4,7 +4,7 @@ vec4 shader(vec2 fragCoord) {
   float ratio = iResolution.x / iResolution.y;
   vec2 tuv = uv;
   tuv -= .5;
-  float t = iTime * timeScale;  // Use timeScale uniform
+  float t = iTime * 0.5;  // Use fixed speed instead of timeScale
   float degree = noise(vec2(t * 0.1, tuv.x*tuv.y));  // Slow rotation
   tuv.y *= 1./ratio;
   tuv *= rot(radians((degree-.5)*720.+180.));

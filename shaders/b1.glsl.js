@@ -5,7 +5,7 @@ vec4 shader(vec2 fragCoord) {
   p[0] = vec2(0.1, 0.9);
   p[1] = vec2(0.9, 0.9);
   p[2] = vec2(0.5, 0.1);
-  float t = iTime * timeScale;  // Use timeScale uniform
+  float t = iTime * 0.5;  // Use fixed speed instead of timeScale
   p[3] = vec2(cos(t), sin(t)) * 0.4 + vec2(0.5, 0.5);
   vec3 c[4];
   // Add subtle color animation

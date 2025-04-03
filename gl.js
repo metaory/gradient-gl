@@ -1,3 +1,5 @@
+import { normalizeValue } from './seed.js'
+
 const vertex = /* glsl */ `#version 300 es
     in vec2 position;
     void main() {
@@ -12,22 +14,20 @@ class GradientGL {
     #uniforms
     #timeScale
     #isActive
+    #externalUniforms
 
-    constructor(canvas, fragment, options) {
+    constructor(canvas, fragment, uniforms) {
         this.#gl = this.#createGLContext(canvas)
         this.#canvas = canvas
         this.#program = this.#createProgram(vertex, fragment)
         this.#uniforms = this.#getUniformLocations()
-        this.#timeScale = options.timeScale
+        this.#timeScale = 0.4
         this.#isActive = true
+        this.#externalUniforms = uniforms
 
         this.#setupBuffers()
         this.#setupAttributes()
-
-        // Set initial uniforms
-        console.log('Setting initial timeScale:', this.#timeScale)
-        this.setTimeScale(this.#timeScale)
-
+        this.#updateExternalUniforms()
         this.#render()
     }
 
@@ -93,20 +93,32 @@ class GradientGL {
 
     #getUniformLocations() {
         return {
-            // Internal uniforms
+            // Internal uniforms (updated every frame)
             iResolution: this.#gl.getUniformLocation(this.#program, "iResolution"),
             iTime: this.#gl.getUniformLocation(this.#program, "iTime"),
             iFrame: this.#gl.getUniformLocation(this.#program, "iFrame"),
+            timeScale: this.#gl.getUniformLocation(this.#program, "timeScale"),
 
-            // External uniforms
-            timeScale: this.#gl.getUniformLocation(this.#program, "timeScale")
+            // External uniforms (set once, updated when options change)
+            options: this.#gl.getUniformLocation(this.#program, "options")
         }
+    }
+
+    #updateExternalUniforms() {
+        if (!this.#externalUniforms) return
+        this.#gl.useProgram(this.#program)
+        this.#gl.uniform1iv(this.#uniforms.options, this.#externalUniforms)
+    }
+
+    setExternalUniforms(uniforms) {
+        this.#externalUniforms = uniforms
+        this.#updateExternalUniforms()
     }
 
     #updateInternalUniforms(time) {
         if (!this.#isActive) return
 
-        const { iResolution, iTime, iFrame } = this.#uniforms
+        const { iResolution, iTime, iFrame, timeScale } = this.#uniforms
 
         // Ensure program is active
         this.#gl.useProgram(this.#program)
@@ -124,6 +136,10 @@ class GradientGL {
         // Update time-based uniforms
         this.#gl.uniform1f(iTime, time / 1000) // Pass raw time in seconds
         this.#gl.uniform1f(iFrame, Math.floor(time / 1000 * 60))
+
+        // Update timeScale from seed (normalized 0-9 to 0.1-2.0)
+        const speed = this.#externalUniforms ? normalizeValue(this.#externalUniforms[0]) / 255.0 * 1.9 + 0.1 : 0.4
+        this.#gl.uniform1f(timeScale, speed)
     }
 
     #render() {
@@ -135,14 +151,6 @@ class GradientGL {
         }
 
         frame()
-    }
-
-    // Public methods
-    setTimeScale(value) {
-        if (!this.#isActive) return
-        this.#gl.useProgram(this.#program)
-        this.#gl.uniform1f(this.#uniforms.timeScale, value)
-        this.#timeScale = value
     }
 
     // Cleanup method

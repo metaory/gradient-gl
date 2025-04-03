@@ -39,14 +39,18 @@ const mkEl = (tag, props = {}, children = []) => {
 
 const state = {
     seed: '',
-    update: () => {
+    program: null,
+    update: async () => {
         const shader = query('.shader[data-selected="true"]')?.dataset.shader
         const values = ['speed', 'hue', 'saturation', 'lightness']
             .map(id => query(id)?.value || '4')
 
-        state.seed = shader ? `${shader}.${values.join('')}` : state.seed
+        const newSeed = shader ? `${shader}.${values.join('')}` : state.seed
+        if (newSeed === state.seed) return
+
+        state.seed = newSeed
         getEl('seed').textContent = state.seed
-        gradient(state.seed)
+        state.program = await gradient(state.seed)
     }
 }
 
