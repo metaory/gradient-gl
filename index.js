@@ -1,6 +1,6 @@
 import { createCanvas } from './dom.js'
 import parseSeed from './seed.js'
-import { createProgram } from './gl.js'
+import GradientGL from './gl.js'
 
 const main = /* glsl */ `
 void main() {
@@ -27,5 +27,21 @@ export default async (seed, selector = 'body') => {
 
   const canvas = createCanvas(selector)
 
-  createProgram(canvas, fragment, uniforms)
+  console.log('>>', uniforms)
+  const program = new GradientGL(canvas, fragment, {timeScale: 0.6})
+  console.log('>>', program)
+  setTimeout(() => {
+    console.log('UPDATE 1')
+    program.setTimeScale(0.2)
+  }, 3000)
+
+  setTimeout(() => {
+    console.log('UPDATE 2')
+    program.setTimeScale(0.8)
+  }, 8000)
+
+  setTimeout(() => {
+    console.log('UPDATE 2')
+    program.setTimeScale(0.2)
+  }, 16000)
 }

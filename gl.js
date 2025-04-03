@@ -4,104 +4,153 @@ const vertex = /* glsl */ `#version 300 es
         gl_Position = vec4(position, 0.0, 1.0);
     }`;
 
-const createGLContext = canvas => {
-    const gl = canvas.getContext("webgl2")
-    if (!gl) throw new Error("WebGL2 not supported")
-    return gl
-}
+class GradientGL {
+    // Private fields (prefixed with #)
+    #gl
+    #canvas
+    #program
+    #uniforms
+    #timeScale
+    #isActive
 
-const createShader = (gl, type, source) => {
-    const shader = gl.createShader(type)
-    gl.shaderSource(shader, source)
-    gl.compileShader(shader)
+    constructor(canvas, fragment, options) {
+        this.#gl = this.#createGLContext(canvas)
+        this.#canvas = canvas
+        this.#program = this.#createProgram(vertex, fragment)
+        this.#uniforms = this.#getUniformLocations()
+        this.#timeScale = options.timeScale
+        this.#isActive = true
 
-    const log = gl.getShaderInfoLog(shader)
-    if (log) throw new Error(`${type === gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compilation error: ${log}`)
+        this.#setupBuffers()
+        this.#setupAttributes()
 
-    return shader
-}
+        // Set initial uniforms
+        console.log('Setting initial timeScale:', this.#timeScale)
+        this.setTimeScale(this.#timeScale)
 
-const createGLProgram = (gl, vertexSource, fragmentSource) => {
-    const program = gl.createProgram()
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource)
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource)
-
-    gl.attachShader(program, vertexShader)
-    gl.attachShader(program, fragmentShader)
-    gl.linkProgram(program)
-
-    const log = gl.getProgramInfoLog(program)
-    if (log) console.error("Program linking error:", log)
-
-    return program
-}
-
-const setupBuffers = gl => {
-    const positionBuffer = gl.createBuffer()
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
-    gl.bufferData(
-        gl.ARRAY_BUFFER,
-        new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-        gl.STATIC_DRAW
-    )
-    return positionBuffer
-}
-
-const setupAttributes = (gl, program) => {
-    const positionLocation = gl.getAttribLocation(program, "position")
-    gl.enableVertexAttribArray(positionLocation)
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
-}
-
-const getUniformLocations = (gl, program) => ({
-    iResolution: gl.getUniformLocation(program, "iResolution"),
-    iTime: gl.getUniformLocation(program, "iTime"),
-    iFrame: gl.getUniformLocation(program, "iFrame"),
-    timeScale: gl.getUniformLocation(program, "timeScale")
-})
-
-const render = ({ gl, uniforms }, canvas) => {
-    const startTime = performance.now()
-
-    const frame = () => {
-        const time = (performance.now() - startTime) / 1000
-        setUniforms({ gl, uniforms }, canvas, time)
-        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-        requestAnimationFrame(frame)
+        this.#render()
     }
 
-    frame()
-}
-
-export const createProgram = (canvas, fragment) => {
-    const gl = createGLContext(canvas)
-    const program = createGLProgram(gl, vertex, fragment)
-    gl.useProgram(program)
-
-    setupBuffers(gl)
-    setupAttributes(gl, program)
-    const uniforms = getUniformLocations(gl, program)
-
-    render({ gl, uniforms }, canvas)
-
-    return { gl, program, uniforms }
-}
-
-export const setUniforms = ({ gl, uniforms }, canvas, time) => {
-    const { iResolution, iTime, iFrame, timeScale } = uniforms
-
-    // Update resolution if needed
-    const displayWidth = canvas.clientWidth
-    const displayHeight = canvas.clientHeight
-    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-        canvas.width = displayWidth
-        canvas.height = displayHeight
-        gl.uniform3f(iResolution, canvas.width, canvas.height, 1.0)
-        gl.viewport(0, 0, canvas.width, canvas.height)
+    // Private methods (prefixed with #)
+    #createGLContext(canvas) {
+        const gl = canvas.getContext("webgl2", {
+            preserveDrawingBuffer: true,
+            antialias: false
+        })
+        if (!gl) throw new Error("WebGL2 not supported")
+        return gl
     }
 
-    // Update time-based uniforms
-    gl.uniform1f(iTime, time)
-    gl.uniform1f(iFrame, Math.floor(time * 60))
-    gl.uniform1f(timeScale, 0.9)
+    #createShader(type, source) {
+        const shader = this.#gl.createShader(type)
+        this.#gl.shaderSource(shader, source)
+        this.#gl.compileShader(shader)
+
+        const log = this.#gl.getShaderInfoLog(shader)
+        if (log) throw new Error(`${type === this.#gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compilation error: ${log}`)
+
+        return shader
+    }
+
+    #createProgram(vertexSource, fragmentSource) {
+        const program = this.#gl.createProgram()
+        const vertexShader = this.#createShader(this.#gl.VERTEX_SHADER, vertexSource)
+        const fragmentShader = this.#createShader(this.#gl.FRAGMENT_SHADER, fragmentSource)
+
+        this.#gl.attachShader(program, vertexShader)
+        this.#gl.attachShader(program, fragmentShader)
+        this.#gl.linkProgram(program)
+
+        const log = this.#gl.getProgramInfoLog(program)
+        if (log) console.error("Program linking error:", log)
+
+        // Clean up shaders after linking
+        this.#gl.detachShader(program, vertexShader)
+        this.#gl.detachShader(program, fragmentShader)
+        this.#gl.deleteShader(vertexShader)
+        this.#gl.deleteShader(fragmentShader)
+
+        // Ensure program is active
+        this.#gl.useProgram(program)
+        return program
+    }
+
+    #setupBuffers() {
+        const positionBuffer = this.#gl.createBuffer()
+        this.#gl.bindBuffer(this.#gl.ARRAY_BUFFER, positionBuffer)
+        this.#gl.bufferData(
+            this.#gl.ARRAY_BUFFER,
+            new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+            this.#gl.STATIC_DRAW
+        )
+    }
+
+    #setupAttributes() {
+        const positionLocation = this.#gl.getAttribLocation(this.#program, "position")
+        this.#gl.enableVertexAttribArray(positionLocation)
+        this.#gl.vertexAttribPointer(positionLocation, 2, this.#gl.FLOAT, false, 0, 0)
+    }
+
+    #getUniformLocations() {
+        return {
+            // Internal uniforms
+            iResolution: this.#gl.getUniformLocation(this.#program, "iResolution"),
+            iTime: this.#gl.getUniformLocation(this.#program, "iTime"),
+            iFrame: this.#gl.getUniformLocation(this.#program, "iFrame"),
+
+            // External uniforms
+            timeScale: this.#gl.getUniformLocation(this.#program, "timeScale")
+        }
+    }
+
+    #updateInternalUniforms(time) {
+        if (!this.#isActive) return
+
+        const { iResolution, iTime, iFrame } = this.#uniforms
+
+        // Ensure program is active
+        this.#gl.useProgram(this.#program)
+
+        // Update resolution if needed
+        const displayWidth = this.#canvas.clientWidth
+        const displayHeight = this.#canvas.clientHeight
+        if (this.#canvas.width !== displayWidth || this.#canvas.height !== displayHeight) {
+            this.#canvas.width = displayWidth
+            this.#canvas.height = displayHeight
+            this.#gl.uniform3f(iResolution, this.#canvas.width, this.#canvas.height, 1.0)
+            this.#gl.viewport(0, 0, this.#canvas.width, this.#canvas.height)
+        }
+
+        // Update time-based uniforms
+        this.#gl.uniform1f(iTime, time / 1000) // Pass raw time in seconds
+        this.#gl.uniform1f(iFrame, Math.floor(time / 1000 * 60))
+    }
+
+    #render() {
+        const frame = () => {
+            if (!this.#isActive) return
+            this.#updateInternalUniforms(performance.now())
+            this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4)
+            requestAnimationFrame(frame)
+        }
+
+        frame()
+    }
+
+    // Public methods
+    setTimeScale(value) {
+        if (!this.#isActive) return
+        this.#gl.useProgram(this.#program)
+        this.#gl.uniform1f(this.#uniforms.timeScale, value)
+        this.#timeScale = value
+    }
+
+    // Cleanup method
+    destroy() {
+        this.#isActive = false
+        this.#gl.deleteProgram(this.#program)
+    }
 }
+
+export default GradientGL
+
