@@ -1,6 +1,6 @@
 import { createCanvas } from './dom.js'
 import parseSeed from './seed.js'
-import render from './gl.js'
+import { createProgram } from './gl.js'
 
 const main = /* glsl */ `
 void main() {
@@ -15,6 +15,7 @@ const fetchShader = (shader) =>
   import(`./shaders/${shader}.glsl.js`).then((module) => module.default)
 
 export default async (seed, selector = 'body') => {
+    console.log(' ⛊ ', seed, selector, ' ⛊ ')
   const [shaderId, uniforms] = parseSeed(seed)
 
   const [common, shader] = await Promise.all([
@@ -26,5 +27,5 @@ export default async (seed, selector = 'body') => {
 
   const canvas = createCanvas(selector)
 
-  render(canvas, fragment, uniforms)
+  createProgram(canvas, fragment, uniforms)
 }

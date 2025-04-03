@@ -47,11 +47,6 @@ const state = {
         state.seed = shader ? `${shader}.${values.join('')}` : state.seed
         getEl('seed').textContent = state.seed
         gradient(state.seed)
-
-        const disclaimer = getEl('info')
-        const color = disclaimer.style.color
-        disclaimer.style.color = 'var(--pk0)'
-        setTimeout(() => { disclaimer.style.color = color }, 600)
     }
 }
 

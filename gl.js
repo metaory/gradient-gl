@@ -4,93 +4,104 @@ const vertex = /* glsl */ `#version 300 es
         gl_Position = vec4(position, 0.0, 1.0);
     }`;
 
+const createGLContext = canvas => {
+    const gl = canvas.getContext("webgl2")
+    if (!gl) throw new Error("WebGL2 not supported")
+    return gl
+}
 
-export default (canvas, fragment, uniforms) => {
-    console.log(uniforms)
+const createShader = (gl, type, source) => {
+    const shader = gl.createShader(type)
+    gl.shaderSource(shader, source)
+    gl.compileShader(shader)
 
-	// Create WebGL context
-	const gl = canvas.getContext("webgl2");
+    const log = gl.getShaderInfoLog(shader)
+    if (log) throw new Error(`${type === gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compilation error: ${log}`)
 
-	// Create and compile shaders
-	const program = gl.createProgram();
-	const vertexShader = gl.createShader(gl.VERTEX_SHADER);
-	const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+    return shader
+}
 
-	gl.shaderSource(vertexShader, vertex);
-	gl.shaderSource(fragmentShader, fragment);
-	gl.compileShader(vertexShader);
-	gl.compileShader(fragmentShader);
+const createGLProgram = (gl, vertexSource, fragmentSource) => {
+    const program = gl.createProgram()
+    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexSource)
+    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentSource)
 
-	// Check shader compilation
-	const vertexLog = gl.getShaderInfoLog(vertexShader);
-	const fragmentLog = gl.getShaderInfoLog(fragmentShader);
-	if (vertexLog || fragmentLog) {
-		if (vertexLog) console.error("Vertex shader compilation error:", vertexLog);
-		if (fragmentLog) console.error("Fragment shader compilation error:", fragmentLog);
-		throw new Error("Shader compilation failed");
-	}
+    gl.attachShader(program, vertexShader)
+    gl.attachShader(program, fragmentShader)
+    gl.linkProgram(program)
 
-	gl.attachShader(program, vertexShader);
-	gl.attachShader(program, fragmentShader);
-	gl.linkProgram(program);
+    const log = gl.getProgramInfoLog(program)
+    if (log) console.error("Program linking error:", log)
 
-	// Check program linking
-	if (gl.getProgramInfoLog(program)) {
-		console.error("Program linking error:", gl.getProgramInfoLog(program));
-	}
+    return program
+}
 
-	// Set up vertex buffer
-	const positionBuffer = gl.createBuffer();
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-	gl.bufferData(
-		gl.ARRAY_BUFFER,
-		new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-		gl.STATIC_DRAW,
-	);
+const setupBuffers = gl => {
+    const positionBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
+        gl.STATIC_DRAW
+    )
+    return positionBuffer
+}
 
-	// Get attribute and uniform locations
-	const positionLocation = gl.getAttribLocation(program, "position");
-	const iResolutionLocation = gl.getUniformLocation(program, "iResolution");
-	const iTimeLocation = gl.getUniformLocation(program, "iTime");
-	const iFrameLocation = gl.getUniformLocation(program, "iFrame");
-	// const currentShaderLocation = gl.getUniformLocation(program, "currentShader");
-	const timeScaleLocation = gl.getUniformLocation(program, "timeScale");
-	// const shaderOptsLocation = gl.getUniformLocation(program, "shaderOpts");
+const setupAttributes = (gl, program) => {
+    const positionLocation = gl.getAttribLocation(program, "position")
+    gl.enableVertexAttribArray(positionLocation)
+    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0)
+}
 
-	// Set up vertex attributes
-	gl.useProgram(program);
-	gl.enableVertexAttribArray(positionLocation);
-	gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+const getUniformLocations = (gl, program) => ({
+    iResolution: gl.getUniformLocation(program, "iResolution"),
+    iTime: gl.getUniformLocation(program, "iTime"),
+    iFrame: gl.getUniformLocation(program, "iFrame"),
+    timeScale: gl.getUniformLocation(program, "timeScale")
+})
 
-	// Set static uniforms
-	// gl.uniform1i(currentShaderLocation, shaderId);
-	// gl.uniform3f(shaderOptsLocation, ...shaderOpts);
-	gl.uniform1f(timeScaleLocation, 0.9);
+const render = ({ gl, uniforms }, canvas) => {
+    const startTime = performance.now()
 
-	// Animation loop
-	const startTime = performance.now();
+    const frame = () => {
+        const time = (performance.now() - startTime) / 1000
+        setUniforms({ gl, uniforms }, canvas, time)
+        gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
+        requestAnimationFrame(frame)
+    }
 
-	const updateCanvasSize = () => {
-		const displayWidth = canvas.clientWidth;
-		const displayHeight = canvas.clientHeight;
-		if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-			canvas.width = displayWidth;
-			canvas.height = displayHeight;
-			gl.uniform3f(iResolutionLocation, canvas.width, canvas.height, 1.0);
-			gl.viewport(0, 0, canvas.width, canvas.height);
-		}
-	};
+    frame()
+}
 
-	function render() {
-		updateCanvasSize();
+export const createProgram = (canvas, fragment) => {
+    const gl = createGLContext(canvas)
+    const program = createGLProgram(gl, vertex, fragment)
+    gl.useProgram(program)
 
-		const currentTime = (performance.now() - startTime) / 1000;
-		gl.uniform1f(iTimeLocation, currentTime);
-		gl.uniform1f(iFrameLocation, Math.floor(currentTime * 60));
+    setupBuffers(gl)
+    setupAttributes(gl, program)
+    const uniforms = getUniformLocations(gl, program)
 
-		gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-		requestAnimationFrame(render);
-	}
+    render({ gl, uniforms }, canvas)
 
-	render();
-};
+    return { gl, program, uniforms }
+}
+
+export const setUniforms = ({ gl, uniforms }, canvas, time) => {
+    const { iResolution, iTime, iFrame, timeScale } = uniforms
+
+    // Update resolution if needed
+    const displayWidth = canvas.clientWidth
+    const displayHeight = canvas.clientHeight
+    if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+        canvas.width = displayWidth
+        canvas.height = displayHeight
+        gl.uniform3f(iResolution, canvas.width, canvas.height, 1.0)
+        gl.viewport(0, 0, canvas.width, canvas.height)
+    }
+
+    // Update time-based uniforms
+    gl.uniform1f(iTime, time)
+    gl.uniform1f(iFrame, Math.floor(time * 60))
+    gl.uniform1f(timeScale, 0.9)
+}

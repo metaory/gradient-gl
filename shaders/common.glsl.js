@@ -5,7 +5,6 @@ out vec4 fragColor;
 uniform vec3 iResolution;
 uniform float iTime;
 uniform float iFrame;
-uniform int currentShader;
 uniform float timeScale;
 
 #define POINTS 32
