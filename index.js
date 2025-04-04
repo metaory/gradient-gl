@@ -42,7 +42,3 @@ export default async (seed, selector = 'body') => {
 
   return program
 }
-
-//   setTimeout(() => { console.log('UPDATE 1') program.setTimeScale(0.2) }, 3000)
-//   setTimeout(() => { console.log('UPDATE 2') program.setTimeScale(0.8) }, 8000)
-//   setTimeout(() => { console.log('UPDATE 2') program.setTimeScale(0.2) }, 16000)

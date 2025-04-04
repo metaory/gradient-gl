@@ -97,10 +97,10 @@ class GradientGL {
             iResolution: this.#gl.getUniformLocation(this.#program, "iResolution"),
             iTime: this.#gl.getUniformLocation(this.#program, "iTime"),
             iFrame: this.#gl.getUniformLocation(this.#program, "iFrame"),
-            timeScale: this.#gl.getUniformLocation(this.#program, "timeScale"),
 
             // External uniforms (set once, updated when options change)
-            options: this.#gl.getUniformLocation(this.#program, "options")
+            options: this.#gl.getUniformLocation(this.#program, "options"),
+            timeScale: this.#gl.getUniformLocation(this.#program, "timeScale")
         }
     }
 
@@ -108,6 +108,10 @@ class GradientGL {
         if (!this.#externalUniforms) return
         this.#gl.useProgram(this.#program)
         this.#gl.uniform1iv(this.#uniforms.options, this.#externalUniforms)
+
+        // Update timeScale from seed (normalized 0-9 to 0.1-2.0)
+        const speed = normalizeValue(this.#externalUniforms[0]) / 255.0 * 1.9 + 0.1
+        this.#gl.uniform1f(this.#uniforms.timeScale, speed)
     }
 
     setExternalUniforms(uniforms) {
@@ -118,7 +122,7 @@ class GradientGL {
     #updateInternalUniforms(time) {
         if (!this.#isActive) return
 
-        const { iResolution, iTime, iFrame, timeScale } = this.#uniforms
+        const { iResolution, iTime, iFrame } = this.#uniforms
 
         // Ensure program is active
         this.#gl.useProgram(this.#program)
@@ -136,10 +140,6 @@ class GradientGL {
         // Update time-based uniforms
         this.#gl.uniform1f(iTime, time / 1000) // Pass raw time in seconds
         this.#gl.uniform1f(iFrame, Math.floor(time / 1000 * 60))
-
-        // Update timeScale from seed (normalized 0-9 to 0.1-2.0)
-        const speed = this.#externalUniforms ? normalizeValue(this.#externalUniforms[0]) / 255.0 * 1.9 + 0.1 : 0.4
-        this.#gl.uniform1f(timeScale, speed)
     }
 
     #render() {
