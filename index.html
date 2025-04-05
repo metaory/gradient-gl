@@ -15,6 +15,7 @@
             color-scheme: only dark;
             background-color: black;
             --h: 270;
+            --xs: hsl(var(--h) 50% 10% / 0.2);
             --lo: hsl(var(--h) 50% 10% / 0.3);
             --md: hsl(var(--h) 50% 10% / 0.4);
             --bg: hsl(var(--h) 50% 10% / 0.5);
@@ -116,17 +117,21 @@
             padding: var(--spacing-xs) var(--spacing-md);
             text-align: center;
             text-transform: uppercase;
-            background: var(--sk3);
+            background: var(--xs);
+            /* background: transparent; */
+            backdrop-filter: blur(var(--blur-amount));
             border: none;
             box-shadow: none;
             outline: none;
             border-radius: var(--radius-md);
             transition: all 0.2s;
             cursor: pointer;
-            color: var(--pk0);
-            box-shadow: 0 0 0.5rem var(--sk2);
+            color: var(--fg);
+            /* mix-blend-mode: color-dodge; */
+            /* box-shadow: 0 0 0.5rem var(--sk2); */
             border: none;
             font-size: 1rem;
+            /* filter: invert(1); */
 
             &:hover {
                 opacity: 0.6;
@@ -171,8 +176,10 @@
             display: inline-block;
             width: 3rem;
             height: 3rem;
-            --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M15.25 2h-6.5A6.76 6.76 0 0 0 2 8.75v6.5A6.76 6.76 0 0 0 8.75 22h6.5A6.76 6.76 0 0 0 22 15.25v-6.5A6.76 6.76 0 0 0 15.25 2m1.63 11H7.12a1 1 0 0 1 0-2h9.76a1 1 0 0 1 0 2'/%3E%3C/svg%3E");
-            /* background-color: currentColor; */
+            /* --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22M8.47 7.97a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 0 0-1.06-1.06L12 10.44L9.53 7.97a.75.75 0 0 0-1.06 0m0 4a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06L12 14.44l-2.47-2.47a.75.75 0 0 0-1.06 0' clip-rule='evenodd'/%3E%3C/svg%3E"); */
+            /* --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M8.732 5.771L5.67 9.914c-1.285 1.739-1.928 2.608-1.574 3.291l.018.034c.375.673 1.485.673 3.704.673c1.233 0 1.85 0 2.236.363l.02.02l3.872-4.57l-.02-.02c-.379-.371-.379-.963-.379-2.148v-.31c0-3.285 0-4.927-.923-5.21s-1.913 1.056-3.892 3.734' clip-rule='evenodd'/%3E%3Cpath fill='%23000' d='M10.453 16.443v.31c0 3.284 0 4.927.923 5.21s1.913-1.056 3.893-3.734l3.062-4.143c1.284-1.739 1.927-2.608 1.573-3.291l-.018-.034c-.375-.673-1.485-.673-3.704-.673c-1.233 0-1.85 0-2.236-.363l-3.872 4.57c.379.371.379.963.379 2.148' opacity='0.5'/%3E%3C/svg%3E"); */
+            --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0'/%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M2 12c0 1.64.425 2.191 1.275 3.296C4.972 17.5 7.818 20 12 20s7.028-2.5 8.725-4.704C21.575 14.192 22 13.639 22 12c0-1.64-.425-2.191-1.275-3.296C19.028 6.5 16.182 4 12 4S4.972 6.5 3.275 8.704C2.425 9.81 2 10.361 2 12m10-3.75a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5' clip-rule='evenodd'/%3E%3C/svg%3E");
+            background-color: var(--fg);
             /* background: var(--pk0); */
             -webkit-mask-image: var(--svg);
             mask-image: var(--svg);
@@ -232,11 +239,12 @@
             opacity: 0.6;
 
             &[data-selected="true"] {
-                background: var(--pk0);
-                color: black;
+                background: var(--sk2);
+                color: white;
                 font-weight: bold;
                 opacity: 1;
-                box-shadow: 0 0 1rem var(--pk0);
+                box-shadow: 0 0 1rem var(--sk2);
+                /* mix-blend-mode: difference; */
             }
         }
 
@@ -255,7 +263,7 @@
         input[type="range"] {
             width: 100%;
             height: var(--input-height);
-            background-color: var(--sk3);
+            background-color: var(--xs);
             border-radius: var(--radius-sm);
             appearance: none;
             position: relative;
@@ -266,7 +274,7 @@
                 position: absolute;
                 left: 0;
                 top: -1.2rem;
-                color: var(--zk2);
+                color: var(--fg);
                 font-size: 0.9rem;
                 opacity: 0.8;
             }
