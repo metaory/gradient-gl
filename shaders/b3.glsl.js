@@ -21,6 +21,12 @@ vec4 shader(vec2 fragCoord) {
   vec3 col = mix(c0, c1, smoothstep(step1, step2, d));
   col = mix(col, c2, smoothstep(step2, step3, d));
   col = mix(col, c3, smoothstep(step3, step4, d));
+
+  // Apply color adjustments
+  col = applyHueShift(col, hueShift);
+  col = applySaturation(col, saturation);
+  col = applyLightness(col, lightness);
+
   return vec4(col, .5);
 }
 `

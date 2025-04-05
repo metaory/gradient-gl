@@ -30,11 +30,11 @@ float noise3d(in vec3 p) {
 
 vec4 shader(vec2 fragCoord) {
   const int layers = 5;
-  const float speed = 0.25; // Base speed
+  const float baseSpeed = 0.25; // Base speed
   const float scale = 1.2;
 
   vec2 uv = (fragCoord - iResolution.xy - .5) / iResolution.y;
-  float t = iTime * speed; // Scaled time
+  float t = iTime * baseSpeed * timeScale; // Use timeScale for dynamic speed
   uv *= scale;
   float h =
       noise3d(vec3(uv * 2., t)); // Time as z-coordinate for continuous noise
@@ -50,6 +50,16 @@ vec4 shader(vec2 fragCoord) {
   vec3 col = vec3(.5 * sin(uv.x) + 0.5, .5 * sin(uv.x + uv.y) + 0.5,
                   .5 * sin(uv.y) + 0.8) *
             0.8;
+
+  // Apply hue shift to the final color
+  col = applyHueShift(col, hueShift);
+
+  // Apply saturation adjustment
+  col = applySaturation(col, saturation);
+
+  // Apply lightness adjustment
+  col = applyLightness(col, lightness);
+
   return vec4(col, 1.0);
 }
 `

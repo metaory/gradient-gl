@@ -4,14 +4,14 @@ vec4 shader(vec2 fragCoord) {
   float ratio = iResolution.x / iResolution.y;
   vec2 tuv = uv;
   tuv -= .5;
-  float t = iTime * timeScale;  // Use timeScale uniform
-  float degree = noise(vec2(t * 0.1, tuv.x*tuv.y));  // Slow rotation
+  float t = iTime * timeScale;
+  float degree = noise(vec2(t * 0.1, tuv.x*tuv.y));
   tuv.y *= 1./ratio;
   tuv *= rot(radians((degree-.5)*720.+75.));
   tuv.y *= ratio;
   float frequency = 2.;
   float amplitude = 30.;
-  float speed = t * 1.0;  // Reduced from 4.0 to 1.0 for smoother waves
+  float speed = t * 1.0;
   tuv.x += sin(tuv.y*frequency+speed)/amplitude;
   tuv.y += sin(tuv.x*frequency*1.5+speed)/(amplitude*.5);
   vec3 colorWhite = vec3(1.0, 1.0, 1.0);
@@ -27,6 +27,12 @@ vec4 shader(vec2 fragCoord) {
   layer2 = mix(layer2, colorGreen, S(-.1, .9, (tuv*rot(radians(-5.))).x));
   layer2 = mix(layer2, colorBlue, S(-.5, .5, (tuv*rot(radians(-5.))).x));
   vec3 finalComp = mix(layer1, layer2, S(.7, -.5, tuv.y));
+
+  // Apply color adjustments
+  finalComp = applyHueShift(finalComp, hueShift);
+  finalComp = applySaturation(finalComp, saturation);
+  finalComp = applyLightness(finalComp, lightness);
+
   return vec4(finalComp, 1.0);
 }
 `

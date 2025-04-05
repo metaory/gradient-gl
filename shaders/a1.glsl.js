@@ -3,14 +3,14 @@ vec4 shader(vec2 fragCoord) {
   vec2 uv = fragCoord / iResolution.xy;
   float aspectRatio = iResolution.x / iResolution.y;
   vec2 tuv = uv - .5;
-  float t = iTime * 0.5;  // Use fixed speed instead of timeScale
+  float t = iTime * timeScale;  // Use timeScale for dynamic speed
   float degree = noise(vec2(t * 0.1, tuv.x*tuv.y));  // Slow rotation
   tuv.y *= 1./aspectRatio;
   tuv *= rot(radians((degree-.5)*720.+180.));
   tuv.y *= aspectRatio;
   float frequency = 5.;
   float amplitude = 30.;
-  float speed = t * 2.0;  // Reduced from 4.0 to 2.0 for smoother waves
+  float speed = t * 2.0;  // Use timeScale for speed
   tuv.x += sin(tuv.y*frequency+speed)/amplitude;
   tuv.y += sin(tuv.x*frequency*1.5+speed)/(amplitude*.5);
   vec3 amberYellow = vec3(299, 186, 137) / vec3(255);
@@ -30,6 +30,16 @@ vec4 shader(vec2 fragCoord) {
   vec3 layer1 = mix(color3, color2, smoothstep(-.3, .2, (tuv*rot(radians(-5.))).x));
   vec3 layer2 = mix(color4, color1, smoothstep(-.3, .2, (tuv*rot(radians(-5.))).x));
   vec3 color = mix(layer1, layer2, smoothstep(.5, -.3, tuv.y));
+
+  // Apply hue shift to the final color
+  color = applyHueShift(color, hueShift);
+
+  // Apply saturation adjustment
+  color = applySaturation(color, saturation);
+
+  // Apply lightness adjustment
+  color = applyLightness(color, lightness);
+
   return vec4(color, 1.0);
 }
 `

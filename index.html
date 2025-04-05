@@ -10,6 +10,352 @@
     <title>GradientGL - WebGL Gradient Generator</title>
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+        :root {
+            color-scheme: only dark;
+            background-color: black;
+            --h: 270;
+            --bg: hsl(var(--h) 50% 10% / 0.5);
+            --fg: hsl(var(--h) 0% 100%);
+            --sh: hsl(var(--h) 0% 0% / 0.5);
+            --pk0: #FF4488;
+            --pk1: #EE4499;
+            --sk2: #33114476;
+            --sk3: #441A5576;
+            --sk8: #AA55BB76;
+            --zk2: #CC66CC;
+            --spacing-xs: 0.6rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.4rem;
+            --spacing-xl: 1.6rem;
+            --input-height: 0.5rem;
+            --thumb-size: 1rem;
+            --radius-sm: .6rem;
+            --radius-md: .8rem;
+            --radius-lg: 1.4rem;
+            --blur-amount: 20px;
+            --shadow-lg: 0 0 2rem var(--sh);
+        }
+
+        @font-face {
+            font-family: 'pixelify';
+            font-style: normal;
+            font-display: swap;
+            font-weight: 500;
+            src: url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff2) format('woff2'),
+                url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff) format('woff');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: pixelify, monospace;
+            min-height: 100vh;
+            display: grid;
+            place-items: start center;
+            user-select: none;
+            padding-top: 10vh;
+        }
+
+        * {
+            font-family: pixelify, monospace;
+        }
+
+        canvas {
+            width: 100vw;
+            height: 100vh;
+            display: block;
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+        }
+
+        button {
+            opacity: 0.6;
+            padding: var(--spacing-xs) var(--spacing-md);
+            text-align: center;
+            text-transform: uppercase;
+            background: var(--sk3);
+            border: none;
+            box-shadow: none;
+            outline: none;
+            &:hover {
+                opacity: 0.6;
+                background: var(--sk2);
+            }
+
+        }
+
+        #toggle {
+            position: fixed;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            z-index: 2;
+            background: var(--bg);
+            backdrop-filter: blur(var(--blur-amount));
+            border: none;
+            color: var(--pk0);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.2s ease;
+
+        }
+
+        main {
+            background-color: var(--bg);
+            backdrop-filter: blur(var(--blur-amount));
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            display: grid;
+            gap: var(--spacing-lg);
+            place-content: stretch;
+            justify-items: center;
+            z-index: 1;
+            color: var(--fg);
+            min-width: 20rem;
+            margin: 1em;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            margin-top: 0;
+        }
+
+        main.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #seed {
+            background: var(--sk3);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-lg);
+            font-size: 2rem;
+            text-align: center;
+            color: var(--pk0);
+        }
+
+        #info {
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--sk8);
+            font-style: italic;
+            transition: color 0.6s ease;
+        }
+
+        #shaders {
+            display: grid;
+            gap: var(--spacing-xs);
+            width: 100%;
+        }
+
+        .shader-type {
+            display: grid;
+            grid-auto-flow: column;
+            gap: var(--spacing-md);
+            width: 100%;
+        }
+
+        .shader {
+            opacity: 0.6;
+            padding: var(--spacing-xs);
+            text-align: center;
+            text-transform: uppercase;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+            cursor: pointer;
+            color: var(--pk0);
+            box-shadow: 0 0 0.5rem var(--sk2);
+            border: none;
+            font-size: 1.2rem;
+
+
+            &[data-selected="true"] {
+                background: var(--pk0);
+                color: black;
+                font-weight: bold;
+                opacity: 1;
+                box-shadow: 0 0 1rem var(--pk0);
+            }
+        }
+
+        #options {
+            display: grid;
+            gap: var(--spacing-md);
+            width: 100%;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: var(--input-height);
+            background-color: var(--sk3);
+            border-radius: var(--radius-sm);
+            appearance: none;
+            position: relative;
+            margin-top: 1.2rem;
+
+            &::before {
+                content: attr(title);
+                position: absolute;
+                left: 0;
+                top: -1.2rem;
+                color: var(--zk2);
+                font-size: 0.9rem;
+                opacity: 0.8;
+            }
+
+            &::after {
+                content: attr(data-hex-value);
+                position: absolute;
+                right: 0;
+                top: -1.2rem;
+                color: var(--pk0);
+                font-size: 0.9rem;
+                font-weight: bold;
+            }
+
+            &::-webkit-slider-thumb {
+                appearance: none;
+                width: var(--thumb-size);
+                height: var(--thumb-size);
+                background-color: var(--pk0);
+                opacity: 0.4;
+                backdrop-filter: blur(var(--blur-amount));
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 0 0.5rem var(--sh);
+                border: none;
+
+                &:hover {
+                    transform: scale(1.2);
+                    background: var(--pk1);
+                    opacity: 1;
+                }
+            }
+
+            &::-moz-range-thumb {
+                width: var(--thumb-size);
+                height: var(--thumb-size);
+                background-color: var(--pk0);
+                opacity: 0.4;
+                backdrop-filter: blur(var(--blur-amount));
+                border-radius: 50%;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                box-shadow: 0 0 0.5rem var(--sh);
+                border: none;
+
+                &:hover {
+                    transform: scale(1.2);
+                    background: var(--pk1);
+                    opacity: 1;
+                }
+            }
+        }
+
+        .tabs {
+            display: grid;
+            grid-auto-flow: column;
+            gap: var(--spacing-md);
+            width: 100%;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tab {
+            opacity: 0.6;
+            padding: var(--spacing-xs);
+            text-align: center;
+            text-transform: uppercase;
+            background: var(--sk3);
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+            cursor: pointer;
+            color: var(--pk0);
+            box-shadow: 0 0 0.5rem var(--sk2);
+            border: none;
+            font-size: 1.2rem;
+
+            &:hover {
+                opacity: 0.8;
+                box-shadow: 0 0 1rem var(--pk0);
+            }
+
+            &[data-selected="true"] {
+                background: var(--pk0);
+                color: black;
+                font-weight: bold;
+                opacity: 1;
+                box-shadow: 0 0 1rem var(--pk0);
+            }
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+
+        .tab-content[data-selected="true"] {
+            display: grid;
+            gap: var(--spacing-lg);
+        }
+
+        .usage {
+            font-family: monospace;
+            padding: var(--spacing-xs);
+            border-radius: var(--radius-lg);
+            opacity: 0.8;
+            white-space: pre;
+            overflow: hidden;
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 40rem;
+            max-height: 30vh;
+            margin-bottom: var(--spacing-md);
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 1;
+            background: var(--bg);
+            backdrop-filter: blur(var(--blur-amount));
+        }
+
+        .usage.hidden {
+            transform: translateX(-50%) translateY(calc(100% + 1rem));
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        #usage-toggle {
+            position: fixed;
+            bottom: var(--spacing-md);
+            right: var(--spacing-md);
+            z-index: 2;
+            background: var(--bg);
+            backdrop-filter: blur(var(--blur-amount));
+            border: none;
+            color: var(--pk0);
+            padding: var(--spacing-xs) var(--spacing-md);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: var(--shadow-lg);
+            transition: all 0.2s ease;
+        }
+
+        .usage-content>div {
+            padding: var(--spacing-xs);
+            overflow: auto;
+            max-height: calc(30vh - 4rem);
+            position: absolute;
+            width: 100%;
+            left: 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -18,7 +364,203 @@
         <div id="shaders"></div>
         <div id="options"></div>
     </main>
-    <script type="module" src="demo/main.js"></script>
+    <div class="usage"></div>
+    <script type="module">
+        import gradient from './index.js'
+        import shaders from './shaders/index.js'
+        import { codeToHtml } from 'https://esm.sh/shiki@3.0.0'
+
+        const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x)
+        const setProps = (el, props) => {
+            if (!props) return el
+            for (const [k, v] of Object.entries(props)) {
+                if (k === 'dataset') {
+                    for (const [dk, dv] of Object.entries(v)) {
+                        el.dataset[dk] = dv
+                    }
+                } else {
+                    el[k] = v
+                }
+            }
+            return el
+        }
+
+        const mkEl = (tag, props = {}, children = []) => {
+            const el = document.createElement(tag)
+            setProps(el, props)
+            if (children?.length) {
+                for (const child of children) el.append(child)
+            }
+            return el
+        }
+
+        const query = document.querySelector.bind(document)
+        const getEl = document.getElementById.bind(document)
+
+        // Debounce function to prevent too many updates
+        const debounce = (fn, delay = 100) => {
+            let timeout
+            return (...args) => {
+                clearTimeout(timeout)
+                timeout = setTimeout(() => fn(...args), delay)
+            }
+        }
+
+        // Usage interface state
+        const usageState = {
+            update: async () => {
+                const usage = query('.usage');
+                const currentSeed = controlState.seed;
+
+                const example = `import gradientGL from "gradient-gl"\n\nawait gradientGL("${currentSeed}")`;
+
+                const html = await codeToHtml(example, {
+                    lang: 'javascript',
+                    theme: 'laserwave',
+                    // theme: 'min-dark',
+                    transformers: [
+                        {
+                            pre(node) {
+                                delete node.properties.style;
+                                return node;
+                            }
+                        }
+                    ]
+                });
+
+                usage.innerHTML = html;
+            }
+        }
+
+        // Control interface state
+        const controlState = {
+            seed: '',
+            isVisible: true,
+            update: debounce(async () => {
+                const shader = query('.shader[data-selected="true"]')?.dataset.shader
+                if (!shader) return
+
+                const values = ['speed', 'hue', 'saturation', 'lightness']
+                    .map(id => parseInt(getEl(id).value, 10).toString(16).toLowerCase());
+
+                const newSeed = `${shader}.${values.join('')}`
+                if (newSeed === controlState.seed) return
+
+                controlState.seed = newSeed
+                getEl('seed').textContent = controlState.seed
+                await gradient(controlState.seed)
+                usageState.update()
+            }, 50)
+        }
+
+        // UI Components
+        const createRangeInput = ({ id, label }) => {
+            const input = mkEl('input', {
+                type: 'range',
+                id,
+                title: label,
+                min: 0,
+                max: 15,
+                value: 7,
+                dataset: { hexValue: '7' },
+                oninput: (e) => {
+                    e.target.dataset.hexValue = e.target.value.toString(16).toLowerCase();
+                    controlState.update();
+                }
+            });
+            return input;
+        }
+
+        const createShaderOption = shader => mkEl('button', {
+            className: 'shader',
+            textContent: shader,
+            dataset: { shader },
+            onclick: (e) => {
+                const target = e.target
+                document.querySelectorAll('.shader').forEach(opt => {
+                    opt.dataset.selected = opt === target ? 'true' : 'false'
+                })
+                controlState.update()
+            }
+        })
+
+        if (!shaders?.length) {
+            console.error('No shaders available')
+        }
+
+        // Create shader UI
+        getEl('shaders').append(
+            ...Object.values(
+                shaders.reduce((acc, shader) => {
+                    acc[shader[0]] = [...(acc[shader[0]] || []), shader]
+                    return acc
+                }, {})
+            ).map(variations =>
+                mkEl('div', { className: 'shader-type' },
+                    variations.map(createShaderOption)))
+        )
+
+        // Generate random option values
+        const randomizeOptions = () => {
+            // Randomize shader
+            const randomShader = shaders[Math.floor(Math.random() * shaders.length)];
+            const shaderButtons = document.querySelectorAll('.shader');
+            shaderButtons.forEach(btn => {
+                btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false';
+            });
+
+            // Randomize other options
+            ['speed', 'hue', 'saturation', 'lightness'].forEach(id => {
+                const input = getEl(id);
+                if (!input) return;
+                const randomValue = Math.floor(Math.random() * 16);
+                input.value = randomValue;
+                input.dataset.hexValue = randomValue.toString(16);
+            });
+            controlState.update();
+        }
+
+        getEl('options').append(
+            ...['speed', 'hue', 'saturation', 'lightness'].map(id =>
+                createRangeInput({ id, label: id }))
+        )
+
+        // Select random shader
+        const randomShader = shaders[Math.floor(Math.random() * shaders.length)];
+        const initialOption = query(`.shader[data-shader="${randomShader}"]`);
+        if (initialOption) {
+            initialOption.dataset.selected = 'true';
+        }
+
+        // Randomize values on load
+        randomizeOptions();
+
+        // Add button to randomize values again
+        const randomizeBtn = mkEl('button', {
+            textContent: 'Randomize',
+            onclick: randomizeOptions,
+            className: 'shader',
+            style: 'margin-top: var(--spacing-lg); width: 100%; font-size: 1.3rem; background: var(--sk3); color: var(--pk0); text-transform: uppercase;'
+        });
+        getEl('options').appendChild(randomizeBtn);
+
+        // Add toggle buttons
+        const main = query('main');
+        const usage = query('.usage');
+
+        const mainToggle = mkEl('button', {
+            id: 'toggle',
+            textContent: 'Hide',
+            onclick: () => {
+                controlState.isVisible = !controlState.isVisible;
+                main.classList.toggle('hidden');
+                usage.classList.toggle('hidden');
+                mainToggle.textContent = controlState.isVisible ? 'Hide' : 'Show';
+            }
+        });
+
+        document.body.appendChild(mainToggle);
+    </script>
 </body>
 
 </html>

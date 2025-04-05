@@ -11,23 +11,34 @@ vec2 line(vec2 p, vec2 a, vec2 b) {
 }
 
 vec4 shader(vec2 fragCoord) {
-    vec2 uv = fragCoord.xy / iResolution.xy;
-    vec3 sum = vec3(0.0);
-    float valence = 0.0;
-    float t = iTime * timeScale;  // Use timeScale uniform
-    for (float i = 0.0; i <= 4.0; i++) {
-        float id = 0.2 + (i/5.0) * 0.75;
-        vec2 start = vec2(id, 0.25);
-        vec2 end = vec2(id, 0.75);
-        float blend = 2.0;
-        vec2 d = line(uv, start, end);
-        float w = 1.0 / pow(d.x, blend);
-        vec3 colA = irri(id + t * 0.2);  // Adjusted to match our time scaling
-        sum += w * colA;
-        valence += w;
-    }
-    sum /= valence;
-    sum = pow(sum, vec3(1.0/2.2));
-    return vec4(sum, 1.0);
+    vec2 uv = fragCoord / iResolution.xy;
+    float aspectRatio = iResolution.x / iResolution.y;
+    float t = iTime * timeScale;
+
+    // Create noise-based gradient with aspect ratio correction
+    vec2 p = uv * 0.5;
+    p.x *= aspectRatio;
+    float noise1 = noise(p + t * 0.05);
+    float noise2 = noise(p * 0.5 - t * 0.08);
+
+    // Create gradient with noise influence
+    vec3 color = vec3(
+        noise1 * 0.8 + 0.2,
+        noise2 * 0.8 + 0.2,
+        (noise1 + noise2) * 0.4 + 0.3
+    );
+
+    // Add some rotation-based variation
+    vec2 rotatedUV = uv * rot(t * 0.02);
+    rotatedUV.x *= aspectRatio;
+    float rotationNoise = noise(rotatedUV * 0.5);
+    color = mix(color, color.yzx, rotationNoise * 0.2);
+
+    // Apply color adjustments
+    color = applyHueShift(color, hueShift);
+    color = applySaturation(color, saturation);
+    color = applyLightness(color, lightness);
+
+    return vec4(color, 1.0);
 }
 `

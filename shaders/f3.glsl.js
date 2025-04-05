@@ -1,20 +1,37 @@
 export default /* glsl */ `
 vec4 shader(vec2 fragCoord) {
-  vec2 xy = vec2(0.0, 0.0);
-  xy.x = fragCoord.x / iResolution.x;
-  xy.y = fragCoord.y / iResolution.y;
+  vec2 uv = fragCoord / iResolution.xy;
+  float aspectRatio = iResolution.x / iResolution.y;
+  float t = iTime * timeScale;
 
-  float t = iTime * timeScale;  // Use timeScale uniform
+  // Create abstract fluid movement with aspect ratio correction
+  vec2 p = uv * 1.0;
+  p.x *= aspectRatio;
+  p = p * rot(t * 0.02);
 
-  // Enhanced color channel interaction
-  float r = (xy.x + xy.y) * 0.5 + 0.2 * sin(t * 0.8);  // Added subtle red oscillation
-  float g = 0.2 * sin(t * 1.2 + xy.x * 2.0);  // Added green channel with position-based phase
-  float b = (xy.x - xy.y) * sin(t * 0.6);  // Scaled blue oscillation
+  // Generate multiple noise layers with lower frequency
+  float noise1 = noise(p + t * 0.05);
+  float noise2 = noise(p * 0.5 - t * 0.08);
+  float noise3 = noise(p * 0.25 + t * 0.1);
 
-  // Added color mixing for more interesting transitions
-  vec3 col = vec3(r, g, b);
-  col = mix(col, col.yzx, sin(t * 0.4) * 0.3);  // Subtle color channel rotation
+  // Create color channels with different noise combinations
+  vec3 color = vec3(
+    noise1 * noise2,
+    noise2 * noise3,
+    noise3 * noise1
+  );
 
-  return vec4(col, 1.0);
+  // Add some movement-based variation
+  vec2 movement = vec2(sin(t * 0.1), cos(t * 0.15)) * 0.2;
+  movement.x *= aspectRatio;
+  float movementNoise = noise(uv + movement);
+  color = mix(color, color.zxy, movementNoise);
+
+  // Apply color adjustments
+  color = applyHueShift(color, hueShift);
+  color = applySaturation(color, saturation);
+  color = applyLightness(color, lightness);
+
+  return vec4(color, 1.0);
 }
 `
