@@ -15,6 +15,8 @@
             color-scheme: only dark;
             background-color: black;
             --h: 270;
+            --lo: hsl(var(--h) 50% 10% / 0.3);
+            --md: hsl(var(--h) 50% 10% / 0.4);
             --bg: hsl(var(--h) 50% 10% / 0.5);
             --fg: hsl(var(--h) 0% 100%);
             --sh: hsl(var(--h) 0% 0% / 0.5);
@@ -35,22 +37,24 @@
             --radius-lg: 1.4rem;
             --blur-amount: 20px;
             --shadow-lg: 0 0 2rem var(--sh);
+            --shadow-md: 0 0 1rem var(--sh);
         }
 
         @font-face {
-            font-family: 'pixelify';
+            font-family: krypton;
             font-style: normal;
             font-display: swap;
-            font-weight: 500;
-            src: url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff2) format('woff2'),
-                url(https://cdn.jsdelivr.net/fontsource/fonts/pixelify-sans@latest/latin-500-normal.woff) format('woff');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+            font-weight: 600;
+            src: url(https://cdn.jsdelivr.net/fontsource/fonts/monaspace-krypton@latest/latin-600-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/monaspace-krypton@latest/latin-600-normal.woff) format('woff');
+        }
+
+        * {
+            font-family: krypton, monospace;
         }
 
         body {
             margin: 0;
             overflow: hidden;
-            font-family: pixelify, monospace;
             min-height: 100vh;
             display: grid;
             place-items: start center;
@@ -58,8 +62,44 @@
             padding-top: 10vh;
         }
 
-        * {
-            font-family: pixelify, monospace;
+        main {
+            z-index: 1;
+            /* background-color: var(--lo); */
+            /* backdrop-filter: blur(var(--blur-amount)); */
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            /* box-shadow: var(--shadow-lg); */
+            color: var(--fg);
+            min-width: 20rem;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        @media (pointer: coarse) and (hover: none) {
+            main {
+                position: fixed;
+                inset: 0;
+                width: 80vw;
+                height: 90vh;
+                padding: 1rem;
+                margin: 5em auto;
+                /* min-width: unset;
+                max-width: 100vw;
+                width: 100vw; */
+                border-radius: 0;
+                overflow-y: auto;
+            }
+        }
+
+        /* display: grid; */
+        /* gap: var(--spacing-lg);
+            place-content: stretch; */
+        /* justify-items: center; */
+        /* margin: 1em; */
+        /* margin-top: 0; */
+
+        main.hidden {
+            opacity: 0;
+            visibility: hidden;
         }
 
         canvas {
@@ -80,10 +120,34 @@
             border: none;
             box-shadow: none;
             outline: none;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+            cursor: pointer;
+            color: var(--pk0);
+            box-shadow: 0 0 0.5rem var(--sk2);
+            border: none;
+            font-size: 1rem;
+
             &:hover {
                 opacity: 0.6;
                 background: var(--sk2);
             }
+
+            /* &:focus {
+                border-radius: var(--radius-md);
+                background: yellow;
+                border: none;
+                box-shadow: none;
+                outline: none;
+            }
+
+            &:active {
+                border-radius: var(--radius-md);
+                background: cyan;
+                border: none;
+                box-shadow: none;
+                outline: none;
+            } */
 
         }
 
@@ -103,46 +167,52 @@
             box-shadow: var(--shadow-lg);
             transition: all 0.2s ease;
 
-        }
-
-        main {
-            background-color: var(--bg);
-            backdrop-filter: blur(var(--blur-amount));
-            padding: var(--spacing-xl);
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-lg);
-            display: grid;
-            gap: var(--spacing-lg);
-            place-content: stretch;
-            justify-items: center;
-            z-index: 1;
-            color: var(--fg);
-            min-width: 20rem;
-            margin: 1em;
-            transition: opacity 0.3s ease, visibility 0.3s ease;
-            margin-top: 0;
-        }
-
-        main.hidden {
-            opacity: 0;
-            visibility: hidden;
+            mix-blend-mode: difference;
+            display: inline-block;
+            width: 3rem;
+            height: 3rem;
+            --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M15.25 2h-6.5A6.76 6.76 0 0 0 2 8.75v6.5A6.76 6.76 0 0 0 8.75 22h6.5A6.76 6.76 0 0 0 22 15.25v-6.5A6.76 6.76 0 0 0 15.25 2m1.63 11H7.12a1 1 0 0 1 0-2h9.76a1 1 0 0 1 0 2'/%3E%3C/svg%3E");
+            /* background-color: currentColor; */
+            /* background: var(--pk0); */
+            -webkit-mask-image: var(--svg);
+            mask-image: var(--svg);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
         }
 
         #seed {
-            background: var(--sk3);
+            position: fixed;
+            top: var(--spacing-md);
+            left: 50%;
+            text-transform: uppercase;
+            transform: translateX(-50%);
+            backdrop-filter: blur(var(--blur-amount));
+            /* background: var(--sk3); */
             padding: var(--spacing-md);
             border-radius: var(--radius-lg);
             font-size: 2rem;
             text-align: center;
-            color: var(--pk0);
-        }
+            /* color: var(--pk0); */
+            z-index: 2;
+            mix-blend-mode: difference;
+            /* box-shadow: var(--shadow-lg); */
 
-        #info {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--sk8);
-            font-style: italic;
-            transition: color 0.6s ease;
+            &::before {
+                content: '';
+                display: inline-block;
+                width: 3rem;
+                height: 3rem;
+                --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M6.6 11.397c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c2.715 0 4.073 0 4.916.847c.844.847.844 2.21.844 4.936v4.82c0 2.726 0 4.089-.844 4.936c-.843.847-2.201.847-4.916.847h-2.88c-2.716 0-4.073 0-4.917-.847s-.843-2.21-.843-4.936z'/%3E%3Cpath fill='%23000' d='M4.172 3.172C3 4.343 3 6.229 3 10v2c0 3.771 0 5.657 1.172 6.828c.617.618 1.433.91 2.62 1.048c-.192-.84-.192-1.996-.192-3.66v-4.819c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c1.652 0 2.8 0 3.638.19c-.138-1.193-.43-2.012-1.05-2.632C16.657 2 14.771 2 11 2S5.343 2 4.172 3.172' opacity='0.5'/%3E%3C/svg%3E");
+                background-color: currentColor;
+                -webkit-mask-image: var(--svg);
+                mask-image: var(--svg);
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-size: 100% 100%;
+                mask-size: 100% 100%;
+            }
         }
 
         #shaders {
@@ -160,17 +230,6 @@
 
         .shader {
             opacity: 0.6;
-            padding: var(--spacing-xs);
-            text-align: center;
-            text-transform: uppercase;
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
-            cursor: pointer;
-            color: var(--pk0);
-            box-shadow: 0 0 0.5rem var(--sk2);
-            border: none;
-            font-size: 1.2rem;
-
 
             &[data-selected="true"] {
                 background: var(--pk0);
@@ -184,7 +243,13 @@
         #options {
             display: grid;
             gap: var(--spacing-md);
-            width: 100%;
+            width: 90%;
+            padding: 1em;
+            margin: 1rem auto;
+            border-radius: var(--radius-lg);
+            /* background-color: var(--lo); */
+            backdrop-filter: blur(var(--blur-amount));
+            /* box-shadow: var(--shadow-md); */
         }
 
         input[type="range"] {
@@ -256,54 +321,9 @@
             }
         }
 
-        .tabs {
-            display: grid;
-            grid-auto-flow: column;
-            gap: var(--spacing-md);
-            width: 100%;
-            margin-bottom: var(--spacing-md);
-        }
-
-        .tab {
-            opacity: 0.6;
-            padding: var(--spacing-xs);
-            text-align: center;
-            text-transform: uppercase;
-            background: var(--sk3);
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
-            cursor: pointer;
-            color: var(--pk0);
-            box-shadow: 0 0 0.5rem var(--sk2);
-            border: none;
-            font-size: 1.2rem;
-
-            &:hover {
-                opacity: 0.8;
-                box-shadow: 0 0 1rem var(--pk0);
-            }
-
-            &[data-selected="true"] {
-                background: var(--pk0);
-                color: black;
-                font-weight: bold;
-                opacity: 1;
-                box-shadow: 0 0 1rem var(--pk0);
-            }
-        }
-
-        .tab-content {
-            display: none;
-            width: 100%;
-        }
-
-        .tab-content[data-selected="true"] {
-            display: grid;
-            gap: var(--spacing-lg);
-        }
-
         .usage {
             font-family: monospace;
+            font-size: 0.9rem;
             padding: var(--spacing-xs);
             border-radius: var(--radius-lg);
             opacity: 0.8;
@@ -316,11 +336,11 @@
             width: 90%;
             max-width: 40rem;
             max-height: 30vh;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: var(--spacing-xs);
             box-shadow: var(--shadow-lg);
             transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
             z-index: 1;
-            background: var(--bg);
+            background: var(--md);
             backdrop-filter: blur(var(--blur-amount));
         }
 
@@ -330,41 +350,39 @@
             visibility: hidden;
         }
 
-        #usage-toggle {
+        .toast {
             position: fixed;
             bottom: var(--spacing-md);
-            right: var(--spacing-md);
-            z-index: 2;
+            left: 50%;
+            transform: translateX(-50%);
             background: var(--bg);
             backdrop-filter: blur(var(--blur-amount));
-            border: none;
             color: var(--pk0);
             padding: var(--spacing-xs) var(--spacing-md);
             border-radius: var(--radius-md);
-            cursor: pointer;
             font-size: 1.2rem;
             box-shadow: var(--shadow-lg);
-            transition: all 0.2s ease;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 100;
         }
 
-        .usage-content>div {
-            padding: var(--spacing-xs);
-            overflow: auto;
-            max-height: calc(30vh - 4rem);
-            position: absolute;
-            width: 100%;
-            left: 0;
+        .toast.show {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
 
 <body>
+    <span id="seed"></span>
     <main>
-        <span id="seed"></span>
         <div id="shaders"></div>
         <div id="options"></div>
+        <div class="usage"></div>
     </main>
-    <div class="usage"></div>
+    <div class="toast">URL copied to clipboard</div>
     <script type="module">
         import gradient from './index.js'
         import shaders from './shaders/index.js'
@@ -450,7 +468,52 @@
                 getEl('seed').textContent = controlState.seed
                 await gradient(controlState.seed)
                 usageState.update()
+
+                // Only clear URL hash if this is not the initial load
+                if (window.location.hash && !window.location.hash.includes(controlState.seed)) {
+                    window.location.hash = ''
+                }
             }, 50)
+        }
+
+        // Load seed from URL hash if present
+        const loadSeedFromUrl = () => {
+            const hash = window.location.hash.slice(1)
+            if (!hash) return false
+
+            console.log('Loading seed from URL:', hash)
+            const [shader, values] = hash.split('.')
+            if (!shader || !values || values.length !== 4) {
+                console.log('Invalid seed format:', hash)
+                return false
+            }
+
+            // Split values into individual hex digits
+            const hexValues = values.split('')
+
+            // Set shader
+            const shaderBtn = query(`.shader[data-shader="${shader}"]`)
+            if (!shaderBtn) {
+                console.log('Shader not found:', shader)
+                return false
+            }
+
+            document.querySelectorAll('.shader').forEach(opt => {
+                opt.dataset.selected = opt === shaderBtn ? 'true' : 'false'
+            })
+
+            // Set values
+            const ids = ['speed', 'hue', 'saturation', 'lightness']
+            hexValues.forEach((value, i) => {
+                const input = getEl(ids[i])
+                if (!input) return
+                const intValue = parseInt(value, 16)
+                input.value = intValue
+                input.dataset.hexValue = value
+            })
+
+            console.log('Successfully loaded seed from URL')
+            return true
         }
 
         // UI Components
@@ -525,22 +588,32 @@
                 createRangeInput({ id, label: id }))
         )
 
-        // Select random shader
-        const randomShader = shaders[Math.floor(Math.random() * shaders.length)];
-        const initialOption = query(`.shader[data-shader="${randomShader}"]`);
-        if (initialOption) {
-            initialOption.dataset.selected = 'true';
+        // Try loading from URL first, fallback to random
+        if (!loadSeedFromUrl()) {
+            randomizeOptions();
+        } else {
+            controlState.update();
         }
 
-        // Randomize values on load
-        randomizeOptions();
+        // Add click handler to seed element
+        getEl('seed').addEventListener('click', async () => {
+            window.location.hash = controlState.seed
+            try {
+                await navigator.clipboard.writeText(window.location.href)
+                const toast = query('.toast')
+                toast.classList.add('show')
+                setTimeout(() => toast.classList.remove('show'), 2000)
+            } catch (err) {
+                console.error('Failed to copy URL:', err)
+            }
+        })
 
         // Add button to randomize values again
         const randomizeBtn = mkEl('button', {
             textContent: 'Randomize',
             onclick: randomizeOptions,
             className: 'shader',
-            style: 'margin-top: var(--spacing-lg); width: 100%; font-size: 1.3rem; background: var(--sk3); color: var(--pk0); text-transform: uppercase;'
+            style: 'width: 100%;'
         });
         getEl('options').appendChild(randomizeBtn);
 
@@ -550,12 +623,12 @@
 
         const mainToggle = mkEl('button', {
             id: 'toggle',
-            textContent: 'Hide',
+            // textContent: 'Hide',
             onclick: () => {
                 controlState.isVisible = !controlState.isVisible;
                 main.classList.toggle('hidden');
                 usage.classList.toggle('hidden');
-                mainToggle.textContent = controlState.isVisible ? 'Hide' : 'Show';
+                // mainToggle.textContent = controlState.isVisible ? 'Hide' : 'Show';
             }
         });
 
