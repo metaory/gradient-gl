@@ -11,7 +11,8 @@
 
 ---
 
-A zero-dependency WebGL library for creating animated gradient backgrounds. gradient-gl accepts a short seed string that pseudo-randomly affects the visual output, enabling easy customization without complex configuration.
+A minimal WebGL library for animated gradient backgrounds, with visuals shaped by a simple seed string.
+
 
 ---
 
