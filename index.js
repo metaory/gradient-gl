@@ -278,7 +278,21 @@ class GradientGL {
     // Cleanup method
     destroy() {
         this.#isActive = false
-        this.#gl.deleteProgram(this.#program)
+
+        // Clean up WebGL resources
+        if (this.#program) {
+            this.#gl.deleteProgram(this.#program)
+            this.#program = null
+        }
+
+        // Clean up canvas
+        if (this.#canvas) {
+            this.#canvas.remove()
+            this.#canvas = null
+        }
+
+        // Clean up GL context
+        this.#gl = null
     }
 }
 
@@ -308,7 +322,9 @@ export default async (seed, selector = 'body') => {
       const updated = activeProgram.updateSeed(parsedSeed)
       return activeProgram
     }
+    // Properly destroy the old program before creating a new one
     activeProgram.destroy()
+    activeProgram = null
   }
 
   // Load shader from cache or fetch it

@@ -37,6 +37,7 @@
             --sh: hsl(var(--h) 0% 0% / 0.5);
             --pk0: #FF4488;
             --pk1: #EE4499;
+            --wk1: #4411BB;
             --sk2: #33114476;
             --sk3: #441A5576;
             --sk8: #AA55BB76;
@@ -94,6 +95,7 @@
             color: var(--fg);
             min-width: 20rem;
             transition: opacity 0.3s ease, visibility 0.3s ease;
+            mix-blend-mode: difference;
         }
 
         @media (pointer: coarse) and (hover: none) {
@@ -353,10 +355,48 @@
             opacity: 1;
             visibility: visible;
         }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--bg);
+            backdrop-filter: blur(var(--blur-amount));
+            display: grid;
+            place-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+        }
+
+        .loader.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loader::before {
+            content: '';
+            width: 50vw;
+            height: 50vw;
+            background: conic-gradient(from 0deg,
+                    var(--pk0) 0%,
+                    var(--wk1) 50%,
+                    var(--pk1) 100%);
+            border-radius: 50%;
+            filter: blur(4em);
+            animation: rot 0.7s linear infinite;
+        }
+
+        @keyframes rot {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
 <body>
+    <div class="loader"></div>
     <span id="seed"></span>
     <a id="github" href="https://github.com/metaory/gradient-gl">
         <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24">
@@ -408,6 +448,23 @@
             return el
         }
 
+        const copyToClipboard = async (text) => {
+            try {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                return false;
+            }
+        }
+
+        const showToast = (message) => {
+            const toast = query('.toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
         const mkEl = (tag, props = {}, children = []) => {
             const el = document.createElement(tag)
             setProps(el, props)
@@ -428,6 +485,8 @@
                 timeout = setTimeout(() => fn(...args), delay)
             }
         }
+
+        const sleep = (s = 3) => new Promise(resolve => setTimeout(resolve, s * 1_000));
 
         // Usage interface state
         const usageState = {
@@ -470,7 +529,12 @@
 
                 controlState.seed = newSeed
                 getEl('seed').textContent = controlState.seed
+
+                const loader = query('.loader')
+                loader.classList.add('show')
+                // await sleep(1)
                 await gradient(controlState.seed)
+                loader.classList.remove('show')
                 usageState.update()
 
                 // Only clear URL hash if this is not the initial load
@@ -610,13 +674,8 @@
             innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 11.397c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c2.715 0 4.073 0 4.916.847c.844.847.844 2.21.844 4.936v4.82c0 2.726 0 4.089-.844 4.936c-.843.847-2.201.847-4.916.847h-2.88c-2.716 0-4.073 0-4.917-.847s-.843-2.21-.843-4.936z"/><path fill="currentColor" d="M4.172 3.172C3 4.343 3 6.229 3 10v2c0 3.771 0 5.657 1.172 6.828c.617.618 1.433.91 2.62 1.048c-.192-.84-.192-1.996-.192-3.66v-4.819c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c1.652 0 2.8 0 3.638.19c-.138-1.193-.43-2.012-1.05-2.632C16.657 2 14.771 2 11 2S5.343 2 4.172 3.172" opacity="0.5"/></svg>`,
             onclick: async () => {
                 window.location.hash = controlState.seed;
-                try {
-                    await navigator.clipboard.writeText(window.location.href);
-                    const toast = query('.toast');
-                    toast.classList.add('show');
-                    setTimeout(() => toast.classList.remove('show'), 2000);
-                } catch (err) {
-                    console.error('Failed to copy URL:', err);
+                if (await copyToClipboard(window.location.href)) {
+                    showToast('URL copied to clipboard');
                 }
             },
             className: 'shader',
@@ -649,6 +708,25 @@
         });
 
         document.body.appendChild(mainToggle);
+
+        // Add copy functionality to seed
+        const seedEl = getEl('seed');
+        seedEl.style.cursor = 'pointer';
+        seedEl.onclick = async () => {
+            if (await copyToClipboard(seedEl.textContent)) {
+                showToast('Seed copied to clipboard');
+            }
+        };
+
+        // Add copy functionality to usage
+        const usageEl = query('.usage');
+        usageEl.style.cursor = 'pointer';
+        usageEl.onclick = async () => {
+            const code = usageEl.querySelector('code')?.textContent;
+            if (code && await copyToClipboard(code)) {
+                showToast('Code copied to clipboard');
+            }
+        };
     </script>
 </body>
 
