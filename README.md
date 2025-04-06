@@ -1,5 +1,5 @@
 <div align="center">
-    <img src="public/logo.svg" alt="demo" height="60" />
+    <img src=".github/assets/logo.png" alt="demo" height="128" />
     <h3>Blurry, Noisy, Pseudo-Random</h3>
     <h3>WebGL Gradients with Seed-Based Control</h3>
     <p>

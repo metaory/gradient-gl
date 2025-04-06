@@ -3,13 +3,26 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="public/logo.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="public/logo.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="public/logo.png" />
+    <link rel="icon" type="image/x-icon" href=".github/assets/logo.ico" />
+    <link rel="icon" type="image/png" href=".github/assets/logo.png" />
+    <link rel="apple-touch-icon" href=".github/assets/logo.png" />
     <link rel="stylesheet" href="demo/style.css">
     <title>GradientGL - WebGL Gradient Generator</title>
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Blurry, noisy, pseudo-random WebGL gradients with seed-based control" />
+    <meta name="author" content="metaory" />
+    <meta property="og:title" content="GradientGL - WebGL Gradient Generator" />
+    <meta property="og:description" content="Blurry, noisy, pseudo-random WebGL gradients with seed-based control" />
+    <meta property="og:image" content="https://metaory.github.io/gradient-gl/.github/assets/logo.png" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://metaory.github.io/gradient-gl/" />
+    <meta property="og:author" content="metaory" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GradientGL" />
+    <meta name="twitter:description" content="Blurry, noisy, pseudo-random WebGL gradients with seed-based control" />
+    <meta name="twitter:image" content="https://metaory.github.io/gradient-gl/.github/assets/logo.png" />
+    <meta name="twitter:creator" content="@metaory" />
     <style>
         :root {
             color-scheme: only dark;
@@ -20,7 +33,7 @@
             --lo: hsl(var(--h) 50% 10% / 0.3);
             --md: hsl(var(--h) 50% 10% / 0.4);
             --bg: hsl(var(--h) 50% 10% / 0.5);
-            --fg: hsl(var(--h) 0% 100%);
+            --fg: hsl(var(--h) 20% 80%);
             --sh: hsl(var(--h) 0% 0% / 0.5);
             --pk0: #FF4488;
             --pk1: #EE4499;
@@ -28,6 +41,7 @@
             --sk3: #441A5576;
             --sk8: #AA55BB76;
             --zk2: #CC66CC;
+            --spacing-ss: 0.4rem;
             --spacing-xs: 0.6rem;
             --spacing-md: 1rem;
             --spacing-lg: 1.4rem;
@@ -59,8 +73,6 @@
             src: url(https://cdn.jsdelivr.net/fontsource/fonts/monaspace-krypton@latest/latin-800-normal.woff2) format('woff2'), url(https://cdn.jsdelivr.net/fontsource/fonts/monaspace-krypton@latest/latin-800-normal.woff) format('woff');
         }
 
-
-
         * {
             font-family: krypton, monospace;
         }
@@ -77,11 +89,8 @@
 
         main {
             z-index: 1;
-            /* background-color: var(--lo); */
-            /* backdrop-filter: blur(var(--blur-amount)); */
             padding: var(--spacing-xl);
             border-radius: var(--radius-lg);
-            /* box-shadow: var(--shadow-lg); */
             color: var(--fg);
             min-width: 20rem;
             transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -95,20 +104,10 @@
                 height: 90vh;
                 padding: 1rem;
                 margin: 5em auto;
-                /* min-width: unset;
-                max-width: 100vw;
-                width: 100vw; */
                 border-radius: 0;
                 overflow-y: auto;
             }
         }
-
-        /* display: grid; */
-        /* gap: var(--spacing-lg);
-            place-content: stretch; */
-        /* justify-items: center; */
-        /* margin: 1em; */
-        /* margin-top: 0; */
 
         main.hidden {
             opacity: 0;
@@ -126,46 +125,25 @@
 
         button {
             opacity: 0.6;
-            padding: var(--spacing-xs) var(--spacing-md);
+            padding: var(--spacing-ss);
             text-align: center;
             text-transform: uppercase;
             background: var(--ss);
-            /* background: transparent; */
             backdrop-filter: blur(var(--blur-amount));
             border: none;
             box-shadow: none;
             outline: none;
-            border-radius: var(--radius-md);
+            border-radius: var(--radius-sm);
             transition: all 0.2s;
             cursor: pointer;
             color: var(--fg);
-            /* mix-blend-mode: color-dodge; */
-            /* box-shadow: 0 0 0.5rem var(--sk2); */
             border: none;
             font-size: 1rem;
-            /* filter: invert(1); */
 
             &:hover {
                 opacity: 0.6;
                 background: var(--sk2);
             }
-
-            /* &:focus {
-                border-radius: var(--radius-md);
-                background: yellow;
-                border: none;
-                box-shadow: none;
-                outline: none;
-            }
-
-            &:active {
-                border-radius: var(--radius-md);
-                background: cyan;
-                border: none;
-                box-shadow: none;
-                outline: none;
-            } */
-
         }
 
         #toggle {
@@ -173,8 +151,6 @@
             top: var(--spacing-md);
             right: var(--spacing-md);
             z-index: 2;
-            /* background: var(--bg); */
-            /* backdrop-filter: blur(var(--blur-amount)); */
             background: transparent;
             border: none;
             color: var(--fg);
@@ -182,25 +158,22 @@
             border-radius: var(--radius-lg);
             cursor: pointer;
             font-size: 1.2rem;
-            /* box-shadow: var(--shadow-lg); */
             transition: all 0.2s ease;
-
-            mix-blend-mode: difference;
-            /* display: inline-block; */
+            mix-blend-mode: di;
             width: auto;
             height: auto;
-            /* --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22M8.47 7.97a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 0 0-1.06-1.06L12 10.44L9.53 7.97a.75.75 0 0 0-1.06 0m0 4a.75.75 0 0 0 0 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06L12 14.44l-2.47-2.47a.75.75 0 0 0-1.06 0' clip-rule='evenodd'/%3E%3C/svg%3E"); */
-            /* --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M8.732 5.771L5.67 9.914c-1.285 1.739-1.928 2.608-1.574 3.291l.018.034c.375.673 1.485.673 3.704.673c1.233 0 1.85 0 2.236.363l.02.02l3.872-4.57l-.02-.02c-.379-.371-.379-.963-.379-2.148v-.31c0-3.285 0-4.927-.923-5.21s-1.913 1.056-3.892 3.734' clip-rule='evenodd'/%3E%3Cpath fill='%23000' d='M10.453 16.443v.31c0 3.284 0 4.927.923 5.21s1.913-1.056 3.893-3.734l3.062-4.143c1.284-1.739 1.927-2.608 1.573-3.291l-.018-.034c-.375-.673-1.485-.673-3.704-.673c-1.233 0-1.85 0-2.236-.363l-3.872 4.57c.379.371.379.963.379 2.148' opacity='0.5'/%3E%3C/svg%3E"); */
-            /* --svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='M9.75 12a2.25 2.25 0 1 1 4.5 0a2.25 2.25 0 0 1-4.5 0'/%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M2 12c0 1.64.425 2.191 1.275 3.296C4.972 17.5 7.818 20 12 20s7.028-2.5 8.725-4.704C21.575 14.192 22 13.639 22 12c0-1.64-.425-2.191-1.275-3.296C19.028 6.5 16.182 4 12 4S4.972 6.5 3.275 8.704C2.425 9.81 2 10.361 2 12m10-3.75a3.75 3.75 0 1 0 0 7.5a3.75 3.75 0 0 0 0-7.5' clip-rule='evenodd'/%3E%3C/svg%3E"); */
-            /* background-color: var(--fg); */
-            /* background: var(--pk0); */
-            /* -webkit-mask-image: var(--svg);
-            mask-image: var(--svg);
-            -webkit-mask-repeat: no-repeat;
-            mask-repeat: no-repeat;
-            -webkit-mask-size: 100% 100%;
-            mask-size: 100% 100%; */
         }
+
+        #github {
+            position: fixed;
+            mix-blend-mode: difference;
+            top: var(--spacing-lg);
+            left: var(--spacing-lg);
+            color: var(--fg);
+            opacity: 0.6;
+            z-index: 2;
+        }
+
 
         #seed {
             position: fixed;
@@ -209,15 +182,12 @@
             text-transform: uppercase;
             transform: translateX(-50%);
             backdrop-filter: blur(var(--blur-amount));
-            /* background: var(--sk3); */
             padding: var(--spacing-md);
             border-radius: var(--radius-lg);
             font-size: 2rem;
             text-align: center;
-            /* color: var(--pk0); */
             z-index: 2;
             mix-blend-mode: difference;
-            /* box-shadow: var(--shadow-lg); */
         }
 
         #shaders {
@@ -235,15 +205,13 @@
 
         .shader {
             opacity: 0.6;
-            /* mix-blend-mode: difference; */
 
             &[data-selected="true"] {
-                background: var(--sk2);
+                background: var(--sk3);
                 color: white;
                 font-weight: bold;
                 opacity: 1;
                 box-shadow: 0 0 1rem var(--sk2);
-                /* mix-blend-mode: difference; */
             }
         }
 
@@ -254,9 +222,7 @@
             padding: 1em;
             margin: 1rem auto;
             border-radius: var(--radius-lg);
-            /* background-color: var(--lo); */
             backdrop-filter: blur(var(--blur-amount));
-            /* box-shadow: var(--shadow-md); */
         }
 
         input[type="range"] {
@@ -294,13 +260,10 @@
                 width: var(--thumb-size);
                 height: var(--thumb-size);
                 background-color: var(--fg);
-                opacity: 0.4;
-                mix-blend-mode: difference;
-                backdrop-filter: blur(var(--blur-amount));
-                border-radius: 50%;
+                border-radius: 30%;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                box-shadow: 0 0 0.5rem var(--sh);
+                box-shadow: 0 0 0.8rem var(--sh);
                 border: none;
 
                 &:hover {
@@ -311,15 +274,14 @@
             }
 
             &::-moz-range-thumb {
+                appearance: none;
                 width: var(--thumb-size);
                 height: var(--thumb-size);
-                background-color: var(--pk0);
-                opacity: 0.4;
-                backdrop-filter: blur(var(--blur-amount));
-                border-radius: 50%;
+                background-color: var(--fg);
+                border-radius: 30%;
                 cursor: pointer;
                 transition: all 0.2s ease;
-                box-shadow: 0 0 0.5rem var(--sh);
+                box-shadow: 0 0 0.8rem var(--sh);
                 border: none;
 
                 &:hover {
@@ -352,46 +314,14 @@
             background: var(--bg);
             backdrop-filter: blur(var(--blur-amount));
         }
-
-        #github {
-            position: fixed;
-            mix-blend-mode: difference;
-            top: var(--spacing-lg);
-            left: var(--spacing-lg);
-            color: var(--fg);
-            z-index: 2;
-        }
-
         .usage.hidden {
             transform: translateX(-50%) translateY(calc(100% + 1rem));
             opacity: 0;
             visibility: hidden;
         }
 
-        @keyframes gradientMove {
-            to {
-                background-position: 100% 100%;
-            }
-        }
-
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-
         .toast {
             position: fixed;
-            /* bottom: var(--spacing-md); */
             top: 10%;
             left: 50%;
             width: 80%;
@@ -669,15 +599,13 @@
 
         // Add button to randomize values again
         const randomizeBtn = mkEl('button', {
-            // innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16"><path fill="currentColor" d="M3 0a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V3a3 3 0 0 0-3-3zm2.5 4a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0m8 0a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0M12 13.5a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3M5.5 12a1.5 1.5 0 1 1-3 0a1.5 1.5 0 0 1 3 0M8 9.5a1.5 1.5 0 1 1 0-3a1.5 1.5 0 0 1 0 3"/></svg>`,
-            // innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 16 16"><path fill="currentColor" d="M13.5 3h-8A2.507 2.507 0 0 0 3 5.5v8C3 14.875 4.125 16 5.5 16h8c1.375 0 2.5-1.125 2.5-2.5v-8C16 4.125 14.875 3 13.5 3m-7 11a1.5 1.5 0 1 1 .001-3.001A1.5 1.5 0 0 1 6.5 14m0-6a1.5 1.5 0 1 1 .001-3.001A1.5 1.5 0 0 1 6.5 8m3 3a1.5 1.5 0 1 1 .001-3.001A1.5 1.5 0 0 1 9.5 11m3 3a1.5 1.5 0 1 1 .001-3.001A1.5 1.5 0 0 1 12.5 14m0-6a1.5 1.5 0 1 1 .001-3.001A1.5 1.5 0 0 1 12.5 8m.449-6A2.51 2.51 0 0 0 10.5 0h-8A2.507 2.507 0 0 0 0 2.5v8c0 1.204.862 2.216 2 2.449V3c0-.55.45-1 1-1z"/></svg>`,
-            innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22m4.262-14.523a.75.75 0 0 1 1.06-.015l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.146-.954h-.338c-.511 0-.844 0-1.1.025c-.242.023-.36.062-.444.109c-.084.046-.176.12-.318.307c-.152.2-.323.474-.586.902l-1.52 2.463c-.242.39-.45.729-.652.994c-.218.286-.46.532-.789.713c-.328.18-.666.254-1.025.288c-.336.032-.74.032-1.21.032H6a.75.75 0 0 1 0-1.5h2.162c.511 0 .844 0 1.1-.025c.243-.023.36-.062.444-.11c.084-.045.176-.12.318-.306c.152-.2.323-.475.586-.902l1.52-2.464c.242-.39.45-.728.652-.994c.218-.285.46-.531.789-.712c.328-.18.666-.255 1.025-.289c.336-.031.74-.031 1.21-.031h.37a.75.75 0 0 1 .086-.94M9.385 9.77c-.085-.017-.185-.02-.584-.02H6a.75.75 0 0 1 0-1.5h2.858c.313 0 .565 0 .806.045a2.56 2.56 0 0 1 1.405.775c.167.18.299.394.459.653l.03.05a.75.75 0 1 1-1.276.788c-.206-.334-.259-.413-.313-.472a1.06 1.06 0 0 0-.584-.32m3.301 3.26a.75.75 0 0 1 1.032.244c.206.333.259.412.313.471c.151.163.355.277.584.32c.085.016.186.02.584.02h.977a.75.75 0 0 1 1.147-.955l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.147-.955h-1.034c-.313 0-.565 0-.806-.045a2.56 2.56 0 0 1-1.405-.775c-.167-.18-.299-.394-.459-.653l-.03-.05a.75.75 0 0 1 .244-1.032" clip-rule="evenodd"/></svg>`,
+            innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22m4.262-14.523a.75.75 0 0 1 1.06-.015l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.146-.954h-.338c-.511 0-.844 0-1.1.025c-.242.023-.36.062-.444.109c-.084.046-.176.12-.318.307c-.152.2-.323.474-.586.902l-1.52 2.463c-.242.39-.45.729-.652.994c-.218.286-.46.532-.789.713c-.328.18-.666.254-1.025.288c-.336.032-.74.032-1.21.032H6a.75.75 0 0 1 0-1.5h2.162c.511 0 .844 0 1.1-.025c.243-.023.36-.062.444-.11c.084-.045.176-.12.318-.306c.152-.2.323-.475.586-.902l1.52-2.464c.242-.39.45-.728.652-.994c.218-.285.46-.531.789-.712c.328-.18.666-.255 1.025-.289c.336-.031.74-.031 1.21-.031h.37a.75.75 0 0 1 .086-.94M9.385 9.77c-.085-.017-.185-.02-.584-.02H6a.75.75 0 0 1 0-1.5h2.858c.313 0 .565 0 .806.045a2.56 2.56 0 0 1 1.405.775c.167.18.299.394.459.653l.03.05a.75.75 0 1 1-1.276.788c-.206-.334-.259-.413-.313-.472a1.06 1.06 0 0 0-.584-.32m3.301 3.26a.75.75 0 0 1 1.032.244c.206.333.259.412.313.471c.151.163.355.277.584.32c.085.016.186.02.584.02h.977a.75.75 0 0 1 1.147-.955l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.147-.955h-1.034c-.313 0-.565 0-.806-.045a2.56 2.56 0 0 1-1.405-.775c-.167-.18-.299-.394-.459-.653l-.03-.05a.75.75 0 0 1 .244-1.032" clip-rule="evenodd"/></svg>`,
             onclick: randomizeOptions,
             className: 'shader',
         });
 
         const copyBtn = mkEl('button', {
-            innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 11.397c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c2.715 0 4.073 0 4.916.847c.844.847.844 2.21.844 4.936v4.82c0 2.726 0 4.089-.844 4.936c-.843.847-2.201.847-4.916.847h-2.88c-2.716 0-4.073 0-4.917-.847s-.843-2.21-.843-4.936z"/><path fill="currentColor" d="M4.172 3.172C3 4.343 3 6.229 3 10v2c0 3.771 0 5.657 1.172 6.828c.617.618 1.433.91 2.62 1.048c-.192-.84-.192-1.996-.192-3.66v-4.819c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c1.652 0 2.8 0 3.638.19c-.138-1.193-.43-2.012-1.05-2.632C16.657 2 14.771 2 11 2S5.343 2 4.172 3.172" opacity="0.5"/></svg>`,
+            innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M6.6 11.397c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c2.715 0 4.073 0 4.916.847c.844.847.844 2.21.844 4.936v4.82c0 2.726 0 4.089-.844 4.936c-.843.847-2.201.847-4.916.847h-2.88c-2.716 0-4.073 0-4.917-.847s-.843-2.21-.843-4.936z"/><path fill="currentColor" d="M4.172 3.172C3 4.343 3 6.229 3 10v2c0 3.771 0 5.657 1.172 6.828c.617.618 1.433.91 2.62 1.048c-.192-.84-.192-1.996-.192-3.66v-4.819c0-2.726 0-4.089.843-4.936c.844-.847 2.201-.847 4.917-.847h2.88c1.652 0 2.8 0 3.638.19c-.138-1.193-.43-2.012-1.05-2.632C16.657 2 14.771 2 11 2S5.343 2 4.172 3.172" opacity="0.5"/></svg>`,
             onclick: async () => {
                 window.location.hash = controlState.seed;
                 try {
@@ -694,7 +622,7 @@
 
         const buttonContainer = mkEl('div', {
             className: 'shader-type',
-            style: 'margin-top: var(--spacing-md);',
+            style: 'margin-top: var(--spacing-xs);',
         }, [randomizeBtn, copyBtn]);
 
         getEl('options').appendChild(buttonContainer);
@@ -704,8 +632,8 @@
         const usage = query('.usage');
 
         const toggleSvg = [
-            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464m6.54 1.787a.75.75 0 0 1 .743.756c-.007.851-.033 1.577-.151 2.18c-.122.623-.352 1.166-.798 1.612s-.99.676-1.613.798c-.602.118-1.328.144-2.179.151a.75.75 0 1 1-.012-1.5c.856-.007 1.453-.035 1.903-.123c.429-.084.666-.212.84-.387c.175-.174.303-.411.387-.84c.088-.45.116-1.048.123-1.903a.75.75 0 0 1 .757-.744m3.99 0a.75.75 0 0 1 .756.744c.007.855.035 1.453.123 1.903c.084.429.213.666.387.84c.174.175.411.303.84.387c.45.088 1.048.116 1.904.123a.75.75 0 0 1-.013 1.5c-.85-.007-1.577-.033-2.18-.151c-.623-.122-1.166-.352-1.612-.798s-.675-.99-.798-1.613c-.118-.602-.144-1.328-.151-2.179a.75.75 0 0 1 .743-.756m-7.988 8a.75.75 0 0 0-.012 1.5c.856.007 1.453.035 1.903.123c.429.084.666.212.84.386c.175.175.303.412.387.84c.088.45.116 1.048.123 1.904a.75.75 0 0 0 1.5-.013c-.007-.85-.033-1.576-.151-2.179c-.122-.623-.352-1.166-.798-1.612s-.99-.676-1.613-.798c-.602-.118-1.328-.144-2.179-.152m12.741.743a.75.75 0 0 1-.743.756c-.856.008-1.454.036-1.904.124c-.429.084-.666.212-.84.386c-.175.175-.303.412-.387.84c-.088.45-.116 1.048-.123 1.904a.75.75 0 1 1-1.5-.013c.007-.85.033-1.576.151-2.179c.123-.623.352-1.166.798-1.612s.99-.676 1.613-.798c.602-.118 1.328-.144 2.179-.152a.75.75 0 0 1 .756.744" clip-rule="evenodd"/></svg>`,
-            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464m7.283 2.53a.75.75 0 0 1-.743.756c-.856.007-1.454.035-1.904.124c-.428.084-.666.212-.84.386s-.302.412-.386.84c-.088.45-.117 1.048-.124 1.904a.75.75 0 0 1-1.5-.013c.007-.85.034-1.577.152-2.179c.122-.623.351-1.167.797-1.613s.99-.675 1.613-.797c.602-.118 1.328-.145 2.179-.152a.75.75 0 0 1 .756.744m2.503 0a.75.75 0 0 1 .757-.744c.85.007 1.576.034 2.179.152c.623.122 1.166.351 1.612.797s.676.99.798 1.613c.118.602.144 1.328.151 2.179a.75.75 0 0 1-1.5.013c-.007-.856-.035-1.454-.123-1.904c-.084-.428-.212-.666-.386-.84s-.412-.302-.84-.386c-.45-.088-1.048-.117-1.904-.124a.75.75 0 0 1-.744-.756m-6.5 8a.75.75 0 0 0-1.5.013c.007.85.034 1.577.152 2.179c.122.623.351 1.167.797 1.613s.99.675 1.613.797c.602.119 1.328.145 2.179.152a.75.75 0 0 0 .013-1.5c-.856-.007-1.454-.036-1.904-.123c-.428-.084-.666-.213-.84-.387s-.302-.412-.386-.84c-.088-.45-.117-1.048-.124-1.904m11.254-.743a.75.75 0 0 1 .743.756c-.007.85-.033 1.577-.151 2.179c-.122.623-.352 1.167-.798 1.613s-.99.675-1.612.797c-.603.119-1.329.145-2.18.152a.75.75 0 1 1-.012-1.5c.856-.007 1.454-.036 1.903-.123c.429-.084.666-.213.84-.387c.175-.174.303-.412.387-.84c.088-.45.116-1.048.124-1.904a.75.75 0 0 1 .756-.743" clip-rule="evenodd"/></svg>`,
+            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" opacity="0.5"/><path fill="currentColor" d="M5.25 13.994a.75.75 0 0 1 .756-.744c.851.008 1.577.034 2.18.152c.623.122 1.166.352 1.612.798s.676.989.798 1.612c.118.603.144 1.329.151 2.18a.75.75 0 0 1-1.5.012c-.007-.856-.035-1.454-.123-1.903c-.084-.43-.212-.666-.387-.84c-.174-.175-.411-.303-.84-.387c-.45-.088-1.047-.116-1.903-.124a.75.75 0 0 1-.744-.756m4.754-8.743a.75.75 0 0 1 .743.756c-.007.851-.033 1.577-.151 2.18c-.122.623-.352 1.166-.798 1.612s-.99.676-1.613.798c-.602.118-1.328.144-2.179.151a.75.75 0 1 1-.012-1.5c.856-.007 1.453-.035 1.903-.123c.429-.084.666-.212.84-.387c.175-.174.303-.411.387-.84c.088-.45.116-1.048.123-1.903a.75.75 0 0 1 .757-.744m3.99 0a.75.75 0 0 1 .756.744c.007.855.035 1.453.123 1.903c.084.429.213.666.387.84c.174.175.411.303.84.387c.45.088 1.048.116 1.904.123a.75.75 0 0 1-.013 1.5c-.85-.007-1.577-.033-2.18-.151c-.623-.122-1.166-.352-1.612-.798s-.675-.99-.798-1.613c-.118-.602-.144-1.328-.151-2.179a.75.75 0 0 1 .743-.756m4.754 8.743a.75.75 0 0 1-.743.756c-.856.008-1.454.036-1.904.124c-.429.084-.666.212-.84.386c-.175.175-.303.412-.387.84c-.088.45-.116 1.048-.123 1.904a.75.75 0 1 1-1.5-.013c.007-.85.033-1.576.151-2.179c.123-.623.352-1.166.798-1.612s.99-.676 1.613-.798c.602-.118 1.328-.144 2.179-.152a.75.75 0 0 1 .756.744"/></svg>`,
+            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" opacity="0.5"/><path fill="currentColor" d="M10.004 6.75a.75.75 0 0 0-.013-1.5c-.85.007-1.577.034-2.179.152c-.623.122-1.167.351-1.613.797s-.675.99-.797 1.613c-.118.602-.145 1.328-.152 2.179a.75.75 0 0 0 1.5.013c.007-.856.035-1.454.124-1.904c.084-.428.212-.666.386-.84s.412-.302.84-.386c.45-.088 1.048-.117 1.904-.124m4.003-1.5a.75.75 0 1 0-.013 1.5c.856.007 1.454.035 1.903.124c.429.084.666.212.84.386c.175.174.303.412.387.84c.088.45.116 1.048.124 1.904a.75.75 0 0 0 1.5-.013c-.008-.85-.034-1.577-.152-2.179c-.122-.623-.352-1.167-.798-1.613s-.99-.675-1.612-.797c-.603-.118-1.329-.145-2.18-.152M6.75 13.994a.75.75 0 0 0-1.5.013c.007.85.034 1.577.152 2.179c.122.623.351 1.167.797 1.613s.99.675 1.613.797c.602.119 1.328.145 2.179.152a.75.75 0 0 0 .013-1.5c-.856-.007-1.454-.036-1.904-.123c-.428-.084-.666-.213-.84-.387s-.302-.412-.386-.84c-.088-.45-.117-1.048-.124-1.904m11.998.013a.75.75 0 1 0-1.5-.013c-.008.856-.036 1.454-.124 1.904c-.084.428-.212.666-.386.84s-.412.303-.84.387c-.45.087-1.048.116-1.904.123a.75.75 0 1 0 .013 1.5c.85-.007 1.576-.034 2.179-.152c.623-.122 1.166-.351 1.612-.797s.676-.99.798-1.613c.118-.602.144-1.328.151-2.179"/></svg>`,
         ]
         const mainToggle = mkEl('button', {
             id: 'toggle',
