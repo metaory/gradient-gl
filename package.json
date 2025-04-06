@@ -1,7 +1,7 @@
 {
   "name": "gradient-gl",
-  "description": "Blurry, noisy, pseudo-random WebGL gradients with seed-based control",
-  "version": "0.4.0",
+  "description": "WebGL-powered animated gradients with seed-driven variation",
+  "version": "0.5.0",
   "sideEffects": false,
   "bugs": "https://github.com/metaory/gradient-gl/issues",
   "homepage": "https://metaory.github.io/gradient-gl/",
@@ -13,9 +13,9 @@
   "files": [
     "index.js",
     "shaders/*.js",
-    "dom.js",
-    "gl.js",
-    "seed.js",
+    ".github/assets/*.png",
+    "package.json",
+    "README.md",
     "LICENSE"
   ],
   "browserslist": [
