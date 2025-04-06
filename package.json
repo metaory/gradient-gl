@@ -1,7 +1,7 @@
 {
   "name": "gradient-gl",
   "description": "WebGL-powered animated gradients with seed-driven variation",
-  "version": "0.5.0",
+  "version": "0.5.1-0",
   "sideEffects": false,
   "bugs": "https://github.com/metaory/gradient-gl/issues",
   "homepage": "https://metaory.github.io/gradient-gl/",
