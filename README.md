@@ -1,17 +1,15 @@
 <div align="center">
     <img src="public/logo.png" alt="demo" height="128" />
-    <h3>WebGL-powered animated gradients</h3>
-    <h3>with deterministic variations</h3>
+    <h4>Deterministic WebGL Gradient Animations</h4>
     <p>
         <a href="https://metaory.github.io/gradient-gl/">
             Live Demo →
         </a>
     </p>
+    Tiny WebGL library for procedural gradient animations.
+    <br>
+    Deterministic. Seed-driven.
 </div>
-
----
-
-Minimal WebGL library for animated gradient backgrounds. Generate unique visuals from simple **seed** strings.
 
 ## Usage
 

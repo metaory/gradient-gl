@@ -6,13 +6,13 @@
     <link rel="icon" type="image/x-icon" href="public/logo.ico" />
     <link rel="icon" type="image/png" href="public/logo.png" />
     <link rel="apple-touch-icon" href="public/logo.png" />
-    <title>GradientGL - WebGL-powered animated gradients</title>
+    <title>GradientGL - Procedural Gradient Animations</title>
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="WebGL-powered animated gradients with deterministic variations" />
+    <meta name="description" content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
     <meta name="author" content="metaory" />
-    <meta property="og:title" content="GradientGL - WebGL-powered animated gradients" />
-    <meta property="og:description" content="WebGL-powered animated gradients with deterministic variations" />
+    <meta property="og:title" content="GradientGL - Procedural Gradient Animations" />
+    <meta property="og:description" content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
     <meta property="og:image" content="https://metaory.github.io/gradient-gl/public/social.jpg" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://metaory.github.io/gradient-gl/" />
@@ -21,7 +21,7 @@
     <meta property="og:site_name" content="GradientGL" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="GradientGL" />
-    <meta name="twitter:description" content="WebGL-powered animated gradients with deterministic variations" />
+    <meta name="twitter:description" content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
     <meta name="twitter:image" content="https://metaory.github.io/gradient-gl/public/social.jpg" />
     <meta name="twitter:creator" content="@metaory" />
     <style>
@@ -39,6 +39,7 @@
             --pk0: #FF4488;
             --pk1: #EE4499;
             --wk1: #4411BB;
+            --wk2: #4411BB76;
             --sk2: #33114476;
             --sk3: #441A5576;
             --sk8: #AA55BB76;
@@ -167,7 +168,7 @@
             background: transparent;
             backdrop-filter: none;
             border: none;
-            color: var(--fg);
+            color: var(--pk1);
             padding: var(--spacing-xs) var(--spacing-md);
             border-radius: var(--radius-lg);
             cursor: pointer;
@@ -181,10 +182,9 @@
         #github {
             mix-blend-mode: color-dodge;
             position: fixed;
-            /* mix-blend-mode: difference; */
             top: var(--spacing-lg);
             left: var(--spacing-lg);
-            color: var(--fg);
+            color: var(--pk1);
             opacity: 0.6;
             z-index: 2;
         }
@@ -197,10 +197,7 @@
 
             button {
                 margin: auto 1rem;
-            }
-
-            svg {
-                color: var(--fg);
+                color: var(--pk1);
             }
         }
 
@@ -235,11 +232,6 @@
 
         .shader {
             opacity: 0.6;
-
-            svg {
-                color: currentColor;
-                opacity: 0.6;
-            }
 
             &[data-selected="true"] {
                 background: var(--sk3);
@@ -350,7 +342,7 @@
             box-shadow: var(--shadow-lg);
             transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
             z-index: 1;
-            background: var(--bg);
+            background: var(--sk3);
             backdrop-filter: blur(var(--blur-amount));
         }
 

@@ -1,6 +1,6 @@
 {
   "name": "gradient-gl",
-  "description": "WebGL-powered animated gradients with deterministic variations",
+  "description": "Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven.",
   "version": "0.6.1-0",
   "sideEffects": false,
   "bugs": "https://github.com/metaory/gradient-gl/issues",
