@@ -4,7 +4,11 @@ const createCanvas = (selector = 'body') => {
   const targetElement = document.querySelector(selector) ?? document.body
   return targetElement.tagName === 'CANVAS'
     ? targetElement
-    : targetElement.appendChild(document.createElement('canvas'))
+    : targetElement.appendChild(
+        Object.assign(document.createElement('canvas'), {
+          style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;',
+        }),
+      )
 }
 
 // -----------------------------------------------------------------------------
