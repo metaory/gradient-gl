@@ -219,6 +219,11 @@
         .shader {
             opacity: 0.6;
 
+            svg {
+                color: currentColor;
+                opacity: 0.6;
+            }
+
             &[data-selected="true"] {
                 background: var(--sk3);
                 color: white;
@@ -237,9 +242,9 @@
             border-radius: var(--radius-lg);
             backdrop-filter: blur(var(--blur-amount));
 
-            &>.shader-type {
+            /* &>.shader-type {
                 background-color: var(--bg) !important;
-            }
+            } */
         }
 
         input[type="range"] {
@@ -370,31 +375,15 @@
             visibility: visible;
         }
 
-        .backdrop {
-            position: fixed;
-            inset: 0;
-            display: grid;
-            place-items: center;
-            background: rgba(0, 0, 0, 0.25);
-            backdrop-filter: blur(4px);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.2s ease, visibility 0.2s ease;
-        }
-
-        .backdrop.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
         .loader {
-            --size: 8rem;
-            --blur: 1.5rem;
+            --size: 20rem;
+            --blur: 5rem;
             width: var(--size);
             aspect-ratio: 1;
             position: fixed;
             top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             border-radius: 50%;
             background: conic-gradient(from 0deg,
                     var(--pk0) 0%,
@@ -402,32 +391,34 @@
                     var(--pk1) 100%);
             filter: blur(var(--blur));
             animation: spin 1s linear infinite;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s ease, visibility 0.2s ease;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 0 4em 16em var(--sk8);
         }
 
-        .loader::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%,
-                    var(--c1) 0%,
-                    transparent 50%);
-            filter: blur(calc(var(--blur) * 0.5));
-            mix-blend-mode: overlay;
+        .loader.show {
+            opacity: 0.8;
+            visibility: visible;
+            pointer-events: all;
+        }
+
+        .loader.show::before {
+            opacity: 0.8;
+            pointer-events: all;
         }
 
         @keyframes spin {
             to {
-                transform: rotate(1turn);
+                transform: translate(-50%, -50%) rotate(1turn);
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="backdrop">
-        <div class="loadex"></div>
-    </div>
     <div class="loader"></div>
     <span id="seed"></span>
     <a id="github" href="https://github.com/metaory/gradient-gl" target="_blank" rel="noopener noreferrer">
@@ -508,6 +499,7 @@
 
         const query = document.querySelector.bind(document)
         const getEl = document.getElementById.bind(document)
+        const loader = query('.loader')
 
         // Debounce function to prevent too many updates
         const debounce = (fn, delay = 100) => {
@@ -562,11 +554,11 @@
                 controlState.seed = newSeed
                 getEl('seed').textContent = controlState.seed
 
-                const backdrop = query('.backdrop')
-                backdrop.classList.add('show')
-                // await sleep(221)
+                loader.classList.toggle('show', true)
+                document.body.style.pointerEvents = 'none'
                 await gradient(controlState.seed)
-                backdrop.classList.remove('show')
+                loader.classList.toggle('show', false)
+                document.body.style.pointerEvents = ''
                 usageState.update()
 
                 // Only clear URL hash if this is not the initial load
@@ -697,7 +689,7 @@
 
         // Add button to randomize values again
         const randomizeBtn = mkEl('button', {
-            innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22m4.262-14.523a.75.75 0 0 1 1.06-.015l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.146-.954h-.338c-.511 0-.844 0-1.1.025c-.242.023-.36.062-.444.109c-.084.046-.176.12-.318.307c-.152.2-.323.474-.586.902l-1.52 2.463c-.242.39-.45.729-.652.994c-.218.286-.46.532-.789.713c-.328.18-.666.254-1.025.288c-.336.032-.74.032-1.21.032H6a.75.75 0 0 1 0-1.5h2.162c.511 0 .844 0 1.1-.025c.243-.023.36-.062.444-.11c.084-.045.176-.12.318-.306c.152-.2.323-.475.586-.902l1.52-2.464c.242-.39.45-.728.652-.994c.218-.285.46-.531.789-.712c.328-.18.666-.255 1.025-.289c.336-.031.74-.031 1.21-.031h.37a.75.75 0 0 1 .086-.94M9.385 9.77c-.085-.017-.185-.02-.584-.02H6a.75.75 0 0 1 0-1.5h2.858c.313 0 .565 0 .806.045a2.56 2.56 0 0 1 1.405.775c.167.18.299.394.459.653l.03.05a.75.75 0 1 1-1.276.788c-.206-.334-.259-.413-.313-.472a1.06 1.06 0 0 0-.584-.32m3.301 3.26a.75.75 0 0 1 1.032.244c.206.333.259.412.313.471c.151.163.355.277.584.32c.085.016.186.02.584.02h.977a.75.75 0 0 1 1.147-.955l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.147-.955h-1.034c-.313 0-.565 0-.806-.045a2.56 2.56 0 0 1-1.405-.775c-.167-.18-.299-.394-.459-.653l-.03-.05a.75.75 0 0 1 .244-1.032" clip-rule="evenodd"/></svg>`,
+            innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M12 22c-4.714 0-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12s0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22m4.262-14.523a.75.75 0 0 1 1.06-.015l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.146-.954h-.338c-.511 0-.844 0-1.1.025c-.242.023-.36.062-.444.109c-.084.046-.176.12-.318.307c-.152.2-.323.474-.586.902l-1.52 2.463c-.242.39-.45.729-.652.994c-.218.286-.46.532-.789.713c-.328.18-.666.254-1.025.288c-.336.032-.74.032-1.21.032H6a.75.75 0 0 1 0-1.5h2.162c.511 0 .844 0 1.1-.025c.243-.023.36-.062.444-.11c.084-.045.176-.12.318-.306c.152-.2.323-.475.586-.902l1.52-2.464c.242-.39.45-.728.652-.994c.218-.285.46-.531.789-.712c.328-.18.666-.255 1.025-.289c.336-.031.74-.031 1.21-.031h.37a.75.75 0 0 1 .086-.94M9.385 9.77c-.085-.017-.185-.02-.584-.02H6a.75.75 0 0 1 0-1.5h2.858c.313 0 .565 0 .806.045a2.56 2.56 0 0 1 1.405.775c.167.18.299.394.459.653l.03.05a.75.75 0 1 1-1.276.788c-.206-.334-.259-.413-.313-.472a1.06 1.06 0 0 0-.584-.32m3.301 3.26a.75.75 0 0 1 1.032.244c.206.333.259.412.313.471c.151.163.355.277.584.32c.085.016.186.02.584.02h.977a.75.75 0 0 1 1.147-.955l1.2 1.167a.75.75 0 0 1 0 1.075l-1.2 1.167a.75.75 0 0 1-1.147-.955h-1.034c-.313 0-.565 0-.806-.045a2.56 2.56 0 0 1-1.405-.775c-.167-.18-.299-.394-.459-.653l-.03-.05a.75.75 0 0 1 .244-1.032" clip-rule="evenodd"/></svg>`,
             onclick: randomizeOptions,
             className: 'shader',
         });
