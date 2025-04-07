@@ -1,12 +1,22 @@
 {
   "name": "gradient-gl",
-  "description": "WebGL-powered animated gradients with seed-driven variation",
+  "description": "WebGL-powered animated gradients with deterministic variations",
   "version": "0.5.1-1",
   "sideEffects": false,
   "bugs": "https://github.com/metaory/gradient-gl/issues",
   "homepage": "https://metaory.github.io/gradient-gl/",
   "repository": "git+https://github.com/metaory/gradient-gl.git",
   "type": "module",
+  "keywords": [
+    "webgl",
+    "gradient",
+    "animation",
+    "background",
+    "shader",
+    "seed",
+    "deterministic",
+    "canvas"
+  ],
   "exports": {
     ".": "./index.js"
   },

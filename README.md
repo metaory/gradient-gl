@@ -1,103 +1,61 @@
 <div align="center">
     <img src=".github/assets/logo.png" alt="demo" height="128" />
     <h3>WebGL-powered animated gradients</h3>
-    <h3>with seed-driven variation</h3>
+    <h3>with deterministic variations</h3>
     <p>
         <a href="https://metaory.github.io/gradient-gl/">
-            metaory.github.io/gradient-gl
+            Live Demo →
         </a>
     </p>
 </div>
 
 ---
 
-A minimal WebGL library for animated gradient backgrounds, with visuals shaped by a simple seed string.
-
-
----
+Minimal WebGL library for animated gradient backgrounds. Generate unique visuals from simple **seed** strings.
 
 ## Usage
 
 ```sh
 npm install gradient-gl
-# or
-pnpm add gradient-gl
 ```
 
-```typescript
-import gradientGL from 'gradient-gl';
+```js
+import gradientGL from 'gradient-gl'
 
-await gradientGL(seed?: string, selector?: string);
+// Random seed on body
+await gradientGL()
 
-// random seed, mounted on body
-await gradientGL();
-
-// custom seed, mounted on body
-await gradientGL('a2.eba9');
-
-// custom seed, mounted on #app
-await gradientGL('a2.eba9', '#app');
+// Custom seed on #app
+await gradientGL('a2.eba9', '#app')
+// selector: where to mount the canvas
 ```
 
-
-> [!TIP]
-> The optional selector is element selector that the canvas will be appended to
-
-
----
-
-## Seed
-
-The seed string is a combination of a shader name and a set of values.
-
-Use the [playground](https://metaory.github.io/gradient-gl/) to explore and generate a seed
-
----
-
-### Syntax
-
-`{shader}.{options}`
-
-The values are a set of numbers that are used to seed the shader.
-
-
----
-
-### Shader `[a-z]{1}[0-9]{1}`
-
-The shader name is a short string that identifies the shader.
-
-### Options `[0-9a-f]{1}`
-
-Each tweak option is a hex digit, which is a number between 0 and 15.
+## Seed Format
 
 `{shader}.{speed}{hue}{saturation}{lightness}`
 
+- Shader: `[a-z][0-9]` (e.g., `a2`)
+- Options: `[0-9a-f]` (hex values)
 
----
+Explore and generate seeds in the **[playground](https://metaory.github.io/gradient-gl/)**.
 
-## Benchmark
+## Performance
 
-TODO: create benchmark to compare the performance beween different animation techniques
+Animated Gradient Background Techniques (Slowest → Fastest):
 
-This is a list of techniques to create an animated gradient background,
+1. `SVG` – CPU-bound, DOM-heavy, poor scaling
+2. `Canvas 2D` – Main-thread load, imperative updates
+3. `CSS Gradients` – GPU-composited, limited complexity
+4. `WebGL` – GPU-accelerated, shader-driven, optimal balance
+5. `WebGPU` – Most powerful, but overkill for typical use
 
-They are in order of performance, from slowest to fastest.
+> [!NOTE]
+> While WebGPU is technically the fastest, WebGL remains the best choice for animated gradients due to its maturity, broad support, and optimal performance/complexity ratio.
 
-1. `SVG filters`
-2. `Canvas 2D`
-3. `CSS`
-4. `WebGL`
-5. `WebGPU`
-
-
-<!-- ```html
-🚧 UNDER CONSTRUCTION
-<script src="https://cdn.com/gradient-gl?seed=w2.678"></script>
-<script src="https://cdn.com/gradient-gl?seed=w2.678&selector=#app"></script>
-``` -->
+> TODO: Interactive benchmark app
 
 ---
 
 ## License
+
 [MIT](LICENSE)
