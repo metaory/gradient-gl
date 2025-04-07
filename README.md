@@ -1,5 +1,5 @@
 <div align="center">
-    <img src=".github/assets/logo.png" alt="demo" height="128" />
+    <img src="public/logo.png" alt="demo" height="128" />
     <h3>WebGL-powered animated gradients</h3>
     <h3>with deterministic variations</h3>
     <p>

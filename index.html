@@ -3,10 +3,9 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href=".github/assets/logo.ico" />
-    <link rel="icon" type="image/png" href=".github/assets/logo.png" />
-    <link rel="apple-touch-icon" href=".github/assets/logo.png" />
-    <link rel="stylesheet" href="demo/style.css">
+    <link rel="icon" type="image/x-icon" href="public/logo.ico" />
+    <link rel="icon" type="image/png" href="public/logo.png" />
+    <link rel="apple-touch-icon" href="public/logo.png" />
     <title>GradientGL - WebGL-powered animated gradients</title>
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -14,14 +13,16 @@
     <meta name="author" content="metaory" />
     <meta property="og:title" content="GradientGL - WebGL-powered animated gradients" />
     <meta property="og:description" content="WebGL-powered animated gradients with deterministic variations" />
-    <meta property="og:image" content="https://raw.githubusercontent.com/metaory/gradient-gl/refs/heads/master/.github/assets/social.jpg" />
+    <meta property="og:image" content="https://metaory.github.io/gradient-gl/public/social.jpg" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://metaory.github.io/gradient-gl/" />
     <meta property="og:author" content="metaory" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="GradientGL" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="GradientGL" />
     <meta name="twitter:description" content="WebGL-powered animated gradients with deterministic variations" />
-    <meta name="twitter:image" content="https://raw.githubusercontent.com/metaory/gradient-gl/refs/heads/master/.github/assets/social.jpg" />
+    <meta name="twitter:image" content="https://metaory.github.io/gradient-gl/public/social.jpg" />
     <meta name="twitter:creator" content="@metaory" />
     <style>
         :root {
@@ -740,7 +741,7 @@
 
         const toggleSvg = [
             `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464m6.54 1.787a.75.75 0 0 1 .743.756c-.007.851-.033 1.577-.151 2.18c-.122.623-.352 1.166-.798 1.612s-.99.676-1.613.798c-.602.118-1.328.144-2.179.151a.75.75 0 1 1-.012-1.5c.856-.007 1.453-.035 1.903-.123c.429-.084.666-.212.84-.387c.175-.174.303-.411.387-.84c.088-.45.116-1.048.123-1.903a.75.75 0 0 1 .757-.744m3.99 0a.75.75 0 0 1 .756.744c.007.855.035 1.453.123 1.903c.084.429.213.666.387.84c.174.175.411.303.84.387c.45.088 1.048.116 1.904.123a.75.75 0 0 1-.013 1.5c-.85-.007-1.577-.033-2.18-.151c-.623-.122-1.166-.352-1.612-.798s-.675-.99-.798-1.613c-.118-.602-.144-1.328-.151-2.179a.75.75 0 0 1 .743-.756m-7.988 8a.75.75 0 0 0-.012 1.5c.856.007 1.453.035 1.903.123c.429.084.666.212.84.386c.175.175.303.412.387.84c.088.45.116 1.048.123 1.904a.75.75 0 0 0 1.5-.013c-.007-.85-.033-1.576-.151-2.179c-.122-.623-.352-1.166-.798-1.612s-.99-.676-1.613-.798c-.602-.118-1.328-.144-2.179-.152m12.741.743a.75.75 0 0 1-.743.756c-.856.008-1.454.036-1.904.124c-.429.084-.666.212-.84.386c-.175.175-.303.412-.387.84c-.088.45-.116 1.048-.123 1.904a.75.75 0 1 1-1.5-.013c.007-.85.033-1.576.151-2.179c.123-.623.352-1.166.798-1.612s.99-.676 1.613-.798c.602-.118 1.328-.144 2.179-.152a.75.75 0 0 1 .756.744" clip-rule="evenodd"/></svg>`,
-            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464m7.283 2.53a.75.75 0 0 1-.743.756c-.856.007-1.454.035-1.904.124c-.428.084-.666.212-.84.386s-.302.412-.386.84c-.088.45-.117 1.048-.124 1.904a.75.75 0 0 1-1.5-.013c.007-.85.034-1.577.152-2.179c.122-.623.351-1.167.797-1.613s.99-.675 1.613-.797c.602-.118 1.328-.145 2.179-.152a.75.75 0 0 1 .756.744m2.503 0a.75.75 0 0 1 .757-.744c.85.007 1.576.034 2.179.152c.623.122 1.166.351 1.612.797s.676.99.798 1.613c.118.602.144 1.328.151 2.179a.75.75 0 0 1-1.5.013c-.007-.856-.035-1.454-.123-1.904c-.084-.428-.212-.666-.386-.84s-.412-.302-.84-.386c-.45-.088-1.048-.117-1.904-.124a.75.75 0 0 1-.744-.756m-6.5 8a.75.75 0 0 0-1.5.013c.007.85.034 1.577.152 2.179c.122.623.351 1.167.797 1.613s.99.675 1.613.797c.602.119 1.328.145 2.179.152a.75.75 0 0 0 .013-1.5c-.856-.007-1.454-.036-1.904-.123c-.428-.084-.666-.213-.84-.387s-.302-.412-.386-.84c-.088-.45-.117-1.048-.124-1.904m11.254-.743a.75.75 0 0 1 .743.756c-.007.85-.033 1.577-.151 2.179c-.122.623-.352 1.167-.798 1.613s-.99.675-1.612.797c-.603.119-1.329.145-2.18.152a.75.75 0 1 1-.012-1.5c.856-.007 1.454-.036 1.903-.123c.429-.084.666-.213.84-.387c.175-.174.303-.412.387-.84c.088-.45.116-1.048.124-1.904a.75.75 0 0 1 .756-.743" clip-rule="evenodd"/></svg>`,
+            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464m7.283 2.53a.75.75 0 0 1-.743.756c-.856.007-1.454.035-1.904.124c-.428.084-.666.212-.84.386s-.302.412-.386.84c-.088.45-.117 1.048-.124 1.904a.75.75 0 0 1-1.5-.013c.007-.85.034-1.577.152-2.179c.122-.623.351-1.167.797-1.613s.99-.675 1.613-.797c.602-.118 1.328-.145 2.179-.152a.75.75 0 0 1 .756.744m2.503 0a.75.75 0 0 1 .757-.744c.85.007 1.576.034 2.179.152c.623.122 1.166.351 1.612.797s.676.99.798 1.613c.118.602.144 1.328.151 2.179a.75.75 0 0 1-1.5.013c-.007-.856-.035-1.454-.123-1.904c-.084-.428-.212-.666-.386-.84s-.412-.302-.386-.84c-.088-.45-.117-1.048-.124-1.904a.75.75 0 0 1-.744-.756m-6.5 8a.75.75 0 0 0-1.5.013c.007.85.034 1.577.152 2.179c.122.623.351 1.167.797 1.613s.99.675 1.613.797c.602.119 1.328.145 2.179.152a.75.75 0 0 0 .013-1.5c-.856-.007-1.454-.036-1.904-.123c-.428-.084-.666-.213-.84-.387s-.302-.412-.386-.84c-.088-.45-.117-1.048-.124-1.904m11.254-.743a.75.75 0 0 1 .743.756c-.007.85-.033 1.577-.151 2.179c-.122.623-.352 1.167-.798 1.613s-.99.675-1.612.797c-.603.119-1.329.145-2.18.152a.75.75 0 1 1-.012-1.5c.856-.007 1.454-.036 1.903-.123c.429-.084.666-.213.84-.387c.175-.174.303-.412.387-.84c.088-.45.116-1.048.124-1.904a.75.75 0 0 1 .756-.743" clip-rule="evenodd"/></svg>`,
         ]
         const mainToggle = mkEl('button', {
             id: 'toggle',

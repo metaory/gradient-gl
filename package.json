@@ -21,12 +21,12 @@
     ".": "./index.js"
   },
   "files": [
-    "index.js",
-    "shaders/*.js",
-    ".github/assets/*.png",
-    "package.json",
+    "LICENSE",
     "README.md",
-    "LICENSE"
+    "index.js",
+    "package.json",
+    "public/*",
+    "shaders/*.js"
   ],
   "browserslist": [
     "last 2 Chrome versions",
