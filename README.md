@@ -21,7 +21,7 @@ npm install gradient-gl
 import gradientGL from 'gradient-gl'
 
 // Random seed on body
-await gradientGL()
+await gradientGL('a2.eba9')
 
 // Custom seed on #app
 await gradientGL('a2.eba9', '#app')
