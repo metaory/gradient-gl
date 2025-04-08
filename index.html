@@ -332,7 +332,6 @@
         }
 
         .usage {
-            font-family: monospace;
             font-size: 0.9rem;
             padding: var(--spacing-xs);
             border-radius: var(--radius-lg);
@@ -347,11 +346,13 @@
             max-width: 40rem;
             max-height: 30vh;
             margin-bottom: var(--spacing-xs);
-            box-shadow: var(--shadow-lg);
             transition: transform 0.3s ease, opacity 0.3s ease, visibility 0.3s ease;
             z-index: 1;
             background: var(--sk3);
             backdrop-filter: blur(var(--blur-amount));
+            pre.shiky {
+                mix-blend-mode: exclusion;
+            }
         }
 
         .usage.hidden {
@@ -369,10 +370,9 @@
             text-align: center;
             place-content: center;
             transform: translateX(-50%);
-            outline: 50rem solid var(--lo);
             mix-blend-mode: difference;
-            font-weight: 800;
             backdrop-filter: blur(var(--blur-amount));
+            font-weight: 800;
             padding: var(--spacing-xs) var(--spacing-md);
             border-radius: var(--radius-xl);
             font-size: 1.6rem;
@@ -398,7 +398,7 @@
             inset: 0;
             background: var(--sk3);
             backdrop-filter: blur(8px);
-            filter: blur(4em) opacity(0.8);
+            filter: blur(8em) opacity(0.6) brightness(2);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease;
@@ -420,7 +420,6 @@
                     #f43f5e 60%,
                     #3b82f6 80%,
                     #8b5cf6 100%);
-            filter: blur(2rem);
             animation: spin 1s linear infinite;
         }
 
@@ -526,10 +525,11 @@
             const toast = $('.toast')
             toast.textContent = message
             toast.classList.add('show')
-            setTimeout(() => toast.classList.remove('show'), 2000)
+            setTimeout(() => toast.classList.remove('show'), 1_000)
         }
 
         const loader = $('.loader')
+
         // State Management
         const state = {
             seed: '',
