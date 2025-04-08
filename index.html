@@ -529,6 +529,7 @@
             setTimeout(() => toast.classList.remove('show'), 2000)
         }
 
+        const loader = $('.loader')
         // State Management
         const state = {
             seed: '',
@@ -546,12 +547,11 @@
                 state.seed = newSeed
                 $id('seed').textContent = state.seed
 
-                // const loader = $('.loader')
-                // loader.classList.toggle('show', true)
-                // document.body.style.pointerEvents = 'none'
+                loader.classList.toggle('show', true)
+                document.body.style.pointerEvents = 'none'
                 await gradient(state.seed)
-                // loader.classList.toggle('show', false)
-                // document.body.style.pointerEvents = ''
+                loader.classList.toggle('show', false)
+                document.body.style.pointerEvents = ''
                 updateUsage()
 
                 if (window.location.hash && !window.location.hash.includes(state.seed)) {
@@ -682,7 +682,6 @@
 
         // Modified initialization sequence
         const init = async () => {
-            const loader = $('.loader')
             loader.classList.add('show')
             document.body.style.pointerEvents = 'none'
 
