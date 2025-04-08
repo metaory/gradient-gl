@@ -182,13 +182,13 @@
             cursor: pointer;
             font-size: 1.2rem;
             transition: all 0.2s ease;
-            mix-blend-mode: color-dodge;
+            mix-blend-mode: difference;
             width: auto;
             height: auto;
         }
 
         #github {
-            mix-blend-mode: color-dodge;
+            mix-blend-mode: difference;
             position: fixed;
             top: var(--spacing-lg);
             left: var(--spacing-lg);
@@ -199,7 +199,7 @@
 
         #actions {
             z-index: 2;
-            mix-blend-mode: color-dodge;
+            mix-blend-mode: difference;
             position: absolute;
             bottom: 16vh;
 
@@ -414,12 +414,12 @@
             aspect-ratio: 1;
             border-radius: 50%;
             background: conic-gradient(from 0deg,
-                #3b82f6 0%,
-                #8b5cf6 20%,
-                #ec4899 40%,
-                #f43f5e 60%,
-                #3b82f6 80%,
-                #8b5cf6 100%);
+                    #3b82f6 0%,
+                    #8b5cf6 20%,
+                    #ec4899 40%,
+                    #f43f5e 60%,
+                    #3b82f6 80%,
+                    #8b5cf6 100%);
             filter: blur(2rem);
             animation: spin 1s linear infinite;
         }
@@ -476,7 +476,11 @@
         import gradient from './index.js'
         import shaders from './shaders/index.js'
 
-        const pipe = (...fns) => x => fns.reduce((v, f) => f(v), x)
+        // DOM Helpers
+        const $ = document.querySelector.bind(document)
+        const $$ = document.querySelectorAll.bind(document)
+        const $id = document.getElementById.bind(document)
+
         const setProps = (el, props) => {
             if (!props) return el
             for (const [k, v] of Object.entries(props)) {
@@ -491,23 +495,6 @@
             return el
         }
 
-        const copyToClipboard = async (text) => {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch (err) {
-                console.error('Failed to copy:', err);
-                return false;
-            }
-        }
-
-        const showToast = (message) => {
-            const toast = query('.toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 2000);
-        }
-
         const mkEl = (tag, props = {}, children = []) => {
             const el = document.createElement(tag)
             setProps(el, props)
@@ -517,11 +504,6 @@
             return el
         }
 
-        const query = document.querySelector.bind(document)
-        const getEl = document.getElementById.bind(document)
-        const loader = query('.loader')
-
-        // Debounce function to prevent too many updates
         const debounce = (fn, delay = 100) => {
             let timeout
             return (...args) => {
@@ -530,141 +512,159 @@
             }
         }
 
-        const sleep = (s = 3) => new Promise(resolve => setTimeout(resolve, s * 1_000));
-
-        // Usage interface state
-        const usageState = {
-            update: async () => {
-                const usage = query('.usage');
-                const currentSeed = controlState.seed;
-
-                const example = `import gradientGL from "gradient-gl"\n\nawait gradientGL("${currentSeed}")`;
-
-                const { codeToHtml } = await import('https://esm.sh/shiki@3.0.0');
-                const html = await codeToHtml(example, {
-                    lang: 'javascript',
-                    theme: 'laserwave',
-                    transformers: [
-                        {
-                            pre(node) {
-                                delete node.properties.style;
-                                return node;
-                            }
-                        }
-                    ]
-                });
-                usage.innerHTML = html;
+        const copyToClipboard = async (text) => {
+            try {
+                await navigator.clipboard.writeText(text)
+                return true
+            } catch (err) {
+                console.error('Failed to copy:', err)
+                return false
             }
         }
 
-        // Control interface state
-        const controlState = {
+        const showToast = (message) => {
+            const toast = $('.toast')
+            toast.textContent = message
+            toast.classList.add('show')
+            setTimeout(() => toast.classList.remove('show'), 2000)
+        }
+
+        // State Management
+        const state = {
             seed: '',
             isVisible: true,
             update: debounce(async () => {
-                const shader = query('.shader[data-selected="true"]')?.dataset.shader
+                const shader = $('.shader[data-selected="true"]')?.dataset.shader
                 if (!shader) return
 
                 const values = ['speed', 'hue', 'saturation', 'lightness']
-                    .map(id => parseInt(getEl(id).value, 10).toString(16).toLowerCase());
+                    .map(id => parseInt($id(id).value, 10).toString(16).toLowerCase())
 
                 const newSeed = `${shader}.${values.join('')}`
-                if (newSeed === controlState.seed) return
+                if (newSeed === state.seed) return
 
-                controlState.seed = newSeed
-                getEl('seed').textContent = controlState.seed
+                state.seed = newSeed
+                $id('seed').textContent = state.seed
 
-                loader.classList.toggle('show', true)
-                document.body.style.pointerEvents = 'none'
-                await gradient(controlState.seed)
-                loader.classList.toggle('show', false)
-                document.body.style.pointerEvents = ''
-                usageState.update()
+                // const loader = $('.loader')
+                // loader.classList.toggle('show', true)
+                // document.body.style.pointerEvents = 'none'
+                await gradient(state.seed)
+                // loader.classList.toggle('show', false)
+                // document.body.style.pointerEvents = ''
+                updateUsage()
 
-                // Only clear URL hash if this is not the initial load
-                if (window.location.hash && !window.location.hash.includes(controlState.seed)) {
+                if (window.location.hash && !window.location.hash.includes(state.seed)) {
                     window.location.hash = ''
                 }
             }, 50)
         }
 
-        // Load seed from URL hash if present
+        const updateUsage = async () => {
+            const usage = $('.usage')
+            const { codeToHtml } = await import('https://esm.sh/shiki@3.0.0')
+            const html = await codeToHtml(`import gradientGL from "gradient-gl"\n\nawait gradientGL("${state.seed}")`, {
+                lang: 'javascript',
+                theme: 'laserwave',
+                transformers: [{ pre: node => (delete node.properties.style, node) }]
+            })
+            usage.innerHTML = html
+        }
+
         const loadSeedFromUrl = () => {
             const hash = window.location.hash.slice(1)
             if (!hash) return false
 
-            console.log('Loading seed from URL:', hash)
             const [shader, values] = hash.split('.')
-            if (!shader || !values || values.length !== 4) {
-                console.log('Invalid seed format:', hash)
-                return false
-            }
+            if (!shader || !values || values.length !== 4) return false
 
-            // Split values into individual hex digits
-            const hexValues = values.split('')
+            const shaderBtn = $(`.shader[data-shader="${shader}"]`)
+            if (!shaderBtn) return false
 
-            // Set shader
-            const shaderBtn = query(`.shader[data-shader="${shader}"]`)
-            if (!shaderBtn) {
-                console.log('Shader not found:', shader)
-                return false
-            }
-
-            document.querySelectorAll('.shader').forEach(opt => {
+            $$('.shader').forEach(opt => {
                 opt.dataset.selected = opt === shaderBtn ? 'true' : 'false'
             })
 
-            // Set values
             const ids = ['speed', 'hue', 'saturation', 'lightness']
-            hexValues.forEach((value, i) => {
-                const input = getEl(ids[i])
+            values.split('').forEach((value, i) => {
+                const input = $id(ids[i])
                 if (!input) return
                 const intValue = parseInt(value, 16)
                 input.value = intValue
                 input.dataset.hexValue = value
             })
 
-            console.log('Successfully loaded seed from URL')
             return true
         }
 
         // UI Components
-        const createRangeInput = ({ id, label }) => {
-            const input = mkEl('input', {
-                type: 'range',
-                id,
-                title: label,
-                min: 0,
-                max: 15,
-                value: 7,
-                dataset: { hexValue: '7' },
-                oninput: (e) => {
-                    e.target.dataset.hexValue = e.target.value.toString(16).toLowerCase();
-                    controlState.update();
-                }
-            });
-            return input;
-        }
+        const createRangeInput = ({ id, label }) => mkEl('input', {
+            type: 'range',
+            id,
+            title: label,
+            min: 0,
+            max: 15,
+            value: 7,
+            dataset: { hexValue: '7' },
+            oninput: e => {
+                const hexValue = parseInt(e.target.value, 10).toString(16).toLowerCase()
+                e.target.dataset.hexValue = hexValue
+                state.update()
+            }
+        })
 
         const createShaderOption = shader => mkEl('button', {
             className: 'shader',
             textContent: shader,
             dataset: { shader },
-            onclick: (e) => {
+            onclick: e => {
                 const target = e.target
-                document.querySelectorAll('.shader').forEach(opt => {
+                $$('.shader').forEach(opt => {
                     opt.dataset.selected = opt === target ? 'true' : 'false'
                 })
-                controlState.update()
+                state.update()
             }
         })
 
+        const randomizeOptions = async () => {
+            // Randomize shader
+            const randomShader = shaders[Math.floor(Math.random() * shaders.length)]
+            $$('.shader').forEach(btn => {
+                btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false'
+            })
+
+            // Randomize inputs
+            const inputs = ['speed', 'hue', 'saturation', 'lightness'].map(id => $id(id))
+            inputs.forEach((input, index) => {
+                if (!input) return
+                let randomValue
+
+                switch (index) {
+                    case 0: // speed
+                    case 1: // hue
+                        randomValue = Math.floor(Math.random() * 16)
+                        break
+                    case 2: // saturation
+                        randomValue = Math.floor(Math.random() * 4) + 1
+                        break
+                    case 3: // lightness
+                        randomValue = Math.floor(Math.random() * 7) + 9
+                        break
+                }
+
+                input.value = randomValue
+                input.dataset.hexValue = randomValue.toString(16)
+            })
+
+            await state.update()
+        }
+
+        // Initialize UI
         if (!shaders?.length) {
             console.error('No shaders available')
         }
 
-        // Create shader UI
-        getEl('shaders').append(
+        $id('shaders').append(
             ...Object.values(
                 shaders.reduce((acc, shader) => {
                     acc[shader[0]] = [...(acc[shader[0]] || []), shader]
@@ -675,91 +675,87 @@
                     variations.map(createShaderOption)))
         )
 
-        // Generate random option values
-        const randomizeOptions = () => {
-            // Randomize shader
-            const randomShader = shaders[Math.floor(Math.random() * shaders.length)];
-            const shaderButtons = document.querySelectorAll('.shader');
-            shaderButtons.forEach(btn => {
-                btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false';
-            });
-
-            // Randomize other options
-            ['speed', 'hue', 'saturation', 'lightness'].forEach(id => {
-                const input = getEl(id);
-                if (!input) return;
-                const randomValue = Math.floor(Math.random() * 16);
-                input.value = randomValue;
-                input.dataset.hexValue = randomValue.toString(16);
-            });
-            controlState.update();
-        }
-
-        getEl('options').append(
+        $id('options').append(
             ...['speed', 'hue', 'saturation', 'lightness'].map(id =>
                 createRangeInput({ id, label: id }))
         )
 
-        loadSeedFromUrl() ? controlState.update() : randomizeOptions();
+        // Modified initialization sequence
+        const init = async () => {
+            const loader = $('.loader')
+            loader.classList.add('show')
+            document.body.style.pointerEvents = 'none'
+
+            if (loadSeedFromUrl()) {
+                await state.update()
+            } else {
+                randomizeOptions()
+            }
+
+            loader.classList.remove('show')
+            document.body.style.pointerEvents = ''
+        }
+
+        init()
 
         const randomizeBtn = mkEl('button', {
             innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"><path fill="currentColor" d="M20.536 20.536C22 19.07 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465" opacity="0.5"/><path fill="currentColor" d="M7 10.75a.75.75 0 0 1-.493-1.315l3.437-3a.75.75 0 0 1 .987 1.13L9 9.25h8a.75.75 0 0 1 0 1.5zm6.07 5.685a.75.75 0 0 0 .986 1.13l3.437-3A.75.75 0 0 0 17 13.25H7a.75.75 0 0 0 0 1.5h8z"/></svg>`,
             onclick: randomizeOptions,
-        });
+        })
 
         const copyBtn = mkEl('button', {
             innerHTML: `<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 24 24"><path fill="currentColor" d="M3.464 20.536C4.93 22 7.286 22 12 22s7.071 0 8.535-1.465C22 19.072 22 16.714 22 12s0-7.071-1.465-8.536C19.072 2 16.714 2 12 2S4.929 2 3.464 3.464C2 4.93 2 7.286 2 12s0 7.071 1.464 8.535" opacity="0.5"/><path fill="currentColor" d="M9.5 8.75A3.25 3.25 0 1 0 12.75 12a.75.75 0 0 1 1.5 0A4.75 4.75 0 1 1 9.5 7.25a.75.75 0 0 1 0 1.5"/><path fill="currentColor" d="M17.75 12a3.25 3.25 0 0 1-3.25 3.25a.75.75 0 0 0 0 1.5A4.75 4.75 0 1 0 9.75 12a.75.75 0 0 0 1.5 0a3.25 3.25 0 0 1 6.5 0"/></svg>`,
             onclick: async () => {
-                window.location.hash = controlState.seed;
+                window.location.hash = state.seed
                 if (await copyToClipboard(window.location.href)) {
-                    showToast('URL copied to clipboard');
+                    showToast('URL copied to clipboard')
                 }
             },
-        });
+        })
 
         const buttonContainer = mkEl('div', {
             id: 'actions',
-        }, [randomizeBtn, copyBtn]);
+        }, [randomizeBtn, copyBtn])
 
-        const main = query('main');
-        const usage = query('.usage');
+        const main = $('main')
+        const usage = $('.usage')
 
         const toggleSvg = [
-            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" opacity="0.5"/><path fill="currentColor" d="M5.25 13.994a.75.75 0 0 1 .756-.744c.851.008 1.577.034 2.18.152c.623.122 1.166.352 1.612.798s.676.989.798 1.612c.118.603.144 1.329.151 2.18a.75.75 0 0 1-1.5.012c-.007-.856-.035-1.454-.123-1.903c-.084-.43-.212-.666-.387-.84c-.174-.175-.411-.303-.84-.387c-.45-.088-1.047-.116-1.903-.124a.75.75 0 0 1-.744-.756m4.754-8.743a.75.75 0 0 1 .743.756c-.007.851-.033 1.577-.151 2.18c-.122.623-.352 1.166-.798 1.612s-.99.676-1.613.798c-.602.118-1.328.144-2.179.151a.75.75 0 1 1-.012-1.5c.856-.007 1.453-.035 1.903-.123c.429-.084.666-.212.84-.387c.175-.174.303-.411.387-.84c.088-.45.116-1.048.123-1.903a.75.75 0 0 1 .757-.744m3.99 0a.75.75 0 0 1 .756.744c.007.855.035 1.453.123 1.903c.084.429.213.666.387.84c.174.175.411.303.84.387c.45.088 1.048.116 1.904.123a.75.75 0 0 1-.013 1.5c-.85-.007-1.577-.033-2.18-.151c-.623-.122-1.166-.352-1.612-.798s-.675-.99-.798-1.613c-.118-.602-.144-1.328-.151-2.179a.75.75 0 0 1 .743-.756m4.754 8.743a.75.75 0 0 1-.743.756c-.856.008-1.454.036-1.904.124c-.429.084-.666.212-.84.386c-.175.175-.303.412-.387.84c-.088.45-.116 1.048-.123 1.904a.75.75 0 1 1-1.5-.013c.007-.85.033-1.576.151-2.179c.123-.623.352-1.166.798-1.612s.99-.676 1.613-.798c.602-.118 1.328-.144 2.179-.152a.75.75 0 0 1 .756.744"/></svg>`,
+            `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" opacity="0.5"/><path fill="currentColor" d="M5.25 13.994a.75.75 0 0 1 .756-.744c.851.008 1.577.034 2.18.152c.623.122 1.166.352 1.612.798s.676.989.798 1.612c.118.603.144 1.329.151 2.18a.75.75 0 0 1-1.5.012c-.007-.856-.035-1.454-.123-1.903c-.084-.43-.212-.666-.387-.84c-.174-.175-.411-.303-.84-.387c-.45-.088-1.047-.116-1.903-.124a.75.75 0 0 1-.744-.756m4.754-8.743a.75.75 0 0 1 .743.756c-.007.851-.033 1.577-.151 2.18c-.122.623-.352 1.166-.798 1.612s-.99.676-1.613.798c-.602.118-1.328.144-2.179.151a.75.75 0 1 1-.012-1.5c.856-.007 1.453-.035 1.903-.123c.429-.084.666-.212.84-.387c.175-.174.303-.411.387-.84c.088-.45.116-1.048.123-1.903a.75.75 0 0 1 .757-.744m3.99 0a.75.75 0 0 1 .756.744c.007.855.035 1.453.123 1.903c.084.429.213.666.387.84c.174.175.411.303.84.387c.45.088 1.048.116 1.904.123a.75.75 0 0 1-.013 1.5c-.85-.007-1.577-.033-2.18-.151c-.623-.122-1.166-.352-1.612-.798s-.675-.99-.798-1.613c-.118-.602-.144-1.328-.151-2.179a.75.75 0 0 1 .743-.756m4.754 8.743a.75.75 0 0 1-.743.756c-.856.008-1.454.036-1.904.124c-.429.084-.666.212-.84.386c-.175.175-.303.412-.387.84c-.088.45-.116 1.048-.124 1.904a.75.75 0 1 1-1.5-.013c.007-.85.033-1.576.151-2.179c.123-.623.352-1.166.798-1.612s.99-.676 1.613-.798c.602-.118 1.328-.144 2.179-.152a.75.75 0 0 1 .756.744"/></svg>`,
             `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24"><path fill="currentColor" d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2s7.071 0 8.535 1.464C22 4.93 22 7.286 22 12s0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12" opacity="0.5"/><path fill="currentColor" d="M10.004 6.75a.75.75 0 0 0-.013-1.5c-.85.007-1.577.034-2.179.152c-.623.122-1.167.351-1.613.797s-.675.99-.797 1.613c-.118.602-.145 1.328-.152 2.179a.75.75 0 0 0 1.5.013c.007-.856.035-1.454.124-1.904c.084-.428.212-.666.386-.84s.412-.302.84-.386c.45-.088 1.048-.117 1.904-.124m4.003-1.5a.75.75 0 1 0-.013 1.5c.856.007 1.454.035 1.903.124c.429.084.666.212.84.386c.175.174.303.412.387.84c.088.45.116 1.048.124 1.904a.75.75 0 0 0 1.5-.013c-.008-.85-.034-1.577-.152-2.179c-.122-.623-.352-1.167-.798-1.613s-.99-.675-1.612-.797c-.603-.118-1.329-.145-2.18-.152M6.75 13.994a.75.75 0 0 0-1.5.013c.007.85.034 1.577.152 2.179c.122.623.351 1.167.797 1.613s.99.675 1.613.797c.602.119 1.328.145 2.179.152a.75.75 0 0 0 .013-1.5c-.856-.007-1.454-.036-1.904-.123c-.428-.084-.666-.213-.84-.387s-.302-.412-.386-.84c-.088-.45-.117-1.048-.124-1.904m11.998.013a.75.75 0 1 0-1.5-.013c-.008.856-.036 1.454-.124 1.904c-.084.428-.212.666-.386.84s-.412.303-.84.387c-.45.087-1.048.116-1.904.123a.75.75 0 1 0 .013 1.5c.85-.007 1.576-.034 2.179-.152c.623-.122 1.166-.351 1.612-.797s.676-.99.798-1.613c.118-.602.144-1.328.151-2.179"/></svg>`,
         ]
+
         const mainToggle = mkEl('button', {
             id: 'toggle',
-            innerHTML: toggleSvg[Number(controlState.isVisible)],
+            innerHTML: toggleSvg[Number(state.isVisible)],
             onclick: () => {
-                controlState.isVisible = !controlState.isVisible;
-                main.classList.toggle('hidden');
-                usage.classList.toggle('hidden');
-                mainToggle.innerHTML = toggleSvg[Number(controlState.isVisible)];
+                state.isVisible = !state.isVisible
+                main.classList.toggle('hidden')
+                usage.classList.toggle('hidden')
+                mainToggle.innerHTML = toggleSvg[Number(state.isVisible)]
             }
-        });
+        })
 
-        document.body.appendChild(buttonContainer);
-        document.body.appendChild(mainToggle);
+        document.body.appendChild(buttonContainer)
+        document.body.appendChild(mainToggle)
 
         // Add copy functionality to seed
-        const seedEl = getEl('seed');
-        seedEl.style.cursor = 'pointer';
+        const seedEl = $id('seed')
+        seedEl.style.cursor = 'pointer'
         seedEl.onclick = async () => {
             if (await copyToClipboard(seedEl.textContent)) {
-                showToast('Seed copied to clipboard');
+                showToast('Seed copied to clipboard')
             }
-        };
+        }
 
         // Add copy functionality to usage
-        const usageEl = query('.usage');
-        usageEl.style.cursor = 'pointer';
-        usageEl.onclick = async () => {
-            const code = usageEl.querySelector('code')?.textContent;
+        usage.style.cursor = 'pointer'
+        usage.onclick = async () => {
+            const code = usage.querySelector('code')?.textContent
             if (code && await copyToClipboard(code)) {
-                showToast('Code copied to clipboard');
+                showToast('Code copied to clipboard')
             }
-        };
+        }
     </script>
 </body>
 

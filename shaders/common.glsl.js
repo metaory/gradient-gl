@@ -56,7 +56,7 @@ vec3 applySaturation(vec3 color, float satFactor) {
 // Apply lightness adjustment to RGB color
 vec3 applyLightness(vec3 color, float lightFactor) {
     vec3 hsv = rgb2hsv(color);
-    hsv.z = clamp(hsv.z * lightFactor, 0.0, 1.0); // Adjust value/brightness
+    hsv.z = clamp(hsv.z * lightFactor, 0.0, 1.0);
     return hsv2rgb(hsv);
 }
 
