@@ -9,10 +9,12 @@
     <title>GradientGL - Procedural Gradient Animations</title>
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
+    <meta name="description"
+        content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
     <meta name="author" content="metaory" />
     <meta property="og:title" content="GradientGL - Procedural Gradient Animations" />
-    <meta property="og:description" content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
+    <meta property="og:description"
+        content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
     <meta property="og:image" content="https://metaory.github.io/gradient-gl/public/social.jpg" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://metaory.github.io/gradient-gl/" />
@@ -21,7 +23,8 @@
     <meta property="og:site_name" content="GradientGL" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="GradientGL" />
-    <meta name="twitter:description" content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
+    <meta name="twitter:description"
+        content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
     <meta name="twitter:image" content="https://metaory.github.io/gradient-gl/public/social.jpg" />
     <meta name="twitter:creator" content="@metaory" />
     <style>
@@ -38,12 +41,17 @@
             --sh: hsl(var(--h) 0% 0% / 0.5);
             --pk0: #FF4488;
             --pk1: #EE4499;
+            --pk2: #DD44AA;
             --wk1: #4411BB;
-            --wk2: #4411BB76;
-            --sk2: #33114476;
+            --wk2: #4411BB88;
+            --wk3: #4411BB44;
+            --sk1: #33114488;
+            --sk2: #33114444;
             --sk3: #441A5576;
             --sk8: #AA55BB76;
             --zk2: #CC66CC;
+
+
             --spacing-ss: 0.4rem;
             --spacing-xs: 0.6rem;
             --spacing-sm: 0.8rem;
@@ -386,42 +394,45 @@
 
         .loader {
             --size: 20rem;
-            --blur: 5rem;
-            width: var(--size);
-            aspect-ratio: 1;
             position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 50%;
-            background: conic-gradient(from 0deg,
-                    var(--pk0) 0%,
-                    var(--wk1) 50%,
-                    var(--pk1) 100%);
-            filter: blur(var(--blur));
-            animation: spin 1s linear infinite;
+            inset: 0;
+            background: var(--sk3);
+            backdrop-filter: blur(8px);
+            filter: blur(4em) opacity(0.8);
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.2s ease, visibility 0.2s ease;
             z-index: 9999;
             pointer-events: none;
-            box-shadow: 0 0 4em 16em var(--sk8);
+            display: grid;
+            place-items: center;
+        }
+
+        .loader::before {
+            content: '';
+            width: var(--size);
+            aspect-ratio: 1;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg,
+                #3b82f6 0%,
+                #8b5cf6 20%,
+                #ec4899 40%,
+                #f43f5e 60%,
+                #3b82f6 80%,
+                #8b5cf6 100%);
+            filter: blur(2rem);
+            animation: spin 1s linear infinite;
         }
 
         .loader.show {
-            opacity: 0.8;
+            opacity: 1;
             visibility: visible;
-            pointer-events: all;
-        }
-
-        .loader.show::before {
-            opacity: 0.8;
             pointer-events: all;
         }
 
         @keyframes spin {
             to {
-                transform: translate(-50%, -50%) rotate(1turn);
+                transform: rotate(1turn);
             }
         }
     </style>

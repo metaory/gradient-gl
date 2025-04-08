@@ -328,7 +328,21 @@ const shaderCache = {}
 let activeProgram = null
 let lastSeed = null
 
+/**
+ * Creates a WebGL gradient animation
+ * @param {string} seed - Required seed string in format `{shader}.{speed}{hue}{saturation}{lightness}`
+ * @param {string} [selector='body'] - Optional CSS selector for the parent element
+ * @returns {Promise<GradientGL>} Instance of the gradient animation
+ * @example
+ * // Basic usage
+ * await gradientGL('a2.eba9')
+ *
+ * // With custom parent element
+ * await gradientGL('a2.eba9', '#app')
+ */
 export default async (seed, selector = 'body') => {
+  if (!seed) throw new Error('Seed is required')
+
   const parsedSeed = parseSeed(seed)
   const [shaderId, uniforms] = parsedSeed
 

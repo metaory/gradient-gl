@@ -20,12 +20,11 @@ npm install gradient-gl
 ```js
 import gradientGL from 'gradient-gl'
 
-// Random seed on body
+// Required seed argument
 await gradientGL('a2.eba9')
 
-// Custom seed on #app
+// Optional parent selector as second argument
 await gradientGL('a2.eba9', '#app')
-// selector: where to mount the canvas
 ```
 
 ## Seed Format
@@ -41,11 +40,11 @@ Explore and generate seeds in the **[playground](https://metaory.github.io/gradi
 
 Animated Gradient Background Techniques (Slowest → Fastest):
 
-1. `SVG` – CPU-bound, DOM-heavy, poor scaling
-2. `Canvas 2D` – Main-thread load, imperative updates
-3. `CSS Gradients` – GPU-composited, limited complexity
+1. `SVG` – CPU-only, DOM-heavy, poor scaling, high memory usage
+2. `Canvas 2D` – CPU-only, main-thread load, imperative updates
+3. `CSS` – GPU-composited, limited complexity, best for static
 4. `WebGL` – GPU-accelerated, shader-driven, optimal balance
-5. `WebGPU` – Most powerful, but overkill for typical use
+5. `WebGPU` – GPU-native, most powerful, limited browser support
 
 > [!NOTE]
 > While WebGPU is technically the fastest, WebGL remains the best choice for animated gradients due to its maturity, broad support, and optimal performance/complexity ratio.
