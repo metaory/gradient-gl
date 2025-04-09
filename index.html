@@ -648,7 +648,9 @@
                         randomValue = Math.floor(Math.random() * 4) + 1
                         break
                     case 3: // lightness
-                        randomValue = Math.floor(Math.random() * 7) + 9
+                        randomValue = Math.random() < 0.3
+                            ? Math.floor(Math.random() * 4) + 1  // 30% chance: 1-4
+                            : Math.floor(Math.random() * 5) + 11 // 70% chance: 11-15
                         break
                 }
 

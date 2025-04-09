@@ -146,7 +146,7 @@ class GradientGL {
       nonLinearMap(speedVal, 0.1, 3.0, 1.5),
       hueVal / 15,
       nonLinearMap(satVal, 0.3, 3.0, 1.5),
-      nonLinearMap(lightVal, 0.1, 2.5, 1.0)
+      lightVal / 15  // Simple linear mapping from 0 to 1
     ]
 
     const valuesChanged = forceUpdate ||

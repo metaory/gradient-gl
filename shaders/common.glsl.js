@@ -53,11 +53,39 @@ vec3 applySaturation(vec3 color, float satFactor) {
     return hsv2rgb(hsv);
 }
 
+// Add dithering function
+float dither(vec2 uv) {
+    return fract(sin(dot(uv, vec2(12.9898, 78.233))) * 43758.5453);
+}
+
 // Apply lightness adjustment to RGB color
 vec3 applyLightness(vec3 color, float lightFactor) {
-    vec3 hsv = rgb2hsv(color);
-    hsv.z = clamp(hsv.z * lightFactor, 0.0, 1.0);
-    return hsv2rgb(hsv);
+    // Convert to grayscale for more dramatic effect
+    float gray = dot(color, vec3(0.299, 0.587, 0.114));
+
+    // Shift the curve to make 0 match previous 1
+    float shiftedFactor = (lightFactor * 14.0 + 1.0) / 15.0;
+    float curve = shiftedFactor * shiftedFactor * 0.9;
+
+    // Mix between original color and white/black based on lightness
+    vec3 result;
+    if (lightFactor > 0.5) {
+        // Mix with white for lighter values, but cap at 0.95
+        float mixAmount = min((curve - 0.5) * 2.0, 0.95);
+        result = mix(color, vec3(1.0), mixAmount);
+    } else {
+        // Mix with black for darker values, but cap at 0.95
+        float mixAmount = min(curve * 2.0, 0.95);
+        result = mix(vec3(0.1), color, mixAmount);
+    }
+
+    // Add dithering to break up color bands
+    float ditherAmount = (1.0 - lightFactor) * 0.02; // More dither in darker areas
+    vec2 uv = gl_FragCoord.xy / iResolution.xy;
+    float noise = dither(uv) * ditherAmount;
+    result += vec3(noise);
+
+    return result;
 }
 
 vec2 hash(vec2 p) {
