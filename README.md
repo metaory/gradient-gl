@@ -27,6 +27,19 @@ await gradientGL('a2.eba9')
 await gradientGL('a2.eba9', '#app')
 ```
 
+The library creates a fullscreen canvas with these CSS properties:
+```css
+position: fixed;
+inset: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+```
+
+If a selector is provided:
+- Creates the canvas as a child of the selected element
+- If the selector points to an existing canvas, uses it instead of creating a new one
+
 ## Seed Format
 
 `{shader}.{speed}{hue}{saturation}{lightness}`
@@ -35,6 +48,10 @@ await gradientGL('a2.eba9', '#app')
 - Options: `[0-9a-f]` (hex values)
 
 Explore and generate seeds in the **[playground](https://metaory.github.io/gradient-gl/)**.
+
+## URL Sharing
+
+Click copy to share, randomize to clear.
 
 ## Performance
 

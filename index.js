@@ -18,15 +18,19 @@ const normalize = v => {
     const value = Number.parseInt(v, 16)
     return Math.round(value * (255 / 15))  // Map 0-15 to 0-255
 }
-const nonLinearMap = (val, minOut, maxOut, power = 2) => {
+
+// Linear mapping from input range [0-15] to output range [min-max]
+const linearMap = (val, min, max) => {
   const v = Math.max(0, Math.min(val, 15))
-  return v === 0 ? minOut : minOut + ((v - 1) / 14) ** power * (maxOut - minOut)
+  return min + (v / 15) * (max - min)
 }
 
-const parseSeed = s => [
-  s.split('.').shift(),
-  new Uint8Array(s.split('.').pop().split('').map(normalize))
-]
+const parseSeed = s => {
+  if (!s) throw new Error('Seed is required')
+  const [shaderId, values] = s.split('.')
+  if (!shaderId || !values || values.length !== 4) throw new Error('Invalid seed format')
+  return [shaderId, new Uint8Array(values.split('').map(normalize))]
+}
 
 // -----------------------------------------------------------------------------
 
@@ -36,24 +40,42 @@ const vertex = /* glsl */ `#version 300 es
         gl_Position = vec4(position, 0.0, 1.0);
     }`
 
+const calculateLightness = (lightVal, satVal) => {
+  // Special case for minimum lightness (near black)
+  if (lightVal === 0) return 0.05;
+
+  // Special case for maximum lightness (near white)
+  // Higher boost when saturation is low for true whites
+  if (lightVal === 15) {
+    // If saturation is low (0-3), push even more toward white
+    return satVal <= 3 ? 5.0 : 3.5;
+  }
+
+  // For mid-range, use a more linear progression
+  // Map 1-14 to a wider range of 0.2-3.0
+  const normalizedLight = lightVal / 15;
+  const baseLight = 0.2 + normalizedLight * 2.8;
+
+  // Apply a slight curve (less dramatic than before)
+  return baseLight * (1.0 + normalizedLight * 0.5);
+}
+
 class GradientGL {
   #gl
   #canvas
   #program
   #uniforms
-  #timeScale
   #isActive
-  #externalUniforms
   #currentSeed
+  #externalUniforms
   #currentUniformValues
 
-  constructor(canvas, fragment, seed) {
+  constructor(canvas, fragment, seed, opts = {}) {
     this.#gl = this.#createGLContext(canvas)
     this.#canvas = canvas
     this.#program = this.#createProgram(vertex, fragment)
     this.#uniforms = this.#getUniformLocations()
-    this.#timeScale = 0.4
-    this.#isActive = true
+    this.#isActive = false // don't start yet
     this.#currentSeed = seed
     this.#externalUniforms = seed[1]
     this.#currentUniformValues = { speed: 0, hueShift: 0, saturation: 0, lightness: 0 }
@@ -61,6 +83,15 @@ class GradientGL {
     this.#setupBuffers()
     this.#setupAttributes()
     this.#updateExternalUniforms(true)
+
+    if (opts.autoplay !== false) {
+      this.start()
+    }
+  }
+
+  start() {
+    if (this.#isActive) return
+    this.#isActive = true
     this.#render()
   }
 
@@ -96,7 +127,7 @@ class GradientGL {
     this.#gl.linkProgram(program)
 
     const log = this.#gl.getProgramInfoLog(program)
-    if (log) console.error('Program linking error:', log)
+    if (log) throw new Error(`Program linking error: ${log}`)
 
     this.#gl.detachShader(program, vertexShader)
     this.#gl.detachShader(program, fragmentShader)
@@ -136,17 +167,32 @@ class GradientGL {
     }
   }
 
+  pause() {
+    this.#isActive = false
+  }
+
+  updateSeed(seed) {
+    if (seed[0] === this.#currentSeed[0] && seed[1].every((v, i) => v === this.#currentSeed[1][i])) {
+      return false
+    }
+    this.#currentSeed = seed
+    this.#externalUniforms = seed[1]
+    this.#updateExternalUniforms(true)
+    return true
+  }
+
   #updateExternalUniforms(forceUpdate = false) {
     if (!this.#externalUniforms) return
+
     this.#gl.useProgram(this.#program)
     this.#gl.uniform1iv(this.#uniforms.options, this.#externalUniforms)
 
-    const [speedVal, hueVal, satVal, lightVal] = this.#externalUniforms.map(v => Math.round((v * 15) / 255))
+    const [speedVal, hueVal, satVal, lightVal] = this.#externalUniforms.map(v => Math.round((v / 255) * 15))
     const [speed, hueShift, satFactor, lightFactor] = [
-      nonLinearMap(speedVal, 0.1, 3.0, 1.5),
+      linearMap(speedVal, 0.2, 2.5),
       hueVal / 15,
-      nonLinearMap(satVal, 0.3, 3.0, 1.5),
-      nonLinearMap(lightVal, 0.1, 2.5, 1.0)
+      linearMap(satVal, 0.0, 2.0),
+      linearMap(lightVal, 0.05, 2.0)
     ]
 
     const valuesChanged = forceUpdate ||
@@ -163,14 +209,6 @@ class GradientGL {
 
       this.#currentUniformValues = { speed, hueShift, saturation: satFactor, lightness: lightFactor }
     }
-  }
-
-  updateSeed(seed) {
-    if (seed[0] === this.#currentSeed[0] && seed[1].every((v, i) => v === this.#currentSeed[1][i])) return false
-    this.#currentSeed = seed
-    this.#externalUniforms = seed[1]
-    this.#updateExternalUniforms(true)
-    return true
   }
 
   #updateInternalUniforms(time) {
@@ -203,23 +241,17 @@ class GradientGL {
   }
 
   destroy() {
-    this.#isActive = false
+    this.pause()
     if (this.#program) {
       this.#gl.deleteProgram(this.#program)
       this.#program = null
     }
-    if (this.#canvas) {
-      this.#canvas.remove()
-      this.#canvas = null
-    }
+    this.#canvas = null
     this.#gl = null
   }
 }
 
 // -----------------------------------------------------------------------------
-
-const fetchCommon = () => import('./shaders/common.glsl.js').then(module => module.default)
-const fetchShader = shader => import(`./shaders/${shader}.glsl.js`).then(module => module.default)
 
 const main = /* glsl */ `
 void main() {
@@ -227,38 +259,17 @@ void main() {
 }
 `
 
-const shaderCache = new Map()
-let activeProgram = null
-
-export default async (seed, selector = 'body') => {
-  if (!seed) throw new Error('Seed is required')
-
+export default async (seed, selector = 'body', opts = {}) => {
   const parsedSeed = parseSeed(seed)
   const [shaderId] = parsedSeed
 
-  if (activeProgram?.shaderId === shaderId) {
-    activeProgram.updateSeed(parsedSeed)
-    return activeProgram
-  }
-
-  if (activeProgram) {
-    activeProgram.destroy()
-    activeProgram = null
-  }
-
-  let fragment = shaderCache.get(shaderId)
-  if (!fragment) {
-    const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
-    fragment = common + shader + main
-    shaderCache.set(shaderId, fragment)
-  }
+  const [common, shader] = await Promise.all([
+    import('./shaders/common.glsl.js').then(m => m.default),
+    import(`./shaders/${shaderId}.glsl.js`).then(m => m.default)
+  ])
 
   const canvas = createCanvas(selector)
-  const program = new GradientGL(canvas, fragment, parsedSeed)
+  const program = new GradientGL(canvas, common + shader + main, parsedSeed, opts)
   program.shaderId = shaderId
-  activeProgram = program
-
   return program
 }
-
-// -----------------------------------------------------------------------------
