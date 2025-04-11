@@ -2,11 +2,11 @@
     <img src="docs/public/logo.png" alt="demo" height="128" />
     <h4>Deterministic WebGL Gradient Animations</h4>
     <p>
-        <a href="https://metaory.github.io/gradient-gl/">
+        <a href="https://metaory.github.io/gradient-gl/" target="_blank" rel="noopener noreferrer">
             Live Playground →
         </a>
         <br>
-        <a href="https://metaory.github.io/gradient-gl/vite-vanilla/">
+        <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank" rel="noopener noreferrer">
             Vite Example →
         </a>
     </p>
@@ -55,7 +55,7 @@ await gradientGL('a2.eba9', '#app')
 - Shader: `[a-z][0-9]` (e.g., `a2`)
 - Options: `[0-9a-f]` (hex values)
 
-Explore and generate seeds in the **[playground](https://metaory.github.io/gradient-gl/)**
+Explore and generate seeds in the <a href="https://metaory.github.io/gradient-gl/" target="_blank" rel="noopener noreferrer">playground</a>
 
 ## Performance
 
@@ -78,8 +78,8 @@ Animated Gradient Background Techniques
 
 ## Examples
 
-- [Vite Vanilla Example](https://metaory.github.io/gradient-gl/vite-vanilla/) - Basic integration with Vite
-- [Playground](https://metaory.github.io/gradient-gl/) - Interactive seed generator and preview
+- <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank" rel="noopener noreferrer">Vite Vanilla Example</a> - Basic integration with Vite
+- <a href="https://metaory.github.io/gradient-gl/" target="_blank" rel="noopener noreferrer">Playground</a> - Interactive seed generator and preview
 
 ---
 
