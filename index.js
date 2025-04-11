@@ -6,26 +6,26 @@ const createCanvas = (selector = 'body') => {
     ? target
     : target.appendChild(
         Object.assign(document.createElement('canvas'), {
-          style: 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;'
-        })
+          style: 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;',
+        }),
       )
 }
 
 // -----------------------------------------------------------------------------
 
 // Pure utility functions
-const normalize = v => {
-    const value = Number.parseInt(v, 16)
-    return Math.round(value * (255 / 15))  // Map 0-15 to 0-255
+const normalize = (v) => {
+  const value = Number.parseInt(v, 16)
+  return Math.round(value * (255 / 15)) // Map 0-15 to 0-255
 }
 const nonLinearMap = (val, minOut, maxOut, power = 2) => {
   const v = Math.max(0, Math.min(val, 15))
   return v === 0 ? minOut : minOut + ((v - 1) / 14) ** power * (maxOut - minOut)
 }
 
-const parseSeed = s => [
+const parseSeed = (s) => [
   s.split('.').shift(),
-  new Uint8Array(s.split('.').pop().split('').map(normalize))
+  new Uint8Array(s.split('.').pop().split('').map(normalize)),
 ]
 
 // -----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ class GradientGL {
   #createGLContext(canvas) {
     const gl = canvas.getContext('webgl2', {
       preserveDrawingBuffer: true,
-      antialias: false
+      antialias: false,
     })
     if (!gl) throw new Error('WebGL2 not supported')
     return gl
@@ -79,9 +79,10 @@ class GradientGL {
     this.#gl.compileShader(shader)
 
     const log = this.#gl.getShaderInfoLog(shader)
-    if (log) throw new Error(
-      `${type === this.#gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compilation error: ${log}`
-    )
+    if (log)
+      throw new Error(
+        `${type === this.#gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compilation error: ${log}`,
+      )
 
     return shader
   }
@@ -113,7 +114,7 @@ class GradientGL {
     this.#gl.bufferData(
       this.#gl.ARRAY_BUFFER,
       new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]),
-      this.#gl.STATIC_DRAW
+      this.#gl.STATIC_DRAW,
     )
   }
 
@@ -132,7 +133,7 @@ class GradientGL {
       timeScale: this.#gl.getUniformLocation(this.#program, 'timeScale'),
       hueShift: this.#gl.getUniformLocation(this.#program, 'hueShift'),
       saturation: this.#gl.getUniformLocation(this.#program, 'saturation'),
-      lightness: this.#gl.getUniformLocation(this.#program, 'lightness')
+      lightness: this.#gl.getUniformLocation(this.#program, 'lightness'),
     }
   }
 
@@ -141,15 +142,18 @@ class GradientGL {
     this.#gl.useProgram(this.#program)
     this.#gl.uniform1iv(this.#uniforms.options, this.#externalUniforms)
 
-    const [speedVal, hueVal, satVal, lightVal] = this.#externalUniforms.map(v => Math.round((v * 15) / 255))
+    const [speedVal, hueVal, satVal, lightVal] = this.#externalUniforms.map((v) =>
+      Math.round((v * 15) / 255),
+    )
     const [speed, hueShift, satFactor, lightFactor] = [
       nonLinearMap(speedVal, 0.1, 3.0, 1.5),
       hueVal / 15,
       nonLinearMap(satVal, 0.3, 3.0, 1.5),
-      lightVal / 15  // Simple linear mapping from 0 to 1
+      lightVal / 15, // Simple linear mapping from 0 to 1
     ]
 
-    const valuesChanged = forceUpdate ||
+    const valuesChanged =
+      forceUpdate ||
       speed !== this.#currentUniformValues.speed ||
       hueShift !== this.#currentUniformValues.hueShift ||
       satFactor !== this.#currentUniformValues.saturation ||
@@ -161,12 +165,18 @@ class GradientGL {
       this.#gl.uniform1f(this.#uniforms.saturation, satFactor)
       this.#gl.uniform1f(this.#uniforms.lightness, lightFactor)
 
-      this.#currentUniformValues = { speed, hueShift, saturation: satFactor, lightness: lightFactor }
+      this.#currentUniformValues = {
+        speed,
+        hueShift,
+        saturation: satFactor,
+        lightness: lightFactor,
+      }
     }
   }
 
   updateSeed(seed) {
-    if (seed[0] === this.#currentSeed[0] && seed[1].every((v, i) => v === this.#currentSeed[1][i])) return false
+    if (seed[0] === this.#currentSeed[0] && seed[1].every((v, i) => v === this.#currentSeed[1][i]))
+      return false
     this.#currentSeed = seed
     this.#externalUniforms = seed[1]
     this.#updateExternalUniforms(true)
@@ -218,8 +228,9 @@ class GradientGL {
 
 // -----------------------------------------------------------------------------
 
-const fetchCommon = () => import('./shaders/common.glsl.js').then(module => module.default)
-const fetchShader = shader => import(`./shaders/${shader}.glsl.js`).then(module => module.default)
+const fetchCommon = () => import('./shaders/common.glsl.js').then((module) => module.default)
+const fetchShader = (shader) =>
+  import(`./shaders/${shader}.glsl.js`).then((module) => module.default)
 
 const main = /* glsl */ `
 void main() {
@@ -227,7 +238,6 @@ void main() {
 }
 `
 
-const shaderCache = new Map()
 let activeProgram = null
 
 export default async (seed, selector = 'body') => {
@@ -246,13 +256,8 @@ export default async (seed, selector = 'body') => {
     activeProgram = null
   }
 
-  let fragment = shaderCache.get(shaderId)
-  if (!fragment) {
-    const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
-    fragment = common + shader + main
-    shaderCache.set(shaderId, fragment)
-  }
-
+  const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
+  const fragment = common + shader + main
   const canvas = createCanvas(selector)
   const program = new GradientGL(canvas, fragment, parsedSeed)
   program.shaderId = shaderId

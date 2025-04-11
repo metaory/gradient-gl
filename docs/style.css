@@ -370,12 +370,16 @@ input[type="range"] {
     background: var(--sk3);
     z-index: 9999;
     pointer-events: none;
-    display: grid;
+    display: none;
     place-items: center;
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    mix-blend-mode: difference;
     backdrop-filter: blur(1em);
+    will-change: transform, opacity;
+}
+
+.loader.show {
+    display: grid;
+    opacity: 1;
 }
 
 .loader::before {
@@ -384,7 +388,6 @@ input[type="range"] {
     width: var(--size);
     aspect-ratio: 1;
     border-radius: 50%;
-    mix-blend-mode: overlay;
     background: conic-gradient(from 0deg,
         #FF3366 0%,
         #FF6B6B 10%,
@@ -397,25 +400,25 @@ input[type="range"] {
         #9013FE 80%,
         #FF3366 90%,
         #FF3366 100%);
-    animation: rotate 1s linear infinite;
+    transform: rotate(0deg);
     filter: brightness(1.5) opacity(0.4) blur(4em);
+    will-change: transform;
+}
+
+.loader.show::before {
+    animation: rotate 1s linear infinite;
 }
 
 .loader::after {
     content: 'loading';
     position: absolute;
-    color: var(--sk8);
-    font-size: 2rem;
-    font-weight: 800;
+    mix-blend-mode: overlay;
+    color: #ffffff44;
+    font-size: 3rem;
+    font-weight: 100;
     z-index: 1;
 }
 
 @keyframes rotate {
-    to { rotate: 360deg; }
-}
-
-.loader.show {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: all;
+    to { transform: rotate(360deg); }
 }

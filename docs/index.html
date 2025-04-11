@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/x-icon" href="public/logo.ico" />
-    <link rel="icon" type="image/png" href="public/logo.png" />
-    <link rel="apple-touch-icon" href="public/logo.png" />
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="./public/logo.ico" />
+    <link rel="icon" type="image/png" href="./public/logo.png" />
+    <link rel="apple-touch-icon" href="./public/logo.png" />
+    <link rel="stylesheet" href="./style.css">
     <title>GradientGL - Procedural Gradient Animations</title>
     <base href="/gradient-gl/">
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -116,7 +116,6 @@
             return result
         }
 
-        // State Management
         const createState = (initial) => {
             let state = initial
             const listeners = new Set()
@@ -177,15 +176,18 @@
             if (!hash) return false
 
             const [shader, values] = hash.split('.')
-            if (!shader || !values || values.length !== 4) return false
+            const isValidSeed = shader && values?.length === 4
+            if (!isValidSeed) return false
 
             const shaderBtn = $(`.shader[data-shader="${shader}"]`)
             if (!shaderBtn) return false
 
+            // Update shader selection
             $$('.shader').forEach(opt => {
                 opt.dataset.selected = opt === shaderBtn ? 'true' : 'false'
             })
 
+            // Update input values
             const ids = ['speed', 'hue', 'saturation', 'lightness']
             values.split('').forEach((value, i) => {
                 const input = $id(ids[i])
