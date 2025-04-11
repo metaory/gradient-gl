@@ -41,9 +41,7 @@ jobs:
           cd ../..
 
       - name: Copy Vite build
-        run: |
-          mkdir -p docs/vite-vanilla
-          cp -r examples/vite-vanilla/dist/* docs/vite-vanilla/
+        run: cp -r examples/vite-vanilla/dist docs/vite-vanilla
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
