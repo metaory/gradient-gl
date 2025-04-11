@@ -23,6 +23,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Copy files
+        run: |
+          cp index.js docs/
+          cp -r shaders docs/
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
