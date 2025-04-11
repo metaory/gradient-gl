@@ -5,6 +5,10 @@
         <a href="https://metaory.github.io/gradient-gl/">
             Live Playground →
         </a>
+        <br>
+        <a href="https://metaory.github.io/gradient-gl/vite-vanilla/">
+            Vite Example →
+        </a>
     </p>
     Tiny WebGL library for
     <br>
@@ -69,6 +73,13 @@ Animated Gradient Background Techniques
 > While WebGPU is technically the fastest, WebGL remains the best choice for animated gradients due to its maturity, broad support, and optimal performance/complexity ratio.
 
 > TODO: Interactive benchmark app
+
+---
+
+## Examples
+
+- [Vite Vanilla Example](https://metaory.github.io/gradient-gl/vite-vanilla/) - Basic integration with Vite
+- [Playground](https://metaory.github.io/gradient-gl/) - Interactive seed generator and preview
 
 ---
 
