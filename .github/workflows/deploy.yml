@@ -25,6 +25,9 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          static_site_generator: none
+          source_dir: docs
 
       - name: Generate shaders list
         run: |

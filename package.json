@@ -24,9 +24,9 @@
     "LICENSE",
     "README.md",
     "index.js",
-    "package.json",
-    "public/*",
-    "shaders/*.js"
+    "shaders/*",
+    "docs/public/*",
+    "package.json"
   ],
   "browserslist": [
     "last 2 Chrome versions",
@@ -37,6 +37,6 @@
   "author": "metaory <metaory@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "npx vite"
+    "dev": "npx vite docs"
   }
 }
