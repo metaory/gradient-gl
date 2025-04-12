@@ -2,7 +2,6 @@
   "name": "gradient-gl",
   "description": "Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven.",
   "version": "1.0.2",
-  "sideEffects": false,
   "bugs": "https://github.com/metaory/gradient-gl/issues",
   "homepage": "https://metaory.github.io/gradient-gl/",
   "repository": "git+https://github.com/metaory/gradient-gl.git",
@@ -37,6 +36,7 @@
   "author": "metaory <metaory@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "npx vite docs"
+    "prepare": "ln -sf ../index.js docs/ && ln -sf ../shaders docs/",
+    "dev": "npm run prepare && npx vite docs"
   }
 }
