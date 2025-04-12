@@ -228,9 +228,11 @@ class GradientGL {
 
 // -----------------------------------------------------------------------------
 
-const fetchCommon = () => import('./shaders/common.glsl.js').then((module) => module.default)
-const fetchShader = (shader) =>
-  import(`./shaders/${shader}.glsl.js`).then((module) => module.default)
+import common from './shaders/common.glsl.js'
+import { shaders } from './shaders/index.js'
+
+const fetchCommon = () => Promise.resolve(common)
+const fetchShader = (shader) => Promise.resolve(shaders[shader])
 
 const main = /* glsl */ `
 void main() {
