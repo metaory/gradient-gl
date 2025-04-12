@@ -46,10 +46,12 @@ class GradientGL {
   #externalUniforms
   #currentSeed
   #currentUniformValues
+  #fragment
 
   constructor(canvas, fragment, seed) {
-    this.#gl = this.#createGLContext(canvas)
     this.#canvas = canvas
+    this.#fragment = fragment
+    this.#gl = this.#createGLContext(canvas)
     this.#program = this.#createProgram(vertex, fragment)
     this.#uniforms = this.#getUniformLocations()
     this.#timeScale = 0.4
@@ -70,6 +72,29 @@ class GradientGL {
       antialias: false,
     })
     if (!gl) throw new Error('WebGL2 not supported')
+
+    const restore = () => {
+      if (!this.#canvas || !this.#fragment) return
+      this.#gl = gl
+      this.#program = this.#createProgram(vertex, this.#fragment)
+      this.#uniforms = this.#getUniformLocations()
+      this.#setupBuffers()
+      this.#setupAttributes()
+      this.#updateExternalUniforms(true)
+      this.#isActive = true
+      this.#render()
+    }
+
+    canvas.addEventListener('webglcontextlost', e => {
+      e.preventDefault()
+      this.#isActive = false
+    })
+
+    canvas.addEventListener('webglcontextrestored', restore)
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible' && !this.#isActive) restore()
+    })
+
     return gl
   }
 
@@ -184,7 +209,7 @@ class GradientGL {
   }
 
   #updateInternalUniforms(time) {
-    if (!this.#isActive) return
+    if (!this.#isActive || !this.#canvas || !this.#gl) return
 
     const { iResolution, iTime, iFrame } = this.#uniforms
     this.#gl.useProgram(this.#program)
@@ -204,7 +229,7 @@ class GradientGL {
 
   #render() {
     const frame = () => {
-      if (!this.#isActive) return
+      if (!this.#isActive || !this.#canvas || !this.#gl) return
       this.#updateInternalUniforms(performance.now())
       this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4)
       requestAnimationFrame(frame)
