@@ -11,7 +11,6 @@
         <br>
         Deterministic - Seed-driven
     </p>
-    <img src="docs/public/social.jpg" alt="demo" height="128" />
 </div>
 
 ---
@@ -63,10 +62,12 @@ export default {
 <script type="module">
   await gradientGL('a2.eba9')
 </script>
+```
 
-<!-- 🚧 NOT IMPLEMENTED
- <script src="https://unpkg.com/gradient-gl@latest/seed/a2.eba9"></script>
--->
+
+```html
+ <!-- 🚧 not implemented -->
+ <script src=xxx@latest/seed/a2.eba9"></script>
 ```
 
 ## Seed Format
