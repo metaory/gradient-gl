@@ -12,6 +12,6 @@
     "vite": "^6.2.0"
   },
   "dependencies": {
-    "gradient-gl": "^1.1.0"
+    "gradient-gl": "^1.2.0"
   }
 }
