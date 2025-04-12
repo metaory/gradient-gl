@@ -4,6 +4,8 @@ import javascriptLogo from './javascript.svg'
 import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.js'
 
+await gradientGL('a2.ef55')
+
 document.querySelector('#app').innerHTML = `
   <main>
     <a id="gradient-gl-logo" href="https://github.com/metaory/gradient-gl" target="_blank">
@@ -31,6 +33,3 @@ document.querySelector('#app').innerHTML = `
 `
 
 setupCounter(document.querySelector('#counter'))
-
-// Required seed argument
-await gradientGL('a2.eba9')

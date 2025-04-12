@@ -2,20 +2,31 @@
     <img src="docs/public/logo.png" alt="demo" height="128" />
     <h4>Deterministic WebGL Gradient Animations</h4>
     <p>
-        <a href="https://metaory.github.io/gradient-gl/" target="_blank">
-            Live Playground →
-        </a>
-        <br>
-        <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank">
-            Vite Example →
-        </a>
+        <a href="https://metaory.github.io/gradient-gl/" target="_blank">Playground</a>
     </p>
-    Tiny WebGL library for
-    <br>
-    Procedural Gradient Animations
-    <br>
-    Deterministic - Seed-driven
+    <p>
+        Tiny WebGL library for
+        <br>
+        Procedural Gradient Animations
+        <br>
+        Deterministic - Seed-driven
+    </p>
+    <img src="docs/public/social.jpg" alt="demo" height="128" />
 </div>
+
+---
+
+<div align="center">
+    <h3>Framework Examples</h3>
+    <h4>
+        <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank">Vanilla</a> •
+        <a href="https://metaory.github.io/gradient-gl/vite-react/" target="_blank">React</a> •
+        <a href="https://metaory.github.io/gradient-gl/vite-vue/" target="_blank">Vue</a>
+    </h4>
+    <small>example <a href="https://github.com/metaory/gradient-gl/tree/main/examples" target="_blank">source code</a></small>
+</div>
+
+---
 
 ## Usage
 
@@ -33,6 +44,16 @@ await gradientGL('a2.eba9')
 //  uses existing canvas if found,
 //   otherwise creates new one in target
 await gradientGL('a2.eba9', '#app')
+```
+
+### Vite Configuration
+
+```js
+export default {
+  build: {
+    target: 'esnext',
+  },
+}
 ```
 
 ### CDN
@@ -78,8 +99,19 @@ Animated Gradient Background Techniques
 
 ## Examples
 
-- <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank">Vite Vanilla Example</a> - Basic integration with Vite
-- <a href="https://metaory.github.io/gradient-gl/" target="_blank">Playground</a> - Interactive seed generator and preview
+- [Vite Vanilla](https://metaory.github.io/gradient-gl/vite-vanilla/) - Basic integration with Vite
+  - Local path: `/examples/vite-vanilla`
+  - Live demo: [https://metaory.github.io/gradient-gl/vite-vanilla/](https://metaory.github.io/gradient-gl/vite-vanilla/)
+
+- [Vite React](https://metaory.github.io/gradient-gl/vite-react/) - React integration with Vite
+  - Local path: `/examples/vite-react`
+  - Live demo: [https://metaory.github.io/gradient-gl/vite-react/](https://metaory.github.io/gradient-gl/vite-react/)
+
+- [Vite Vue](https://metaory.github.io/gradient-gl/vite-vue/) - Vue integration with Vite
+  - Local path: `/examples/vite-vue`
+  - Live demo: [https://metaory.github.io/gradient-gl/vite-vue/](https://metaory.github.io/gradient-gl/vite-vue/)
+
+- [Playground](https://metaory.github.io/gradient-gl/) - Interactive seed generator and preview
 
 ---
 

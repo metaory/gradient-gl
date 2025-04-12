@@ -23,27 +23,39 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Copy files
-        run: |
-          cp index.js docs/
-          cp -r shaders docs/
-
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Build Vite example
+      - name: Copy core files
+        run: |
+          cp index.js docs/
+          cp -r shaders docs/
+
+      - name: Build Vanilla example
         run: |
           cd examples/vite-vanilla
           npm install
           npm run build
           cd ../..
-
-      - name: Copy Vite build and shaders
-        run: |
           cp -r examples/vite-vanilla/dist docs/vite-vanilla
-          cp -r shaders docs/vite-vanilla/assets/
+
+      - name: Build Vue example
+        run: |
+          cd examples/vite-vue
+          npm install
+          npm run build
+          cd ../..
+          cp -r examples/vite-vue/dist docs/vite-vue
+
+      - name: Build React example
+        run: |
+          cd examples/vite-react
+          npm install
+          npm run build
+          cd ../..
+          cp -r examples/vite-react/dist docs/vite-react
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
