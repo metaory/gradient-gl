@@ -331,6 +331,8 @@
             innerHTML: toggleSvg[Number(state.get().isVisible)],
             onclick: () => {
                 const newState = state.update({ isVisible: !state.get().isVisible })
+                const main = $('main')
+                const usage = $('.usage')
                 main.classList.toggle('hidden')
                 usage.classList.toggle('hidden')
                 mainToggle.innerHTML = toggleSvg[Number(newState.isVisible)]
