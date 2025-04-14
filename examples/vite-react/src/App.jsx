@@ -9,7 +9,7 @@ function App() {
   return (
     <>
       <a id="gradient-gl-logo" href="https://github.com/metaory/gradient-gl" rel="noreferrer">
-        <img src="/gradientgl-logo.png" width="200" alt="gradientgl logo" />
+        <img src="/gradient-gl/vite-react/gradientgl-logo.png" width="200" alt="gradientgl logo" />
       </a>
       <div>
         <a href="https://vite.dev" target="_blank">

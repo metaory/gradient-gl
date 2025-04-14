@@ -9,7 +9,7 @@ await gradientGL('a2.ef55')
 document.querySelector('#app').innerHTML = `
   <main>
     <a id="gradient-gl-logo" href="https://github.com/metaory/gradient-gl" target="_blank">
-        <img src="/gradientgl-logo.png" width="200" alt="gradientgl logo" />
+        <img src="/gradient-gl/vite-vanilla/gradientgl-logo.png" width="200" alt="gradientgl logo" />
     </a>
     <div>
         <a href="https://vite.dev" target="_blank">
