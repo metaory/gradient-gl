@@ -1,9 +1,9 @@
 <div align="center">
     <img src="docs/public/logo.png" alt="demo" height="128" />
     <h4>Deterministic WebGL Gradient Animations</h4>
-    <p>
+    <h5>
         <a href="https://metaory.github.io/gradient-gl/" target="_blank">Playground</a>
-    </p>
+    </h5>
     <p>
         Tiny WebGL library for
         <br>
@@ -16,13 +16,14 @@
 ---
 
 <div align="center">
-    <h3>Framework Examples</h3>
-    <h4>
+    <h5>Usage Examples</h5>
+    <h6>
         <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank">Vanilla</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-react/" target="_blank">React</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-vue/" target="_blank">Vue</a>
-    </h4>
-    <small>example <a href="https://github.com/metaory/gradient-gl/tree/main/examples" target="_blank">source code</a></small>
+        <br>
+        <small>check <a href="https://github.com/metaory/gradient-gl/tree/master/examples" target="_blank">./examples</a></small>
+    </h6>
 </div>
 
 ---
@@ -77,7 +78,7 @@ export default {
 - Shader: `[a-z][0-9]` (e.g., `a2`)
 - Options: `[0-9a-f]` (hex values)
 
-Explore and generate seeds in the <a href="https://metaory.github.io/gradient-gl/" target="_blank">playground</a>
+Explore and generate seeds in the <b><a href="https://metaory.github.io/gradient-gl/" target="_blank">playground</a></b>
 
 ## Performance
 
@@ -95,24 +96,6 @@ Animated Gradient Background Techniques
 > While WebGPU is technically the fastest, WebGL remains the best choice for animated gradients due to its maturity, broad support, and optimal performance/complexity ratio.
 
 > TODO: Interactive benchmark app
-
----
-
-## Examples
-
-- [Vite Vanilla](https://metaory.github.io/gradient-gl/vite-vanilla/) - Basic integration with Vite
-  - Local path: `/examples/vite-vanilla`
-  - Live demo: [https://metaory.github.io/gradient-gl/vite-vanilla/](https://metaory.github.io/gradient-gl/vite-vanilla/)
-
-- [Vite React](https://metaory.github.io/gradient-gl/vite-react/) - React integration with Vite
-  - Local path: `/examples/vite-react`
-  - Live demo: [https://metaory.github.io/gradient-gl/vite-react/](https://metaory.github.io/gradient-gl/vite-react/)
-
-- [Vite Vue](https://metaory.github.io/gradient-gl/vite-vue/) - Vue integration with Vite
-  - Local path: `/examples/vite-vue`
-  - Live demo: [https://metaory.github.io/gradient-gl/vite-vue/](https://metaory.github.io/gradient-gl/vite-vue/)
-
-- [Playground](https://metaory.github.io/gradient-gl/) - Interactive seed generator and preview
 
 ---
 
