@@ -4,7 +4,7 @@ import javascriptLogo from './javascript.svg'
 import viteLogo from '/vite.svg'
 import { setupCounter } from './counter.js'
 
-await gradientGL('a2.ef55')
+gradientGL('a2.ef55')
 
 document.querySelector('#app').innerHTML = `
   <main>

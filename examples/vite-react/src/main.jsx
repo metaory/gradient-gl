@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-await gradientGL('a2.ec55')
+gradientGL('a2.ec55')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
