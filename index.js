@@ -47,18 +47,45 @@ class GradientGL {
   #currentSeed
   #currentUniformValues
   #fragment
+  #vertex
 
   constructor(canvas, fragment, seed) {
     this.#canvas = canvas
     this.#fragment = fragment
-    this.#gl = this.#createGLContext(canvas)
-    this.#program = this.#createProgram(vertex, fragment)
-    this.#uniforms = this.#getUniformLocations()
+    this.#vertex = vertex
     this.#timeScale = 0.4
-    this.#isActive = true
+    this.#isActive = false
     this.#currentSeed = seed
     this.#externalUniforms = seed[1]
     this.#currentUniformValues = { speed: 0, hueShift: 0, saturation: 0, lightness: 0 }
+
+    this.#setupEventHandlers()
+  }
+
+  #setupEventHandlers() {
+    this.#canvas.addEventListener('webglcontextlost', (e) => {
+      e.preventDefault()
+      this.#isActive = false
+      this.#gl = null
+      this.#program = null
+      this.#uniforms = null
+      this.#canvas.width = 0
+    })
+
+    this.#canvas.addEventListener('webglcontextrestored', () => {
+      this.init()
+    })
+
+    // document.addEventListener('visibilitychange', () => {
+    //   if (!document.hidden && !this.#isActive) this.init()
+    // })
+  }
+
+  init() {
+    this.#gl = this.#createGLContext(this.#canvas)
+    this.#program = this.#createProgram(this.#vertex, this.#fragment)
+    this.#uniforms = this.#getUniformLocations()
+    this.#isActive = true
 
     this.#setupBuffers()
     this.#setupAttributes()
@@ -68,47 +95,9 @@ class GradientGL {
 
   #createGLContext(canvas) {
     const gl = canvas.getContext('webgl2', {
-      preserveDrawingBuffer: true,
-      antialias: false,
+      antialias: true,
     })
     if (!gl) throw new Error('WebGL2 not supported')
-
-    const restore = () => {
-      if (!this.#canvas || !this.#fragment) return
-      const restoredGl = this.#canvas.getContext('webgl2', {
-        preserveDrawingBuffer: true,
-        antialias: false,
-      })
-
-      if (!restoredGl) {
-        console.error('Failed to get restored WebGL context.')
-        this.#isActive = false
-        return
-      }
-      this.#gl = restoredGl
-      this.#program = this.#createProgram(vertex, this.#fragment)
-      this.#uniforms = this.#getUniformLocations()
-      this.#setupBuffers()
-      this.#setupAttributes()
-      this.#updateExternalUniforms(true)
-      this.#isActive = true
-      this.#render()
-    }
-
-    canvas.addEventListener('webglcontextlost', (e) => {
-      e.preventDefault()
-      this.#isActive = false
-    })
-
-    canvas.addEventListener('webglcontextrestored', restore)
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        restore()
-      } else {
-        this.#isActive = false
-      }
-    })
-
     return gl
   }
 
@@ -243,7 +232,10 @@ class GradientGL {
 
   #render() {
     const frame = () => {
-      if (!this.#isActive || !this.#canvas || !this.#gl) return
+      if (!this.#isActive || !this.#canvas || !this.#gl) {
+        console.log(' NOPE ')
+        return
+      }
       this.#updateInternalUniforms(performance.now())
       this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4)
       requestAnimationFrame(frame)
@@ -304,6 +296,7 @@ export default async (seed, selector = 'body') => {
   const canvas = createCanvas(selector)
   const program = new GradientGL(canvas, fragment, parsedSeed)
   program.shaderId = shaderId
+  program.init()
   activeProgram = program
 
   return program
