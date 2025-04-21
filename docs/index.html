@@ -163,7 +163,7 @@
         const updateUsage = async () => {
             const usage = $('.usage')
             const { codeToHtml } = await import('https://esm.sh/shiki@3.0.0')
-            const html = await codeToHtml(`import gradientGL from "gradient-gl"\n\nawait gradientGL("${state.get().seed}")`, {
+            const html = await codeToHtml(`import gradientGL from "gradient-gl"\n\ngradientGL("${state.get().seed}")`, {
                 lang: 'javascript',
                 theme: 'laserwave',
                 transformers: [{ pre: node => (delete node.properties.style, node) }]
@@ -231,7 +231,7 @@
 
         const randomizeOptions = async () => {
             // Randomize shader
-            const randomShader = shaders[Math.floor(Math.random() * shaders.length)]
+            const randomShader = shaders[Math.floor(Math.random() * 8)]
             $$('.shader').forEach(btn => {
                 btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false'
             })
@@ -250,12 +250,10 @@
                         randomValue = Math.floor(Math.random() * 16)
                         break
                     case 2: // saturation
-                        randomValue = Math.floor(Math.random() * 4) + 2 // 2-5
+                        randomValue = Math.floor(Math.random() * 5) + 3 // 3-7
                         break
                     case 3: // lightness
-                        randomValue = Math.random() < 0.3
-                            ? Math.floor(Math.random() * 4) + 2  // 2-5
-                            : Math.floor(Math.random() * 3) + 11 // 11-13
+                        randomValue = Math.floor(Math.random() * 3) + 11 // 11-13
                         break
                 }
 
