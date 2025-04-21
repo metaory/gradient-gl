@@ -38,12 +38,15 @@ npm install gradient-gl
 import gradientGL from 'gradient-gl'
 
 // Required seed argument
-await gradientGL('a2.eba9')
+gradientGL('a2.eba9')
 
 // Optional canvas target (default: 'body')
 //  uses existing canvas if found,
 //   otherwise creates new one in target
-await gradientGL('a2.eba9', '#app')
+gradientGL('a2.eba9', '#app')
+
+// Optionally to use the shader program
+const program = await gradientGL('a2.eba9')
 ```
 
 ### Vite Configuration
@@ -58,10 +61,21 @@ export default {
 
 ### CDN
 
+#### Unpkg
+
 ```html
-<script src="https://unpkg.com/gradient-gl"></script>
 <script type="module">
-  await gradientGL('a2.eba9')
+    import gradientGL from 'https://unpkg.com/gradient-gl'
+    gradientGL('a2.eba9')
+</script>
+```
+
+#### ESM
+
+```html
+<script type="module">
+    import gradientGL from 'https://esm.sh/gradient-gl'
+    gradientGL('a2.eba9')
 </script>
 ```
 
