@@ -66,6 +66,23 @@
     </div>
     <script type="module">
         import gradient from './index.js'
+        gradient('a2.a8aa')
+
+        /* context lost test
+        let ext
+        setTimeout(() => {
+            ext = document.querySelector('canvas').getContext('webgl2').getExtension('WEBGL_lose_context')
+            console.log('::', ext)
+        }, 1_000)
+        setTimeout(() => {
+            console.log('LETS GET LOST')
+            ext.loseContext()
+        }, 3_000)
+        setTimeout(() => {
+            console.log('LETS GET FOUND')
+            ext.restoreContext()
+        }, 6_000)
+        */
         import shaders, { shaders as shaderMap } from './shaders/index.js'
 
         // DOM Helpers
@@ -165,7 +182,7 @@
             const { codeToHtml } = await import('https://esm.sh/shiki@3.0.0')
             const html = await codeToHtml(`import gradientGL from "gradient-gl"\n\ngradientGL("${state.get().seed}")`, {
                 lang: 'javascript',
-                theme: 'laserwave',
+                theme: 'vitesse-dark',
                 transformers: [{ pre: node => (delete node.properties.style, node) }]
             })
             usage.innerHTML = html
@@ -231,7 +248,7 @@
 
         const randomizeOptions = async () => {
             // Randomize shader
-            const randomShader = shaders[Math.floor(Math.random() * 8)]
+            const randomShader = shaders[Math.floor(Math.random() * 6)]
             $$('.shader').forEach(btn => {
                 btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false'
             })

@@ -321,8 +321,9 @@ input[type="range"] {
     background: var(--sk3);
     backdrop-filter: blur(var(--blur-amount));
 
-    pre.shiky {
-        mix-blend-mode: exclusion;
+    pre.shiki {
+        text-shadow: 0 0 2px currentColor;
+        mix-blend-mode: difference;
     }
 }
 
@@ -389,17 +390,17 @@ input[type="range"] {
     aspect-ratio: 1;
     border-radius: 50%;
     background: conic-gradient(from 0deg,
-        #FF3366 0%,
-        #FF6B6B 10%,
-        #FF8E53 20%,
-        #FFB347 30%,
-        #FFD700 40%,
-        #7ED321 50%,
-        #00D2D3 60%,
-        #4A90E2 70%,
-        #9013FE 80%,
-        #FF3366 90%,
-        #FF3366 100%);
+            #FF3366 0%,
+            #FF6B6B 10%,
+            #FF8E53 20%,
+            #FFB347 30%,
+            #FFD700 40%,
+            #7ED321 50%,
+            #00D2D3 60%,
+            #4A90E2 70%,
+            #9013FE 80%,
+            #FF3366 90%,
+            #FF3366 100%);
     transform: rotate(0deg);
     filter: brightness(1.5) opacity(0.4) blur(4em);
     will-change: transform;
@@ -420,5 +421,7 @@ input[type="range"] {
 }
 
 @keyframes rotate {
-    to { transform: rotate(360deg); }
+    to {
+        transform: rotate(360deg);
+    }
 }
