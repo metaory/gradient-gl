@@ -7,7 +7,7 @@ const createCanvas = (selector = 'body') => {
     : target.appendChild(
         Object.assign(document.createElement('canvas'), {
           id: 'gradient-gl',
-          style: 'position:fixed;inset:0;width:100%;height:100%;z-index:-1;',
+          style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;',
         }),
       )
 }
