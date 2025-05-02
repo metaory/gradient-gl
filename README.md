@@ -37,17 +37,23 @@ npm install gradient-gl
 ```js
 import gradientGL from 'gradient-gl'
 
-// Required seed argument
+// Mounts to <body>
 gradientGL('a2.eba9')
 
-// Optional canvas target (default: 'body')
-//  uses existing canvas if found,
-//   otherwise creates new one in target
+// Mounts inside #app
 gradientGL('a2.eba9', '#app')
 
-// Optionally to use the shader program
+// Access shader program if needed
 const program = await gradientGL('a2.eba9')
 ```
+
+### Mounting Behavior
+
+- **No selector**: creates and styles a `<canvas>` in `<body>`
+- **Selector to an element**: creates and styles a `<canvas>` inside it
+- **Selector to a `<canvas>`**: uses it directly, no styles or DOM changes
+
+> Styles are overridable.
 
 ### Vite Configuration
 
@@ -61,7 +67,7 @@ export default {
 
 ### CDN
 
-#### Unpkg
+#### UNPKG
 
 ```html
 <script type="module">
