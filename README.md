@@ -16,14 +16,22 @@
 ---
 
 <div align="center">
-    <h5>Usage Examples</h5>
     <h6>
+        Usage Examples
+        <br>
         <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank">Vanilla</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-react/" target="_blank">React</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-vue/" target="_blank">Vue</a>
         <br>
-        <small>check <a href="https://github.com/metaory/gradient-gl/tree/master/examples" target="_blank">./examples</a></small>
+        <small>source in <a href="https://github.com/metaory/gradient-gl/tree/master/examples" target="_blank">./examples</a></small>
     </h6>
+    <hr>
+    <p>
+        <a href="https://github.com/metaory/gradient-gl/discussions/5" target="_blank">
+            🖼️ Showcase Gallery 🌀
+        </a>
+    </p>
+    Share your seeds & creations!
 </div>
 
 ---
