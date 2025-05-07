@@ -33,29 +33,16 @@ jobs:
           cp index.js docs/
           cp -r shaders docs/
 
-      - name: Build Vanilla example
+      - name: Build examples
         run: |
-          cd examples/vite-vanilla
-          npm install
-          npm run build
-          cd ../..
-          cp -r examples/vite-vanilla/dist docs/vite-vanilla
-
-      - name: Build Vue example
-        run: |
-          cd examples/vite-vue
-          npm install
-          npm run build
-          cd ../..
-          cp -r examples/vite-vue/dist docs/vite-vue
-
-      - name: Build React example
-        run: |
-          cd examples/vite-react
-          npm install
-          npm run build
-          cd ../..
-          cp -r examples/vite-react/dist docs/vite-react
+          for example in vite-vanilla vite-vue vite-react; do
+            echo "Building $example..."
+            cd examples/$example
+            npm install
+            npm run build
+            cd ../..
+            cp -r examples/$example/dist docs/$example
+          done
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
