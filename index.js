@@ -70,7 +70,7 @@ class GradientGL {
       this.#gl = null
       this.#program = null
       this.#uniforms = null
-      this.#canvas.width = 0
+      if (this.#canvas) this.#canvas.width = 0
     })
 
     this.#canvas.addEventListener('webglcontextrestored', () => {
