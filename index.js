@@ -234,7 +234,6 @@ class GradientGL {
   #render() {
     const frame = () => {
       if (!this.#isActive || !this.#canvas || !this.#gl) {
-        console.log(' NOPE ')
         return
       }
       this.#updateInternalUniforms(performance.now())
