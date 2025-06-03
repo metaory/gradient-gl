@@ -113,7 +113,7 @@ export default {
 <script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9"></script>
 
     <!-- optionally pin to a version @x.x.x -->
-<script type="module" src="https://unpkg.com/gradient-gl@1.4.0?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl@1.4.1?seed=a2.eba9"></script>
 
     <!-- optionally set the mount selector -->
         <!-- mount inside the <main> tag -->
