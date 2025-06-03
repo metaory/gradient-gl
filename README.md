@@ -45,6 +45,8 @@
 <script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9"></script>
 ```
 
+> [read more](#seedscript-usage)
+
 ---
 
 ## Usage
@@ -104,6 +106,7 @@ export default {
 </script>
 ```
 
+### SeedScript Usage
 
 ```html
     <!-- Latest with default mounting point -->
