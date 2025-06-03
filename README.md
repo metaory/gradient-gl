@@ -19,6 +19,7 @@
     <h6>
         Usage Examples
         <br>
+        <a href="https://metaory.github.io/gradient-gl/cdn-vanilla/" target="_blank">CDN</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-vanilla/" target="_blank">Vanilla</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-react/" target="_blank">React</a> •
         <a href="https://metaory.github.io/gradient-gl/vite-vue/" target="_blank">Vue</a>
@@ -36,13 +37,23 @@
 
 ---
 
+## Easiest Usage: One-Liner Script Tag
+
+> `SeedScript`
+
+```html
+<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9"></script>
+```
+
+---
+
 ## Usage
 
 ```sh
 npm install gradient-gl
 ```
 
-```js
+```javascript
 import gradientGL from 'gradient-gl'
 
 // Mounts to <body>
@@ -95,8 +106,24 @@ export default {
 
 
 ```html
- <!-- 🚧 not implemented -->
- <script src=xxx@latest/seed/a2.eba9"></script>
+    <!-- Latest with default mounting point -->
+<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9"></script>
+
+    <!-- optionally pin to a version @x.x.x -->
+<script type="module" src="https://esm.sh/gradient-gl@1.4.0?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl@1.4.0?seed=a2.eba9"></script>
+
+    <!-- optionally set the mount selector -->
+        <!-- mount inside the <main> tag -->
+<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9&selector=main"></script>
+        <!-- mount inside the .wrapper>content -->
+        <!-- note: any valid css selector can be used -->
+<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9&selector=.wrapper>content"></script>
+        <!-- mount inside the #app -->
+        <!-- note hash needs to be escaped as %23 -->
+        <!-- #app → %23app  -->
+<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9&selector=%23app"></script>
 ```
 
 ## Seed Format

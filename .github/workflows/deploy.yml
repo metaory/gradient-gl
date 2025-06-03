@@ -44,6 +44,11 @@ jobs:
             cp -r examples/$example/dist docs/$example
           done
 
+      - name: Setup CDN Example
+        run: |
+          mkdir docs/cdn-vanilla
+          cp examples/cdn-vanilla/index.html docs/cdn-vanilla
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 

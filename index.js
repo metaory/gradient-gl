@@ -15,7 +15,7 @@ const createCanvas = (selector = 'body') => {
 // -----------------------------------------------------------------------------
 
 // Pure utility functions
-const normalize = (v) => {
+const normalize = v => {
   const value = Number.parseInt(v, 16)
   return Math.round(value * (255 / 15)) // Map 0-15 to 0-255
 }
@@ -24,7 +24,7 @@ const nonLinearMap = (val, minOut, maxOut, power = 2) => {
   return v === 0 ? minOut : minOut + ((v - 1) / 14) ** power * (maxOut - minOut)
 }
 
-const parseSeed = (s) => [
+const parseSeed = s => [
   s.split('.').shift(),
   new Uint8Array(s.split('.').pop().split('').map(normalize)),
 ]
@@ -64,7 +64,7 @@ class GradientGL {
   }
 
   #setupEventHandlers() {
-    this.#canvas.addEventListener('webglcontextlost', (e) => {
+    this.#canvas.addEventListener('webglcontextlost', e => {
       e.preventDefault()
       this.#isActive = false
       this.#gl = null
@@ -171,7 +171,7 @@ class GradientGL {
     this.#gl.useProgram(this.#program)
     this.#gl.uniform1iv(this.#uniforms.options, this.#externalUniforms)
 
-    const [speedVal, hueVal, satVal, lightVal] = this.#externalUniforms.map((v) =>
+    const [speedVal, hueVal, satVal, lightVal] = this.#externalUniforms.map(v =>
       Math.round((v * 15) / 255),
     )
     const [speed, hueShift, satFactor, lightFactor] = [
@@ -265,7 +265,7 @@ import common from './shaders/common.glsl.js'
 import { shaders } from './shaders/index.js'
 
 const fetchCommon = () => Promise.resolve(common)
-const fetchShader = (shader) => Promise.resolve(shaders[shader])
+const fetchShader = shader => Promise.resolve(shaders[shader])
 
 const main = /* glsl */ `
   void main() {
@@ -275,7 +275,7 @@ const main = /* glsl */ `
 
 let activeProgram = null
 
-export default async (seed, selector = 'body') => {
+export default async function boot(seed, selector = 'body') {
   if (!seed) throw new Error('Seed is required')
 
   const parsedSeed = parseSeed(seed)
@@ -303,3 +303,8 @@ export default async (seed, selector = 'body') => {
 }
 
 // -----------------------------------------------------------------------------
+
+const url = new URL(import.meta.url)
+const seed = url.searchParams.get('seed')
+const selector = url.searchParams.get('selector') || 'body'
+if (seed) gradientGL(seed, selector)
