@@ -42,7 +42,7 @@
 > `SeedScript`
 
 ```html
-<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9"></script>
 ```
 
 > [read more](#seedscript-usage)
@@ -110,23 +110,21 @@ export default {
 
 ```html
     <!-- Latest with default mounting point -->
-<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9"></script>
 <script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9"></script>
 
     <!-- optionally pin to a version @x.x.x -->
-<script type="module" src="https://esm.sh/gradient-gl@1.4.0?seed=a2.eba9"></script>
 <script type="module" src="https://unpkg.com/gradient-gl@1.4.0?seed=a2.eba9"></script>
 
     <!-- optionally set the mount selector -->
         <!-- mount inside the <main> tag -->
-<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9&selector=main"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9&selector=main"></script>
         <!-- mount inside the .wrapper>content -->
         <!-- note: any valid css selector can be used -->
-<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9&selector=.wrapper>content"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9&selector=.wrapper>.content"></script>
         <!-- mount inside the #app -->
         <!-- note hash needs to be escaped as %23 -->
         <!-- #app → %23app  -->
-<script type="module" src="https://esm.sh/gradient-gl?seed=a2.eba9&selector=%23app"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9&selector=%23app"></script>
 ```
 
 ## Seed Format
