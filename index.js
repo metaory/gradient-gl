@@ -307,4 +307,4 @@ export default async function boot(seed, selector = 'body') {
 const url = new URL(import.meta.url)
 const seed = url.searchParams.get('seed')
 const selector = url.searchParams.get('selector') || 'body'
-if (seed) gradientGL(seed, selector)
+if (seed) boot(seed, selector)
