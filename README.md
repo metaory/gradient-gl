@@ -37,7 +37,8 @@
 
 ---
 
-## Easiest Usage: One-Liner Script Tag
+#### Easiest Usage: 
+One-Liner Script Tag
 
 > `SeedScript`
 
