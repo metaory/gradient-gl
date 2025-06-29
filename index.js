@@ -7,7 +7,7 @@ const createCanvas = (selector = 'body') => {
     : target.appendChild(
         Object.assign(document.createElement('canvas'), {
           id: 'gradient-gl',
-          style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;',
+          style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;',
         }),
       )
 }
@@ -49,6 +49,11 @@ class GradientGL {
   #currentUniformValues
   #fragment
   #vertex
+  #lastTime
+  #elapsedTime
+
+  // Time interpolation constants
+  static #MAX_DELTA = 50 // Maximum frame delta in ms (~20fps minimum)
 
   constructor(canvas, fragment, seed) {
     this.#canvas = canvas
@@ -59,6 +64,8 @@ class GradientGL {
     this.#currentSeed = seed
     this.#externalUniforms = seed[1]
     this.#currentUniformValues = { speed: 0, hueShift: 0, saturation: 0, lightness: 0 }
+    this.#lastTime = null
+    this.#elapsedTime = 0
 
     this.#setupEventHandlers()
   }
@@ -227,8 +234,19 @@ class GradientGL {
       this.#gl.viewport(0, 0, this.#canvas.width, this.#canvas.height)
     }
 
-    this.#gl.uniform1f(iTime, time / 1000)
-    this.#gl.uniform1f(iFrame, Math.floor((time / 1000) * 60))
+    // Use elapsed time for smooth animation
+    const continuousTime = time / 1000
+
+    this.#gl.uniform1f(iTime, continuousTime)
+    this.#gl.uniform1f(iFrame, Math.floor(continuousTime * 60))
+  }
+
+  #updateTime(currentTime) {
+    if (this.#lastTime !== null) {
+      const delta = Math.min(currentTime - this.#lastTime, GradientGL.#MAX_DELTA)
+      this.#elapsedTime += delta
+    }
+    this.#lastTime = currentTime
   }
 
   #render() {
@@ -236,11 +254,14 @@ class GradientGL {
       if (!this.#isActive || !this.#canvas || !this.#gl) {
         return
       }
-      this.#updateInternalUniforms(performance.now())
+
+      const currentTime = performance.now()
+      this.#updateTime(currentTime)
+      this.#updateInternalUniforms(this.#elapsedTime)
       this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4)
       requestAnimationFrame(frame)
     }
-    frame()
+    requestAnimationFrame(frame)
   }
 
   destroy() {
