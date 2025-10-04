@@ -1,5 +1,5 @@
 :root {
-    color-scheme: only dark;
+    color-scheme: dark;
     background-color: black;
     --h: 270;
     --ss: hsl(var(--h) 50% 10% / 0.1);
@@ -7,7 +7,7 @@
     --lo: hsl(var(--h) 50% 10% / 0.3);
     --md: hsl(var(--h) 50% 10% / 0.4);
     --bg: hsl(var(--h) 50% 10% / 0.5);
-    --fg: hsl(var(--h) 20% 80%);
+    --fg: hsl(var(--h) 70% 80%);
     --sh: hsl(var(--h) 0% 0% / 0.5);
     --pk0: #FF4488;
     --pk1: #EE4499;
@@ -81,7 +81,7 @@ main {
     color: var(--fg);
     min-width: 20rem;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    mix-blend-mode: difference;
+    mix-blend-mode: color-dodge;
 }
 
 @media (pointer: coarse) and (hover: none) {
@@ -193,6 +193,7 @@ button {
     text-align: center;
     z-index: 2;
     mix-blend-mode: difference;
+    color: white;
 }
 
 #shaders {
@@ -211,11 +212,14 @@ button {
 
 .shader {
     opacity: 0.6;
+    text-shadow: 0 0 4px var(--sk2);
+    background: var(--sk2);
 
     &[data-selected="true"] {
-        background: var(--sk3);
-        color: white;
+        background: conic-gradient(blue, indigo, blue) border-box;
         font-weight: bold;
+        color: white;
+        text-shadow: 0 0 2px currentColor;
         opacity: 1;
         box-shadow: 0 0 1rem var(--sk2);
     }
