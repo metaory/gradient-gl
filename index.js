@@ -5,11 +5,11 @@ const createCanvas = (selector = 'body') => {
   return target.tagName === 'CANVAS'
     ? target
     : target.appendChild(
-        Object.assign(document.createElement('canvas'), {
-          id: 'gradient-gl',
-          style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;',
-        }),
-      )
+      Object.assign(document.createElement('canvas'), {
+        id: 'gradient-gl',
+        style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;',
+      }),
+    )
 }
 
 // -----------------------------------------------------------------------------
@@ -272,7 +272,7 @@ class GradientGL {
     if (this.#canvas) {
       try {
         this.#canvas.remove()
-      } catch (e) {}
+      } catch (e) { }
     }
     this.#program = null
     this.#canvas = null
