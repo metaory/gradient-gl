@@ -81,7 +81,7 @@ main {
     color: var(--fg);
     min-width: 20rem;
     transition: opacity 0.3s ease, visibility 0.3s ease;
-    mix-blend-mode: color-dodge;
+    mix-blend-mode: difference;
 }
 
 @media (pointer: coarse) and (hover: none) {
