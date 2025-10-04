@@ -22,7 +22,6 @@ vec4 shader(vec2 fragCoord) {
   vec3 layer2 = mix(colorRed, colorBlue, S(-.3, .2, (tuv*rot(radians(-5.))).x));
   vec3 finalComp = mix(layer1, layer2, S(.5, -.3, tuv.y));
 
-  // Apply color adjustments
   finalComp = applyHueShift(finalComp, hueShift);
   finalComp = applySaturation(finalComp, saturation);
   finalComp = applyLightness(finalComp, lightness);

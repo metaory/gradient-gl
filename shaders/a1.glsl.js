@@ -31,13 +31,8 @@ vec4 shader(vec2 fragCoord) {
   vec3 layer2 = mix(color4, color1, smoothstep(-.3, .2, (tuv*rot(radians(-5.))).x));
   vec3 color = mix(layer1, layer2, smoothstep(.5, -.3, tuv.y));
 
-  // Apply hue shift to the final color
   color = applyHueShift(color, hueShift);
-
-  // Apply saturation adjustment
   color = applySaturation(color, saturation);
-
-  // Apply lightness adjustment
   color = applyLightness(color, lightness);
 
   return vec4(color, 1.0);
