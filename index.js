@@ -283,10 +283,29 @@ class GradientGL {
 // -----------------------------------------------------------------------------
 
 import common from './shaders/common.glsl.js'
-import { shaders } from './shaders/index.js'
 
 const fetchCommon = () => Promise.resolve(common)
-const fetchShader = shader => Promise.resolve(shaders[shader])
+// Static-analyser friendly map; no dynamic import paths; tree-shake + per-shader split
+const shaderLoaders = {
+  a1: () => import('./shaders/a1.glsl.js'),
+  a2: () => import('./shaders/a2.glsl.js'),
+  b1: () => import('./shaders/b1.glsl.js'),
+  b2: () => import('./shaders/b2.glsl.js'),
+  b3: () => import('./shaders/b3.glsl.js'),
+  b4: () => import('./shaders/b4.glsl.js'),
+  b5: () => import('./shaders/b5.glsl.js'),
+  f1: () => import('./shaders/f1.glsl.js'),
+  f2: () => import('./shaders/f2.glsl.js'),
+  f3: () => import('./shaders/f3.glsl.js'),
+  n1: () => import('./shaders/n1.glsl.js'),
+  n2: () => import('./shaders/n2.glsl.js'),
+}
+const fetchShader = async id => {
+  const loader = shaderLoaders[id]
+  if (!loader) throw new Error('Unknown shader')
+  const mod = await loader()
+  return mod.default
+}
 
 const main = /* glsl */ `
   void main() {
