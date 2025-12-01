@@ -289,17 +289,29 @@ const fetchCommon = () => Promise.resolve(common)
 const shaderLoaders = {
   a1: () => import('./shaders/a1.glsl.js'),
   a2: () => import('./shaders/a2.glsl.js'),
+  a3: () => import('./shaders/a3.glsl.js'),
+  a4: () => import('./shaders/a4.glsl.js'),
+  a5: () => import('./shaders/a5.glsl.js'),
+  a6: () => import('./shaders/a6.glsl.js'),
   b1: () => import('./shaders/b1.glsl.js'),
   b2: () => import('./shaders/b2.glsl.js'),
   b3: () => import('./shaders/b3.glsl.js'),
   b4: () => import('./shaders/b4.glsl.js'),
   b5: () => import('./shaders/b5.glsl.js'),
+  e1: () => import('./shaders/e1.glsl.js'),
+  e2: () => import('./shaders/e2.glsl.js'),
+  e3: () => import('./shaders/e3.glsl.js'),
+  e4: () => import('./shaders/e4.glsl.js'),
   f1: () => import('./shaders/f1.glsl.js'),
   f2: () => import('./shaders/f2.glsl.js'),
   f3: () => import('./shaders/f3.glsl.js'),
+  f4: () => import('./shaders/f4.glsl.js'),
   n1: () => import('./shaders/n1.glsl.js'),
   n2: () => import('./shaders/n2.glsl.js'),
+  n3: () => import('./shaders/n3.glsl.js'),
+  n4: () => import('./shaders/n4.glsl.js'),
 }
+export const shaderIds = Object.keys(shaderLoaders)
 const fetchShader = async id => {
   const loader = shaderLoaders[id]
   if (!loader) throw new Error('Unknown shader')
