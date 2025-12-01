@@ -38,3 +38,4 @@ vec4 shader(vec2 fragCoord) {
   return vec4(color, 1.0);
 }
 `
+

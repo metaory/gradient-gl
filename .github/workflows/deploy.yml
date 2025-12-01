@@ -2,10 +2,11 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [master]
+    branches: [master, dev]
   workflow_dispatch:
 
 permissions:
+  contents: read
   pages: write
   id-token: write
 
@@ -20,34 +21,59 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout master
         uses: actions/checkout@v4
+        with:
+          ref: master
+          path: master
+
+      - name: Checkout dev
+        uses: actions/checkout@v4
+        with:
+          ref: dev
+          path: dev
+        continue-on-error: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Copy core files
+      - name: Build master
         run: |
+          cd master
+          npm link
           cp index.js docs/
           cp -r shaders docs/
-
-      - name: Build examples
-        run: |
           for example in vite-vanilla vite-vue vite-react; do
-            echo "Building $example..."
             cd examples/$example
+            npm link gradient-gl
             npm install
-            npm run build
+            npm run build -- --base=/gradient-gl/$example/
             cd ../..
             cp -r examples/$example/dist docs/$example
           done
-
-      - name: Setup CDN Example
-        run: |
-          mkdir docs/cdn-vanilla
+          mkdir -p docs/cdn-vanilla
           cp examples/cdn-vanilla/index.html docs/cdn-vanilla
+
+      - name: Build dev
+        run: |
+          [ -d dev ] || exit 0
+          cd dev
+          npm link
+          cp index.js docs/
+          cp -r shaders docs/
+          for example in vite-vanilla vite-vue vite-react; do
+            cd examples/$example
+            npm link gradient-gl
+            npm install
+            npm run build -- --base=/gradient-gl/dev/$example/
+            cd ../..
+            cp -r examples/$example/dist docs/$example
+          done
+          mkdir -p docs/cdn-vanilla
+          cp examples/cdn-vanilla/index.html docs/cdn-vanilla
+          mv docs ../master/docs/dev
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -55,7 +81,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: docs
+          path: master/docs
 
       - name: Deploy to GitHub Pages
         id: deployment

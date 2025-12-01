@@ -8,7 +8,11 @@
     <link rel="apple-touch-icon" href="./public/logo.png" />
     <link rel="stylesheet" href="./style.css">
     <title>GradientGL - Procedural Gradient Animations</title>
-    <base href="/gradient-gl/">
+    <base href="">
+    <script>
+        const isDev = location.pathname.includes('/dev/')
+        document.querySelector('base').href = isDev ? '/gradient-gl/dev/' : '/gradient-gl/'
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description"
         content="Tiny WebGL library for procedural gradient animations. Deterministic. Seed-driven." />
@@ -32,6 +36,8 @@
 </head>
 
 <body>
+    <span id="version" style="position:fixed;bottom:1rem;left:1rem;font:700 .75rem/1 monospace;mix-blend-mode:overlay;opacity:.7"></span>
+    <script>document.getElementById('version').textContent = isDev ? 'dev' : 'latest'</script>
     <div class="loader"> </div>
     <span id="seed"></span>
     <a id="github" href="https://github.com/metaory/gradient-gl" target="_blank" rel="noopener noreferrer">
@@ -67,7 +73,7 @@
     </div>
     <script type="module">
         import gradient from './index.js'
-        gradient('a2.a8aa')
+        gradient('w2.a8aa')
 
         /* context lost test
         let ext
@@ -249,7 +255,7 @@
 
         const randomizeOptions = async () => {
             // Randomize shader
-            const randomShader = shaders[Math.floor(Math.random() * 6)]
+            const randomShader = shaders[Math.floor(Math.random() * shaders.length)]
             $$('.shader').forEach(btn => {
                 btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false'
             })
