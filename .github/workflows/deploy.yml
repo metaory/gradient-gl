@@ -43,6 +43,7 @@ jobs:
         run: |
           cd master
           npm link
+          rm -f docs/index.js docs/shaders
           cp index.js docs/
           cp -r shaders docs/
           for example in vite-vanilla vite-vue vite-react; do
@@ -61,6 +62,7 @@ jobs:
           [ -d dev ] || exit 0
           cd dev
           npm link
+          rm -f docs/index.js docs/shaders
           cp index.js docs/
           cp -r shaders docs/
           for example in vite-vanilla vite-vue vite-react; do
