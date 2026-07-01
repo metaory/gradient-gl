@@ -4,7 +4,6 @@ out vec4 fragColor;
 
 uniform vec3 iResolution;
 uniform float iTime;
-uniform float iFrame;
 uniform float timeScale;
 uniform float hueShift;
 uniform float saturation;
@@ -103,4 +102,88 @@ float noise(in vec2 p) {
     dot(-1.0+2.0*hash(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0)), u.x), u.y);
     return 0.5 + 0.5*n;
 }
+// Unified palette function
+vec3 palette(float t, vec3 d) {
+    vec3 a = vec3(0.5, 0.5, 0.5);
+    vec3 b = vec3(1.0, 0.9, 0.8);
+    vec3 c = vec3(1.0, 1.0, 1.0);
+    return a + b * cos(TAU * (c * t + d));
+}
+
+// Unified smooth noise function with configurable smoothness
+float smoothNoise(vec2 p, float smoothness) {
+    vec2 i = floor(p);
+    vec2 f = fract(p);
+    f = f * f * (smoothness - (smoothness - 1.0) * f);
+    float a = dot(hash(i), f);
+    float b = dot(hash(i + vec2(1.0, 0.0)), f - vec2(1.0, 0.0));
+    float c = dot(hash(i + vec2(0.0, 1.0)), f - vec2(0.0, 1.0));
+    float d = dot(hash(i + vec2(1.0, 1.0)), f - vec2(1.0, 1.0));
+    return 0.5 + 0.5 * mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+// Get normalized UV with aspect ratio
+vec2 getUV(vec2 fragCoord) {
+    vec2 uv = fragCoord / iResolution.xy;
+    float ar = iResolution.x / iResolution.y;
+    return (uv - 0.5) * vec2(ar, 1.0);
+}
+
+// Apply gamma correction
+vec3 applyGamma(vec3 col) {
+    return pow(col, vec3(0.7)) * 1.2;
+}
+
+// Apply post-processing chain (hue, saturation, lightness)
+vec3 applyPostProcessing(vec3 col) {
+    col = applyHueShift(col, hueShift);
+    col = applySaturation(col, saturation);
+    col = applyLightness(col, lightness);
+    return col;
+}
+
+// Unified channel swapping
+vec3 channelSwap(vec3 col, float amount) {
+    col = mix(col, col.yzx, amount);
+    col = mix(col, col.zxy, amount * 0.67);
+    return col;
+}
+
+// Unified FBM with configurable octaves
+float fbm(vec2 p, float t, int octaves) {
+    float f = 0.0;
+    float amp = 0.5;
+    mat2 m = mat2(0.8, 0.6, -0.6, 0.8);
+    for (int i = 0; i < octaves; i++) {
+        f += amp * noise(p + t * 0.2);
+        p = m * p * 2.0;
+        amp *= 0.5;
+    }
+    return f;
+}
+
+// Unified swirl function
+vec2 swirl(vec2 uv, float seed, float t) {
+    float n = fract(sin(seed * 127.1) * 43758.5453);
+    vec2 center = vec2(cos(t * 0.4 + n * TAU), sin(t * 0.5 + n * PI)) * 0.35;
+    vec2 d = uv - center;
+    float dist = length(d);
+    float strength = exp(-dist * 2.5) * (0.5 + 0.5 * cos(dist * 6.0));
+    float angle = strength * sin(t * 0.5 + n * TAU) * 3.5;
+    return center + d * rot(angle);
+}
+
+// Final output helper (gamma + clamp + post-processing)
+vec3 finalColor(vec3 col) {
+    col = applyGamma(col);
+    col = clamp(col, 0.0, 1.0);
+    return applyPostProcessing(col);
+}
+
+// Dot noise for subtle grain effect
+float dotNoise(vec2 uv, float amount) {
+    return (dither(uv) - 0.5) * amount;
+}
+
+#define aspectRatio (iResolution.x / iResolution.y)
 `

@@ -1,32 +1,31 @@
 export default /* glsl */ `
 vec4 shader(vec2 fragCoord) {
-  vec2 uv = (fragCoord/iResolution.xy)*1.;
-  uv.y -= 1.5;
-  uv.x += .2;
-  float t = iTime * timeScale;  // Use timeScale uniform
-  vec2 p = uv;
-  float t1 = t * 1.5;  // Reduced from 3.0 to 1.5
-  float t2 = t * 0.5;  // Reduced from 1.0 to 0.5
-  p.y *= (p.x*p.y) * sin(p.y*p.x + t1);  // Reduced frequency from 2. to 1.
-  float d = length(p*.7);
-  vec3 c0 = vec3(1.);
-  vec3 c1 = vec3(.365, .794, .935);
-  vec3 c2 = vec3(.973, .671, .961);
-  vec3 c3 = vec3(.973, .843, .439);
-  float offset = 1.2;
-  float step1 = .05*offset + sin(t2*2.)*.1;  // Reduced from 3. to 2.
-  float step2 = 0.3*offset + sin(t2)*.15;
-  float step3 = 0.6*offset + sin(t2)*.1;
-  float step4 = 1.2*offset + sin(t2*2.)*.2;  // Reduced from 3. to 2.
-  vec3 col = mix(c0, c1, smoothstep(step1, step2, d));
-  col = mix(col, c2, smoothstep(step2, step3, d));
-  col = mix(col, c3, smoothstep(step3, step4, d));
+  vec2 uv = fragCoord/iResolution.xy;
+  float ratio = iResolution.x / iResolution.y;
+  vec2 tuv = uv;
+  tuv -= .5;
+  float t = iTime * timeScale;
+  float degree = noise(vec2(t * 0.1, tuv.x*tuv.y));
+  tuv.y *= 1./ratio;
+  tuv *= rot(radians((degree-.5)*720.+180.));
+  tuv.y *= ratio;
+  float frequency = 5.;
+  float amplitude = 30.;
+  float speed = t * 1.0;
+  tuv.x += sin(tuv.y*frequency+speed)/amplitude;
+  tuv.y += sin(tuv.x*frequency*1.5+speed)/(amplitude*.5);
+  vec3 colorYellow = vec3(.957, .804, .623);
+  vec3 colorDeepBlue = vec3(.192, .384, .933);
+  vec3 layer1 = mix(colorYellow, colorDeepBlue, S(-.3, .2, (tuv*rot(radians(-5.))).x));
+  vec3 colorRed = vec3(.910, .510, .8);
+  vec3 colorBlue = vec3(0.350, .71, .953);
+  vec3 layer2 = mix(colorRed, colorBlue, S(-.3, .2, (tuv*rot(radians(-5.))).x));
+  vec3 finalComp = mix(layer1, layer2, S(.5, -.3, tuv.y));
 
-  // Apply color adjustments
-  col = applyHueShift(col, hueShift);
-  col = applySaturation(col, saturation);
-  col = applyLightness(col, lightness);
+  finalComp = applyHueShift(finalComp, hueShift);
+  finalComp = applySaturation(finalComp, saturation);
+  finalComp = applyLightness(finalComp, lightness);
 
-  return vec4(col, .5);
+  return vec4(finalComp, 1.0);
 }
 `

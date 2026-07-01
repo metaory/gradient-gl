@@ -1,31 +1,41 @@
 export default /* glsl */ `
 vec4 shader(vec2 fragCoord) {
-  vec2 uv = fragCoord/iResolution.xy;
-  float ratio = iResolution.x / iResolution.y;
-  vec2 tuv = uv;
-  tuv -= .5;
-  float t = iTime * timeScale;
-  float degree = noise(vec2(t * 0.1, tuv.x*tuv.y));
-  tuv.y *= 1./ratio;
-  tuv *= rot(radians((degree-.5)*720.+180.));
-  tuv.y *= ratio;
-  float frequency = 5.;
-  float amplitude = 30.;
-  float speed = t * 1.0;
-  tuv.x += sin(tuv.y*frequency+speed)/amplitude;
-  tuv.y += sin(tuv.x*frequency*1.5+speed)/(amplitude*.5);
-  vec3 colorYellow = vec3(.957, .804, .623);
-  vec3 colorDeepBlue = vec3(.192, .384, .933);
-  vec3 layer1 = mix(colorYellow, colorDeepBlue, S(-.3, .2, (tuv*rot(radians(-5.))).x));
-  vec3 colorRed = vec3(.910, .510, .8);
-  vec3 colorBlue = vec3(0.350, .71, .953);
-  vec3 layer2 = mix(colorRed, colorBlue, S(-.3, .2, (tuv*rot(radians(-5.))).x));
-  vec3 finalComp = mix(layer1, layer2, S(.5, -.3, tuv.y));
+  vec2 uv = fragCoord.xy / iResolution.xy;
+  vec2 p[4];
+  p[0] = vec2(0.1, 0.9);
+  p[1] = vec2(0.9, 0.9);
+  p[2] = vec2(0.5, 0.1);
+  float t = iTime * timeScale;  // Use timeScale for dynamic speed
+  p[3] = vec2(cos(t), sin(t)) * 0.4 + vec2(0.5, 0.5);
+  vec3 c[4];
+  // Add subtle color animation
+  float colorShift = sin(t * 0.2) * 0.1;  // Slow color cycling
+  c[0] = vec3(0.996078431372549 + colorShift, 0.3411764705882353, 0.33725490196078434);
+  c[1] = vec3(0.996078431372549, 0.6352941176470588 + colorShift, 0.1607843137254902);
+  c[2] = vec3(0.1450980392156863, 0.8196078431372549, 0.8588235294117647 + colorShift);
+  c[3] = vec3(1.0, 1.0, 0.0);
+  float blend = 2.0;
+  vec3 sum = vec3(0.0);
+  float valence = 0.0;
+  for (int i = 0; i < 4; i++) {
+      float distance = length(uv - p[i]);
+      if (distance == 0.0) { distance = 1.0; }
+      float w =  1.0 / pow(distance, blend);
+      sum += w * c[i];
+      valence += w;
+  }
+  sum /= valence;
+  sum = pow(sum, vec3(1.0/2.2));
 
-  finalComp = applyHueShift(finalComp, hueShift);
-  finalComp = applySaturation(finalComp, saturation);
-  finalComp = applyLightness(finalComp, lightness);
+  // Apply hue shift to the final color
+  sum = applyHueShift(sum, hueShift);
 
-  return vec4(finalComp, 1.0);
+  // Apply saturation adjustment
+  sum = applySaturation(sum, saturation);
+
+  // Apply lightness adjustment
+  sum = applyLightness(sum, lightness);
+
+  return vec4(sum.xyz, 1.0);
 }
 `

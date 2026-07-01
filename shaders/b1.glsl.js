@@ -1,41 +1,65 @@
 export default /* glsl */ `
+vec3 hash3d(vec3 p) {
+  p = vec3(dot(p, vec3(127.1, 311.7, 74.7)), dot(p, vec3(269.5, 183.3, 246.1)),
+          dot(p, vec3(113.5, 271.9, 124.6)));
+  p = -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
+  return p;
+}
+
+float noise3d(in vec3 p) {
+  vec3 i = floor(p);
+  vec3 f = fract(p);
+  vec3 u = f * f * (3.0 - 2.0 * f);
+  return mix(
+      mix(mix(dot(hash3d(i + vec3(0.0, 0.0, 0.0)), f - vec3(0.0, 0.0, 0.0)),
+              dot(hash3d(i + vec3(1.0, 0.0, 0.0)), f - vec3(1.0, 0.0, 0.0)),
+              u.x),
+          mix(dot(hash3d(i + vec3(0.0, 1.0, 0.0)), f - vec3(0.0, 1.0, 0.0)),
+              dot(hash3d(i + vec3(1.0, 1.0, 0.0)), f - vec3(1.0, 1.0, 0.0)),
+              u.x),
+          u.y),
+      mix(mix(dot(hash3d(i + vec3(0.0, 0.0, 1.0)), f - vec3(0.0, 0.0, 1.0)),
+              dot(hash3d(i + vec3(1.0, 0.0, 1.0)), f - vec3(1.0, 0.0, 1.0)),
+              u.x),
+          mix(dot(hash3d(i + vec3(0.0, 1.0, 1.0)), f - vec3(0.0, 1.0, 1.0)),
+              dot(hash3d(i + vec3(1.0, 1.0, 1.0)), f - vec3(1.0, 1.0, 1.0)),
+              u.x),
+          u.y),
+      u.z);
+}
+
 vec4 shader(vec2 fragCoord) {
-  vec2 uv = fragCoord.xy / iResolution.xy;
-  vec2 p[4];
-  p[0] = vec2(0.1, 0.9);
-  p[1] = vec2(0.9, 0.9);
-  p[2] = vec2(0.5, 0.1);
-  float t = iTime * timeScale;  // Use timeScale for dynamic speed
-  p[3] = vec2(cos(t), sin(t)) * 0.4 + vec2(0.5, 0.5);
-  vec3 c[4];
-  // Add subtle color animation
-  float colorShift = sin(t * 0.2) * 0.1;  // Slow color cycling
-  c[0] = vec3(0.996078431372549 + colorShift, 0.3411764705882353, 0.33725490196078434);
-  c[1] = vec3(0.996078431372549, 0.6352941176470588 + colorShift, 0.1607843137254902);
-  c[2] = vec3(0.1450980392156863, 0.8196078431372549, 0.8588235294117647 + colorShift);
-  c[3] = vec3(1.0, 1.0, 0.0);
-  float blend = 2.0;
-  vec3 sum = vec3(0.0);
-  float valence = 0.0;
-  for (int i = 0; i < 4; i++) {
-      float distance = length(uv - p[i]);
-      if (distance == 0.0) { distance = 1.0; }
-      float w =  1.0 / pow(distance, blend);
-      sum += w * c[i];
-      valence += w;
+  const int layers = 5;
+  const float baseSpeed = 0.25; // Base speed
+  const float scale = 1.2;
+
+  vec2 uv = (fragCoord - iResolution.xy - .5) / iResolution.y;
+  float t = iTime * baseSpeed * timeScale; // Use timeScale for dynamic speed
+  uv *= scale;
+  float h =
+      noise3d(vec3(uv * 2., t)); // Time as z-coordinate for continuous noise
+  for (int n = 1; n < layers; n++) {
+    float i = float(n);
+    uv -= vec2(0.7 / i * sin(i * uv.y + i + t * 2.0 + h * i) +
+                  0.8, // Reduced from 5.0 to 2.0
+              0.4 / i * sin(uv.x + 4. - i + h + t * 2.0 + 0.3 * i) +
+                  1.6); // Reduced from 5.0 to 2.0
   }
-  sum /= valence;
-  sum = pow(sum, vec3(1.0/2.2));
+  uv -=
+      vec2(1.2 * sin(uv.x + t + h) + 1.8, 0.4 * sin(uv.y + t + 0.3 * h) + 1.6);
+  vec3 col = vec3(.5 * sin(uv.x) + 0.5, .5 * sin(uv.x + uv.y) + 0.5,
+                  .5 * sin(uv.y) + 0.8) *
+            0.8;
 
   // Apply hue shift to the final color
-  sum = applyHueShift(sum, hueShift);
+  col = applyHueShift(col, hueShift);
 
   // Apply saturation adjustment
-  sum = applySaturation(sum, saturation);
+  col = applySaturation(col, saturation);
 
   // Apply lightness adjustment
-  sum = applyLightness(sum, lightness);
+  col = applyLightness(col, lightness);
 
-  return vec4(sum.xyz, 1.0);
+  return vec4(col, 1.0);
 }
 `

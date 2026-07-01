@@ -66,7 +66,7 @@
     </div>
     <script type="module">
         import gradient from './index.js'
-        gradient('a2.a8aa')
+        gradient('b2.a8aa')
 
         /* context lost test
         let ext
@@ -83,7 +83,8 @@
             ext.restoreContext()
         }, 6_000)
         */
-        import shaders, { shaders as shaderMap } from './shaders/index.js'
+        // import shaders, { shaders as shaderMap } from './shaders/index.js'
+        import { shaderIds as shaders } from './index.js'
 
         // DOM Helpers
         const $ = document.querySelector.bind(document)
