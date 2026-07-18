@@ -37,13 +37,13 @@
 
 ---
 
-#### Easiest Usage: 
+#### Easiest Usage:
 One-Liner Script Tag
 
 > `SeedScript`
 
 ```html
-<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9"></script>
 ```
 
 > [read more](#seedscript-usage)
@@ -60,13 +60,13 @@ npm install gradient-gl
 import gradientGL from 'gradient-gl'
 
 // Mounts to <body>
-gradientGL('a2.eba9')
+gradientGL('c1.eba9')
 
 // Mounts inside #app
-gradientGL('a2.eba9', '#app')
+gradientGL('c1.eba9', '#app')
 
 // Access shader program if needed
-const program = await gradientGL('a2.eba9')
+const program = await gradientGL('c1.eba9')
 ```
 
 ### Mounting Behavior
@@ -94,7 +94,7 @@ export default {
 ```html
 <script type="module">
     import gradientGL from 'https://unpkg.com/gradient-gl'
-    gradientGL('a2.eba9')
+    gradientGL('c1.eba9')
 </script>
 ```
 
@@ -103,7 +103,7 @@ export default {
 ```html
 <script type="module">
     import gradientGL from 'https://esm.sh/gradient-gl'
-    gradientGL('a2.eba9')
+    gradientGL('c1.eba9')
 </script>
 ```
 
@@ -111,31 +111,46 @@ export default {
 
 ```html
     <!-- Latest with default mounting point -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9"></script>
 
     <!-- optionally pin to a version @x.x.x -->
-<script type="module" src="https://unpkg.com/gradient-gl@1.4.1?seed=a2.eba9"></script>
+<script type="module" src="https://unpkg.com/gradient-gl@1.4.1?seed=c1.eba9"></script>
 
     <!-- optionally set the mount selector -->
         <!-- mount inside the <main> tag -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9&selector=main"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=main"></script>
         <!-- mount inside the .wrapper>content -->
         <!-- note: any valid css selector can be used -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9&selector=.wrapper>.content"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=.wrapper>.content"></script>
         <!-- mount inside the #app -->
         <!-- note hash needs to be escaped as %23 -->
         <!-- #app → %23app  -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=a2.eba9&selector=%23app"></script>
+<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=%23app"></script>
 ```
 
 ## Seed Format
 
 `{shader}.{speed}{hue}{sat}{light}`
 
-- Shader: `[a-z][0-9]` (e.g., `a2`)
+- Shader: `[a-z][0-9]` (e.g., `c1`, `n3`)
 - Options: `[0-9a-f]` (hex values)
 
 Explore and generate seeds in the <b><a href="https://metaory.github.io/gradient-gl/" target="_blank">playground</a></b>
+
+## Shaders
+
+IDs are alphabetical. Import the live list with `import { shaderIds } from 'gradient-gl'`.
+
+| Series | IDs | Character |
+|--------|-----|-----------|
+| **b** | `b1` `b2` `b3` `b4` | classic layered / radial |
+| **c** | `c1` `c4` | contrast duotone flow |
+| **f** | `f1` `f3` | fluid RGB noise |
+| **l** | `l1` `l3` `l5` | liquid warp |
+| **n** | `n1` `n2` `n3` `n4` | noisy color islands |
+| **s** | `s1` `s3` | soft shade blobs |
+
+`n1`/`n2` are softer blends; `n3`/`n4` are sharper islands.
 
 ## Performance
 

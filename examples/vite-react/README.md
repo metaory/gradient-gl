@@ -33,22 +33,11 @@ import gradientGL from 'gradient-gl'
 
 function App() {
   useEffect(() => {
-    gradientGL('a2.eba9')
+    gradientGL('n3.ec55')
   }, [])
 
   return <div id="app" />
 }
 ```
 
-# React + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Seed format: `{shader}.{speed}{hue}{sat}{light}`. Available shaders: `b1`–`b4`, `c1` `c4`, `f1` `f3`, `l1` `l3` `l5`, `n1`–`n4`, `s1` `s3`. See the [main README](../../README.md#shaders).

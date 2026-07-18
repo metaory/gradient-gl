@@ -7,7 +7,7 @@ const createCanvas = (selector = 'body') => {
     : target.appendChild(
       Object.assign(document.createElement('canvas'), {
         id: 'gradient-gl',
-        style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none;',
+        style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:0;pointer-events:none;'.replace(/:([^;]+);/g, ':$1!important;'),
       }),
     )
 }
@@ -301,34 +301,22 @@ const shaderLoaders = {
   b4: () => import('./shaders/b4.glsl.js'),
 
   c1: () => import('./shaders/c1.glsl.js'),
-  c2: () => import('./shaders/c2.glsl.js'),
-  c3: () => import('./shaders/c3.glsl.js'),
   c4: () => import('./shaders/c4.glsl.js'),
-  c5: () => import('./shaders/c5.glsl.js'),
 
   f1: () => import('./shaders/f1.glsl.js'),
-  f2: () => import('./shaders/f2.glsl.js'),
   f3: () => import('./shaders/f3.glsl.js'),
-  f4: () => import('./shaders/f4.glsl.js'),
-  f5: () => import('./shaders/f5.glsl.js'),
 
   l1: () => import('./shaders/l1.glsl.js'),
-  l2: () => import('./shaders/l2.glsl.js'),
   l3: () => import('./shaders/l3.glsl.js'),
-  l4: () => import('./shaders/l4.glsl.js'),
   l5: () => import('./shaders/l5.glsl.js'),
 
-  m1: () => import('./shaders/m1.glsl.js'),
-  m2: () => import('./shaders/m2.glsl.js'),
-  m3: () => import('./shaders/m3.glsl.js'),
-  m4: () => import('./shaders/m4.glsl.js'),
-  m5: () => import('./shaders/m5.glsl.js'),
+  n1: () => import('./shaders/n1.glsl.js'),
+  n2: () => import('./shaders/n2.glsl.js'),
+  n3: () => import('./shaders/n3.glsl.js'),
+  n4: () => import('./shaders/n4.glsl.js'),
 
   s1: () => import('./shaders/s1.glsl.js'),
-  s2: () => import('./shaders/s2.glsl.js'),
   s3: () => import('./shaders/s3.glsl.js'),
-  s4: () => import('./shaders/s4.glsl.js'),
-  s5: () => import('./shaders/s5.glsl.js'),
 }
 
 export const shaderIds = Object.keys(shaderLoaders).sort()

@@ -5,11 +5,10 @@ vec4 shader(vec2 fragCoord) {
   p[0] = vec2(0.1, 0.9);
   p[1] = vec2(0.9, 0.9);
   p[2] = vec2(0.5, 0.1);
-  float t = iTime * timeScale;  // Use timeScale for dynamic speed
+  float t = iTime * timeScale;
   p[3] = vec2(cos(t), sin(t)) * 0.4 + vec2(0.5, 0.5);
   vec3 c[4];
-  // Add subtle color animation
-  float colorShift = sin(t * 0.2) * 0.1;  // Slow color cycling
+  float colorShift = sin(t * 0.2) * 0.1;
   c[0] = vec3(0.996078431372549 + colorShift, 0.3411764705882353, 0.33725490196078434);
   c[1] = vec3(0.996078431372549, 0.6352941176470588 + colorShift, 0.1607843137254902);
   c[2] = vec3(0.1450980392156863, 0.8196078431372549, 0.8588235294117647 + colorShift);
@@ -27,15 +26,6 @@ vec4 shader(vec2 fragCoord) {
   sum /= valence;
   sum = pow(sum, vec3(1.0/2.2));
 
-  // Apply hue shift to the final color
-  sum = applyHueShift(sum, hueShift);
-
-  // Apply saturation adjustment
-  sum = applySaturation(sum, saturation);
-
-  // Apply lightness adjustment
-  sum = applyLightness(sum, lightness);
-
-  return vec4(sum.xyz, 1.0);
+  return vec4(finalColor(sum), 1.0);
 }
 `
