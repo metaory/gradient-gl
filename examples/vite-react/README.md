@@ -33,7 +33,7 @@ import gradientGL from 'gradient-gl'
 
 function App() {
   useEffect(() => {
-    gradientGL('n3.ec55')
+    gradientGL('c4.ec55')
   }, [])
 
   return <div id="app" />

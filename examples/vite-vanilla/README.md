@@ -30,7 +30,7 @@ export default {
 ```js
 import gradientGL from 'gradient-gl'
 
-await gradientGL('n3.ef55')
+await gradientGL('b2.ef55')
 ```
 
 Seed format: `{shader}.{speed}{hue}{sat}{light}`. Available shaders: `b1`–`b4`, `c1` `c4`, `f1` `f3`, `l1` `l3` `l5`, `n1`–`n4`, `s1` `s3`. See the [main README](../../README.md#shaders).

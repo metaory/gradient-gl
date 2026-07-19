@@ -33,7 +33,7 @@ import { onMounted } from 'vue'
 import gradientGL from 'gradient-gl'
 
 onMounted(() => {
-  gradientGL('n3.ef55')
+  gradientGL('l5.ef55')
 })
 </script>
 

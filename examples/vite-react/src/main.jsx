@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 
-gradientGL('n3.ec55')
+gradientGL('c4.ec55')
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
