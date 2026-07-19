@@ -65,8 +65,7 @@
         URL copied to clipboard
     </div>
     <script type="module">
-        import gradient from './index.js'
-        gradient('b2.a8aa')
+        import gradient, { shaderIds as shaders } from './index.js'
 
         /* context lost test
         let ext
@@ -83,8 +82,6 @@
             ext.restoreContext()
         }, 6_000)
         */
-        // import shaders, { shaders as shaderMap } from './shaders/index.js'
-        import { shaderIds as shaders } from './index.js'
 
         // DOM Helpers
         const $ = document.querySelector.bind(document)
@@ -102,9 +99,13 @@
 
         const debounce = (fn, delay = 100) => {
             let timeout
+            let pending
             return (...args) => {
                 clearTimeout(timeout)
-                timeout = setTimeout(() => fn(...args), delay)
+                pending = new Promise(resolve => {
+                    timeout = setTimeout(() => resolve(fn(...args)), delay)
+                })
+                return pending
             }
         }
 
@@ -249,7 +250,7 @@
 
         const randomizeOptions = async () => {
             // Randomize shader
-            const randomShader = shaders[Math.floor(Math.random() * 6)]
+            const randomShader = shaders[Math.floor(Math.random() * shaders.length)]
             $$('.shader').forEach(btn => {
                 btn.dataset.selected = btn.dataset.shader === randomShader ? 'true' : 'false'
             })

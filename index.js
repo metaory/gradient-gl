@@ -2,14 +2,16 @@
 
 const createCanvas = (selector = 'body') => {
   const target = document.querySelector(selector) ?? document.body
-  return target.tagName === 'CANVAS'
-    ? target
-    : target.appendChild(
-      Object.assign(document.createElement('canvas'), {
-        id: 'gradient-gl',
-        style: 'position:fixed;inset:0;width:100vw;height:100vh;pointer-events:none;'.replace(/:([^;]+);/g, ':$1!important;'),
-      }),
-    )
+  if (target.tagName === 'CANVAS') return target
+
+  document.querySelectorAll('#gradient-gl').forEach(c => c.remove())
+
+  return target.appendChild(
+    Object.assign(document.createElement('canvas'), {
+      id: 'gradient-gl',
+      style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;'.replace(/:([^;]+);/g, ':$1!important;'),
+    }),
+  )
 }
 
 // -----------------------------------------------------------------------------
@@ -335,32 +337,37 @@ const main = /* glsl */ `
   `
 
 let activeProgram = null
+let bootLock = Promise.resolve()
 
-export default async function boot(seed, selector = 'body') {
-  if (!seed) throw new Error('Seed is required')
+export default function boot(seed, selector = 'body') {
+  const task = bootLock.then(async () => {
+    if (!seed) throw new Error('Seed is required')
 
-  const parsedSeed = parseSeed(seed)
-  const [shaderId] = parsedSeed
+    const parsedSeed = parseSeed(seed)
+    const [shaderId] = parsedSeed
 
-  if (activeProgram?.shaderId === shaderId) {
-    activeProgram.updateSeed(parsedSeed)
-    return activeProgram
-  }
+    if (activeProgram?.shaderId === shaderId) {
+      activeProgram.updateSeed(parsedSeed)
+      return activeProgram
+    }
 
-  if (activeProgram) {
-    activeProgram.destroy()
-    activeProgram = null
-  }
+    if (activeProgram) {
+      activeProgram.destroy()
+      activeProgram = null
+    }
 
-  const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
-  const fragment = common + shader + main
-  const canvas = createCanvas(selector)
-  const program = new GradientGL(canvas, fragment, parsedSeed)
-  program.shaderId = shaderId
-  program.init()
-  activeProgram = program
+    const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
+    const fragment = common + shader + main
+    const canvas = createCanvas(selector)
+    const program = new GradientGL(canvas, fragment, parsedSeed)
+    program.shaderId = shaderId
+    program.init()
+    activeProgram = program
+    return program
+  })
 
-  return program
+  bootLock = task.catch(() => {})
+  return task
 }
 
 // -----------------------------------------------------------------------------

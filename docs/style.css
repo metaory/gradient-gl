@@ -1,6 +1,6 @@
 :root {
     color-scheme: dark;
-    background-color: black;
+    background-color: transparent;
     --h: 270;
     --ss: hsl(var(--h) 50% 10% / 0.1);
     --xs: hsl(var(--h) 50% 10% / 0.2);
@@ -108,7 +108,6 @@ canvas {
     display: block;
     position: fixed;
     inset: 0;
-    z-index: 0;
 }
 
 button {
