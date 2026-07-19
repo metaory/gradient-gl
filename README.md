@@ -37,10 +37,8 @@
 
 ---
 
-#### Easiest Usage:
-One-Liner Script Tag
-
-> `SeedScript`
+#### SeedScript
+One script tag:
 
 ```html
 <script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9"></script>
@@ -65,7 +63,7 @@ gradientGL('c1.eba9')
 // Mounts inside #app
 gradientGL('c1.eba9', '#app')
 
-// Access shader program if needed
+// Returns the program
 const program = await gradientGL('c1.eba9')
 ```
 
@@ -79,9 +77,9 @@ const program = await gradientGL('c1.eba9')
 
 ### Stacking and Blend
 
-The canvas defaults to `z-index: -1` and no `mix-blend-mode`. That fits most full-page backgrounds, but your layout may need different values.
+Default canvas style: `z-index: -1`, no `mix-blend-mode`.
 
-Opaque page backgrounds can hide a `-1` canvas. Fixed headers, stacking contexts, or overlays may want another `z-index`. Color grading against UI often wants `mix-blend-mode`.
+An opaque `html`/`body` background covers a `-1` canvas. Raise `z-index` for fixed chrome or stacking contexts that sit above it. Set `mix-blend-mode` when the gradient should grade against page content.
 
 ```css
 #gradient-gl {
@@ -90,7 +88,7 @@ Opaque page backgrounds can hide a `-1` canvas. Fixed headers, stacking contexts
 }
 ```
 
-Use `!important` when overriding the library defaults.
+Library defaults use `!important`. Match that in overrides.
 
 ### Vite Configuration
 
@@ -125,21 +123,19 @@ export default {
 ### SeedScript Usage
 
 ```html
-    <!-- Latest with default mounting point -->
+<!-- latest, mounts on body -->
 <script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9"></script>
 
-    <!-- optionally pin to a version @x.x.x -->
+<!-- pin a version -->
 <script type="module" src="https://unpkg.com/gradient-gl@1.4.1?seed=c1.eba9"></script>
 
-    <!-- optionally set the mount selector -->
-        <!-- mount inside the <main> tag -->
+<!-- mount inside <main> -->
 <script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=main"></script>
-        <!-- mount inside the .wrapper>content -->
-        <!-- note: any valid css selector can be used -->
+
+<!-- any CSS selector works -->
 <script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=.wrapper>.content"></script>
-        <!-- mount inside the #app -->
-        <!-- note hash needs to be escaped as %23 -->
-        <!-- #app → %23app  -->
+
+<!-- # must be escaped: #app → %23app -->
 <script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=%23app"></script>
 ```
 
@@ -169,18 +165,16 @@ IDs are alphabetical. Import the live list with `import { shaderIds } from 'grad
 
 ## Performance
 
-Animated Gradient Background Techniques
+Animated gradient background techniques, slowest to fastest:
 
-(Slowest → Fastest)
-
-1. `SVG` – CPU-only, DOM-heavy, poor scaling, high memory usage
-2. `Canvas 2D` – CPU-only, main-thread load, imperative updates
-3. `CSS` – GPU-composited, limited complexity, best for static
-4. `WebGL` – GPU-accelerated, shader-driven, optimal balance
-5. `WebGPU` – GPU-native, most powerful, limited browser support
+1. `SVG`: CPU-only, DOM-heavy, poor scaling, high memory
+2. `Canvas 2D`: CPU-only, main-thread load, imperative updates
+3. `CSS`: GPU-composited, limited complexity, best for static work
+4. `WebGL`: GPU shaders, wide support
+5. `WebGPU`: faster where available, thinner browser support
 
 > [!NOTE]
-> While WebGPU is technically the fastest, WebGL remains the best choice for animated gradients due to its maturity, broad support, and optimal performance/complexity ratio.
+> WebGPU is faster where it runs. WebGL covers more browsers and is enough for animated gradients.
 
 > TODO: Interactive benchmark app
 
