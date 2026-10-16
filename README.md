@@ -75,6 +75,24 @@ const program = await gradientGL('c1.eba9')
 
 > Styles are overridable.
 
+### Cleanup
+
+Await initialization and destroy the program when its page or component unmounts:
+
+```javascript
+const program = await gradientGL('c1.915c', '#meeting-gradient')
+
+// Call from your unmount cleanup
+program.destroy()
+```
+
+Only one program is active at a time. Calls with the same shader reuse it only
+while it is alive and mounted to the requested target. After cleanup or target
+replacement, the next call creates a new program. Library-created canvases are
+removed on cleanup; caller-provided canvases stay in the DOM and can be reused.
+If unmount happens before initialization resolves, destroy the returned program
+when the promise settles.
+
 ### Stacking and Blend
 
 Default canvas style: `z-index: -1`, no `mix-blend-mode`.

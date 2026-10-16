@@ -22,14 +22,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Verify package
-        run: |
-          node -e "
-            import('./index.js')
-              .catch(e => {
-                console.error(e);
-                process.exit(1);
-              });
-          "
+        run: npm test
 
       - name: Publish to npm
         run: npm publish

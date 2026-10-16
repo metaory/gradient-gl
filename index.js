@@ -1,7 +1,6 @@
 // -----------------------------------------------------------------------------
 
-const createCanvas = (selector = 'body') => {
-  const target = document.querySelector(selector) ?? document.body
+const createCanvas = target => {
   if (target.tagName === 'CANVAS') return target
 
   document.querySelectorAll('#gradient-gl').forEach(c => c.remove())
@@ -42,6 +41,7 @@ const vertex = /* glsl */ `#version 300 es
 class GradientGL {
   #gl
   #canvas
+  #ownsCanvas
   #program
   #uniforms
   #timeScale
@@ -57,8 +57,9 @@ class GradientGL {
   // Time interpolation constants
   static #MAX_DELTA = 50 // Maximum frame delta in ms (~20fps minimum)
 
-  constructor(canvas, fragment, seed) {
+  constructor(canvas, fragment, seed, ownsCanvas) {
     this.#canvas = canvas
+    this.#ownsCanvas = ownsCanvas
     this.#fragment = fragment
     this.#vertex = vertex
     this.#timeScale = 0.4
@@ -220,6 +221,14 @@ class GradientGL {
     }
   }
 
+  isMounted(target) {
+    if (!this.#isActive || !this.#gl || !this.#program) return false
+    if (!this.#canvas?.isConnected) return false
+    return target.tagName === 'CANVAS'
+      ? this.#canvas === target
+      : this.#canvas.parentElement === target
+  }
+
   updateSeed(seed) {
     if (seed[0] === this.#currentSeed[0] && seed[1].every((v, i) => v === this.#currentSeed[1][i]))
       return false
@@ -265,6 +274,11 @@ class GradientGL {
         return
       }
 
+      if (!this.#canvas.isConnected) {
+        this.destroy()
+        return
+      }
+
       const currentTime = performance.now()
       this.#updateTime(currentTime)
       this.#updateInternalUniforms(this.#elapsedTime)
@@ -274,19 +288,16 @@ class GradientGL {
     requestAnimationFrame(frame)
   }
 
-  destroy() {
+  destroy(preserveCanvas) {
     this.#isActive = false
     if (this.#program && this.#gl) {
       this.#gl.deleteProgram(this.#program)
     }
-    if (this.#canvas) {
-      try {
-        this.#canvas.remove()
-      } catch (e) { }
-    }
+    if (this.#ownsCanvas && this.#canvas !== preserveCanvas) this.#canvas?.remove()
     this.#program = null
     this.#canvas = null
     this.#gl = null
+    if (activeProgram === this) activeProgram = null
   }
 }
 
@@ -345,21 +356,22 @@ export default function boot(seed, selector = 'body') {
 
     const parsedSeed = parseSeed(seed)
     const [shaderId] = parsedSeed
+    const target = document.querySelector(selector) ?? document.body
 
-    if (activeProgram?.shaderId === shaderId) {
+    if (activeProgram?.shaderId === shaderId && activeProgram.isMounted(target)) {
       activeProgram.updateSeed(parsedSeed)
       return activeProgram
     }
 
     if (activeProgram) {
-      activeProgram.destroy()
+      activeProgram.destroy(target)
       activeProgram = null
     }
 
     const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
     const fragment = common + shader + main
-    const canvas = createCanvas(selector)
-    const program = new GradientGL(canvas, fragment, parsedSeed)
+    const canvas = createCanvas(target)
+    const program = new GradientGL(canvas, fragment, parsedSeed, canvas !== target)
     program.shaderId = shaderId
     program.init()
     activeProgram = program
