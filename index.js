@@ -3,7 +3,7 @@
 const createCanvas = target => {
   if (target.tagName === 'CANVAS') return target
 
-  document.querySelectorAll('#gradient-gl').forEach(c => c.remove())
+  for (const canvas of document.querySelectorAll('#gradient-gl')) canvas.remove()
 
   return target.appendChild(
     Object.assign(document.createElement('canvas'), {
