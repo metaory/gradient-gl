@@ -75,6 +75,7 @@ class GradientGL {
 
   #setupEventHandlers() {
     this.#canvas.addEventListener('webglcontextlost', e => {
+      if (!this.#isActive) return
       e.preventDefault()
       this.#isActive = false
       this.#gl = null
@@ -84,7 +85,7 @@ class GradientGL {
     })
 
     this.#canvas.addEventListener('webglcontextrestored', () => {
-      this.init()
+      if (this.#canvas) this.init()
     })
 
 
@@ -95,6 +96,7 @@ class GradientGL {
   }
 
   init() {
+    if (!this.#canvas) return
     this.#gl = this.#createGLContext(this.#canvas)
     this.#program = this.#createProgram(this.#vertex, this.#fragment)
     this.#uniforms = this.#getUniformLocations()
@@ -290,10 +292,12 @@ class GradientGL {
 
   destroy(preserveCanvas) {
     this.#isActive = false
-    if (this.#program && this.#gl) {
-      this.#gl.deleteProgram(this.#program)
+    if (this.#program && this.#gl) this.#gl.deleteProgram(this.#program)
+    const reuse = this.#canvas === preserveCanvas
+    if (this.#ownsCanvas && !reuse) {
+      this.#gl?.getExtension('WEBGL_lose_context')?.loseContext()
+      this.#canvas?.remove()
     }
-    if (this.#ownsCanvas && this.#canvas !== preserveCanvas) this.#canvas?.remove()
     this.#program = null
     this.#canvas = null
     this.#gl = null

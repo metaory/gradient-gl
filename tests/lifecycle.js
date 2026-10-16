@@ -3,10 +3,18 @@ import { afterEach, beforeEach, mock, test } from 'node:test'
 
 const elements = new Set()
 const frames = []
-const gl = new Proxy({}, {
-  get: (target, key) => target[key] ??= /^[A-Z_]+$/.test(key)
-    ? 1
-    : mock.fn(() => key.includes('InfoLog') ? '' : {}),
+const loseContext = mock.fn()
+const gl = new Proxy({
+  getExtension: mock.fn(() => ({ loseContext })),
+}, {
+  get: (target, key) => {
+    if (key in target) return target[key]
+    const value = /^[A-Z_]+$/.test(key)
+      ? 1
+      : mock.fn(() => key.includes('InfoLog') ? '' : {})
+    target[key] = value
+    return value
+  },
 })
 class Element {
   constructor(tagName) {
@@ -122,10 +130,21 @@ test('shader switch preserves the requested caller-owned canvas', async () => {
   const program = await gradientGL('c1.915c', '#meeting-gradient')
   tick()
   const calls = gl.drawArrays.mock.callCount()
+  const lost = loseContext.mock.callCount()
   if (state === 'destroyed') program.destroy()
   if (state === 'detached') canvas().remove()
   tick()
   assert.equal(gl.drawArrays.mock.callCount(), calls)
   assert.equal(frames.length, 0)
+  assert.equal(loseContext.mock.callCount(), lost + 1)
   program.destroy()
 }))
+
+test('caller canvas destroy keeps the live context', async () => {
+  const target = mount('target', 'canvas')
+  const program = await gradientGL('c1.915c', '#target')
+  const lost = loseContext.mock.callCount()
+  program.destroy()
+  assert.equal(loseContext.mock.callCount(), lost)
+  assert.ok(target.isConnected)
+})
