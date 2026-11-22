@@ -1,16 +1,24 @@
 // -----------------------------------------------------------------------------
 
+const ownedStyle = 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none'
+const isCanvas = el => el?.tagName === 'CANVAS'
+
+const sizeCanvas = canvas => {
+  if (canvas.clientWidth && canvas.clientHeight) return canvas
+  canvas.style.width ||= '100%'
+  canvas.style.height ||= '100%'
+  return canvas
+}
+
 const createCanvas = target => {
-  if (target.tagName === 'CANVAS') return target
+  if (isCanvas(target)) return sizeCanvas(target)
 
   for (const canvas of document.querySelectorAll('#gradient-gl')) canvas.remove()
 
-  return target.appendChild(
-    Object.assign(document.createElement('canvas'), {
-      id: 'gradient-gl',
-      style: 'position:fixed;inset:0;width:100vw;height:100vh;z-index:-1;pointer-events:none;'.replace(/:([^;]+);/g, ':$1!important;'),
-    }),
-  )
+  return target.appendChild(Object.assign(document.createElement('canvas'), {
+    id: 'gradient-gl',
+    style: ownedStyle,
+  }))
 }
 
 // -----------------------------------------------------------------------------
@@ -44,7 +52,6 @@ class GradientGL {
   #ownsCanvas
   #program
   #uniforms
-  #timeScale
   #isActive
   #externalUniforms
   #currentSeed
@@ -62,7 +69,6 @@ class GradientGL {
     this.#ownsCanvas = ownsCanvas
     this.#fragment = fragment
     this.#vertex = vertex
-    this.#timeScale = 0.4
     this.#isActive = false
     this.#currentSeed = seed
     this.#externalUniforms = seed[1]
@@ -87,12 +93,6 @@ class GradientGL {
     this.#canvas.addEventListener('webglcontextrestored', () => {
       if (this.#canvas) this.init()
     })
-
-
-    // INFO: to consider
-    // document.addEventListener('visibilitychange', () => {
-    //   if (!document.hidden && !this.#isActive) this.init()
-    // })
   }
 
   init() {
@@ -168,21 +168,11 @@ class GradientGL {
   }
 
   #getUniformLocations() {
-    return [
-      'iResolution',
-      'iTime',
-      'iFrame',
-      'options',
-      'timeScale',
-      'hueShift',
-      'saturation',
-      'lightness',
-    ].reduce(
-      (acc, cur) => ({
-        ...acc,
-        [cur]: this.#gl.getUniformLocation(this.#program, cur),
-      }),
-      {},
+    const names = [
+      'iResolution', 'iTime', 'options', 'timeScale', 'hueShift', 'saturation', 'lightness',
+    ]
+    return Object.fromEntries(
+      names.map(name => [name, this.#gl.getUniformLocation(this.#program, name)]),
     )
   }
 
@@ -198,7 +188,7 @@ class GradientGL {
       nonLinearMap(speedVal, 0.1, 3.0, 1.5),
       hueVal / 15,
       nonLinearMap(satVal, 0.3, 3.0, 1.5),
-      lightVal / 15, // Simple linear mapping from 0 to 1
+      lightVal / 15,
     ]
 
     const valuesChanged =
@@ -226,9 +216,7 @@ class GradientGL {
   isMounted(target) {
     if (!this.#isActive || !this.#gl || !this.#program) return false
     if (!this.#canvas?.isConnected) return false
-    return target.tagName === 'CANVAS'
-      ? this.#canvas === target
-      : this.#canvas.parentElement === target
+    return isCanvas(target) ? this.#canvas === target : this.#canvas.parentElement === target
   }
 
   updateSeed(seed) {
@@ -243,23 +231,21 @@ class GradientGL {
   #updateInternalUniforms(time) {
     if (!this.#isActive || !this.#canvas || !this.#gl) return
 
-    const { iResolution, iTime, iFrame } = this.#uniforms
+    const { iResolution, iTime } = this.#uniforms
+    const { clientWidth, clientHeight } = this.#canvas
     this.#gl.useProgram(this.#program)
 
-    const displayWidth = this.#canvas.clientWidth
-    const displayHeight = this.#canvas.clientHeight
-    if (this.#canvas.width !== displayWidth || this.#canvas.height !== displayHeight) {
-      this.#canvas.width = displayWidth
-      this.#canvas.height = displayHeight
-      this.#gl.uniform3f(iResolution, this.#canvas.width, this.#canvas.height, 1.0)
-      this.#gl.viewport(0, 0, this.#canvas.width, this.#canvas.height)
+    const resized = clientWidth && clientHeight
+      && (this.#canvas.width !== clientWidth || this.#canvas.height !== clientHeight)
+    if (resized) {
+      this.#canvas.width = clientWidth
+      this.#canvas.height = clientHeight
+      this.#gl.viewport(0, 0, clientWidth, clientHeight)
     }
 
-    // Use elapsed time for smooth animation
-    const continuousTime = time / 1000
-
-    this.#gl.uniform1f(iTime, continuousTime)
-    this.#gl.uniform1f(iFrame, Math.floor(continuousTime * 60))
+    const seconds = time / 1000
+    this.#gl.uniform3f(iResolution, this.#canvas.width, this.#canvas.height, 1.0)
+    this.#gl.uniform1f(iTime, seconds)
   }
 
   #updateTime(currentTime) {
@@ -309,8 +295,7 @@ class GradientGL {
 
 import common from './shaders/common.glsl.js'
 
-const fetchCommon = () => Promise.resolve(common)
-// Static-analyser friendly map; no dynamic import paths; tree-shake + per-shader split
+// Static map. No dynamic import paths, so each shader can tree-shake.
 const shaderLoaders = {
   b1: () => import('./shaders/b1.glsl.js'),
   b2: () => import('./shaders/b2.glsl.js'),
@@ -372,10 +357,10 @@ export default function boot(seed, selector = 'body') {
       activeProgram = null
     }
 
-    const [common, shader] = await Promise.all([fetchCommon(), fetchShader(shaderId)])
+    const shader = await fetchShader(shaderId)
     const fragment = common + shader + main
     const canvas = createCanvas(target)
-    const program = new GradientGL(canvas, fragment, parsedSeed, canvas !== target)
+    const program = new GradientGL(canvas, fragment, parsedSeed, !isCanvas(target))
     program.shaderId = shaderId
     program.init()
     activeProgram = program
@@ -392,4 +377,4 @@ const url = new URL(import.meta.url)
 const seed = url.searchParams.get('seed')
 const selector = url.searchParams.get('selector') || 'body'
 if (seed) boot(seed, selector)
-window.gradient = boot;
+window.gradient = boot

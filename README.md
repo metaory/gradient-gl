@@ -63,6 +63,9 @@ gradientGL('c1.eba9')
 // Mounts inside #app
 gradientGL('c1.eba9', '#app')
 
+// Uses <canvas id="gradient">
+gradientGL('c1.eba9', 'canvas#gradient')
+
 // Returns the program
 const program = await gradientGL('c1.eba9')
 ```
@@ -71,9 +74,11 @@ const program = await gradientGL('c1.eba9')
 
 - **No selector**: creates and styles a `<canvas>` in `<body>`
 - **Selector to an element**: creates and styles a `<canvas>` inside it
-- **Selector to a `<canvas>`**: uses it directly, no styles or DOM changes
+- **Selector to a `<canvas>`**: uses that canvas.
+  A sized canvas is left alone.
+  An unsized one gets `width` and `height` of `100%`.
 
-> Styles are overridable.
+> Styles are overridable. Defaults are inline, so override them with `!important`.
 
 ### Cleanup
 
@@ -106,7 +111,7 @@ An opaque `html`/`body` background covers a `-1` canvas. Raise `z-index` for fix
 }
 ```
 
-Library defaults use `!important`. Match that in overrides.
+Defaults are inline. A normal rule does not override them. Use `!important`.
 
 ### Vite Configuration
 

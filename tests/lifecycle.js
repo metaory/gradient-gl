@@ -35,12 +35,16 @@ class Element {
   addEventListener() {}
   getContext() { return gl }
 }
+const matches = (element, selector) => {
+  const [tag, id] = selector.split('#')
+  const tagOk = !tag || element.tagName === tag.toUpperCase()
+  const idOk = !selector.includes('#') || element.id === id
+  return element.isConnected && tagOk && idOk
+}
 globalThis.document = {
   createElement: tag => new Element(tag),
-  querySelector: selector => selector === 'body' ? document.body
-    : [...elements].find(element => element.isConnected && `#${element.id}` === selector),
-  querySelectorAll: selector => [...elements].filter(element =>
-    element.isConnected && `#${element.id}` === selector),
+  querySelector: selector => [...elements].find(element => matches(element, selector)),
+  querySelectorAll: selector => [...elements].filter(element => matches(element, selector)),
 }
 document.body = new Element('body')
 globalThis.window = {}
@@ -139,6 +143,42 @@ test('shader switch preserves the requested caller-owned canvas', async () => {
   assert.equal(loseContext.mock.callCount(), lost + 1)
   program.destroy()
 }))
+
+test('owned canvas style stays overrideable', async () => {
+  await gradientGL('c1.915c')
+  assert.equal(canvas().style.includes('!important'), false)
+  assert.match(canvas().style, /z-index:-1/)
+})
+
+test('canvas query uses that canvas', async () => {
+  const target = mount('gradient', 'canvas')
+  await gradientGL('c1.915c', 'canvas#gradient')
+  assert.equal(target.id, 'gradient')
+  assert.equal(target.style, undefined)
+  assert.equal(document.querySelectorAll('#gradient-gl').length, 0)
+})
+
+test('unsized canvas gets minimum size', async () => {
+  const target = mount('gradient', 'canvas')
+  target.clientWidth = 0
+  target.clientHeight = 0
+  target.style = { width: '', height: '' }
+  await gradientGL('c1.915c', 'canvas#gradient')
+  assert.equal(target.style.width, '100%')
+  assert.equal(target.style.height, '100%')
+  assert.equal(target.id, 'gradient')
+})
+
+test('resolution is set when the buffer already matches', async () => {
+  const target = mount('gradient', 'canvas')
+  target.width = target.clientWidth
+  target.height = target.clientHeight
+  await gradientGL('c1.915c', 'canvas#gradient')
+  tick()
+  const hit = gl.uniform3f.mock.calls.some(call =>
+    call.arguments[1] === target.width && call.arguments[2] === target.height)
+  assert.equal(hit, true)
+})
 
 test('caller canvas destroy keeps the live context', async () => {
   const target = mount('target', 'canvas')
