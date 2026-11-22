@@ -38,6 +38,7 @@
 ---
 
 #### SeedScript
+
 One script tag:
 
 ```html
@@ -55,19 +56,19 @@ npm install gradient-gl
 ```
 
 ```javascript
-import gradientGL from 'gradient-gl'
+import gradientGL from "gradient-gl";
 
 // Mounts to <body>
-gradientGL('c1.eba9')
+gradientGL("c1.eba9");
 
 // Mounts inside #app
-gradientGL('c1.eba9', '#app')
+gradientGL("c1.eba9", "#app");
 
 // Uses <canvas id="gradient">
-gradientGL('c1.eba9', 'canvas#gradient')
+gradientGL("c1.eba9", "canvas#gradient");
 
 // Returns the program
-const program = await gradientGL('c1.eba9')
+const program = await gradientGL("c1.eba9");
 ```
 
 ### Mounting Behavior
@@ -85,10 +86,10 @@ const program = await gradientGL('c1.eba9')
 Await initialization and destroy the program when its page or component unmounts:
 
 ```javascript
-const program = await gradientGL('c1.915c', '#meeting-gradient')
+const program = await gradientGL("c1.915c", "#meeting-gradient");
 
 // Call from your unmount cleanup
-program.destroy()
+program.destroy();
 ```
 
 Only one program is active at a time. Calls with the same shader reuse it only
@@ -106,8 +107,8 @@ An opaque `html`/`body` background covers a `-1` canvas. Raise `z-index` for fix
 
 ```css
 #gradient-gl {
-  z-index: 0 !important;
-  mix-blend-mode: color !important;
+    z-index: 0 !important;
+    mix-blend-mode: color !important;
 }
 ```
 
@@ -117,10 +118,10 @@ Defaults are inline. A normal rule does not override them. Use `!important`.
 
 ```js
 export default {
-  build: {
-    target: 'esnext',
-  },
-}
+    build: {
+        target: "esnext",
+    },
+};
 ```
 
 ### CDN
@@ -129,8 +130,8 @@ export default {
 
 ```html
 <script type="module">
-    import gradientGL from 'https://unpkg.com/gradient-gl'
-    gradientGL('c1.eba9')
+    import gradientGL from "https://unpkg.com/gradient-gl";
+    gradientGL("c1.eba9");
 </script>
 ```
 
@@ -138,8 +139,8 @@ export default {
 
 ```html
 <script type="module">
-    import gradientGL from 'https://esm.sh/gradient-gl'
-    gradientGL('c1.eba9')
+    import gradientGL from "https://esm.sh/gradient-gl";
+    gradientGL("c1.eba9");
 </script>
 ```
 
@@ -150,16 +151,28 @@ export default {
 <script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9"></script>
 
 <!-- pin a version -->
-<script type="module" src="https://unpkg.com/gradient-gl@1.4.1?seed=c1.eba9"></script>
+<script
+    type="module"
+    src="https://unpkg.com/gradient-gl@1.4.1?seed=c1.eba9"
+></script>
 
 <!-- mount inside <main> -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=main"></script>
+<script
+    type="module"
+    src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=main"
+></script>
 
 <!-- any CSS selector works -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=.wrapper>.content"></script>
+<script
+    type="module"
+    src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=.wrapper>.content"
+></script>
 
 <!-- # must be escaped: #app → %23app -->
-<script type="module" src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=%23app"></script>
+<script
+    type="module"
+    src="https://unpkg.com/gradient-gl?seed=c1.eba9&selector=%23app"
+></script>
 ```
 
 ## Seed Format
@@ -175,14 +188,14 @@ Explore and generate seeds in the <b><a href="https://metaory.github.io/gradient
 
 IDs are alphabetical. Import the live list with `import { shaderIds } from 'gradient-gl'`.
 
-| Series | IDs | Character |
-|--------|-----|-----------|
-| **b** | `b1` `b2` `b3` `b4` | classic layered / radial |
-| **c** | `c1` `c4` | contrast duotone flow |
-| **f** | `f1` `f3` | fluid RGB noise |
-| **l** | `l1` `l3` `l5` | liquid warp |
-| **n** | `n1` `n2` `n3` `n4` | noisy color islands |
-| **s** | `s1` `s3` | soft shade blobs |
+| Series | IDs                 | Character                |
+| ------ | ------------------- | ------------------------ |
+| **b**  | `b1` `b2` `b3` `b4` | classic layered / radial |
+| **c**  | `c1` `c4`           | contrast duotone flow    |
+| **f**  | `f1` `f3`           | fluid RGB noise          |
+| **l**  | `l1` `l3` `l5`      | liquid warp              |
+| **n**  | `n1` `n2` `n3` `n4` | noisy color islands      |
+| **s**  | `s1` `s3`           | soft shade blobs         |
 
 `n1`/`n2` are softer blends; `n3`/`n4` are sharper islands.
 
@@ -202,6 +215,8 @@ Animated gradient background techniques, slowest to fastest:
 > TODO: Interactive benchmark app
 
 ---
+
+## [latest release](https://github.com/metaory/gradient-gl/releases/latest)
 
 ## License
 
