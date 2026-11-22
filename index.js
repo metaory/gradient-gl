@@ -60,9 +60,15 @@ class GradientGL {
   #vertex
   #lastTime
   #elapsedTime
+  #size = [0, 0]
+  #observer
+  #abort = new AbortController()
 
   // Time interpolation constants
   static #MAX_DELTA = 50 // Maximum frame delta in ms (~20fps minimum)
+  static #FRAME_MS = 1000 / 30 - 2 // 30fps cap, slack absorbs rAF jitter
+  // Only owned canvases are CSS-sized; scaling an intrinsically sized canvas collapses it
+  static #SCALE = 0.5
 
   constructor(canvas, fragment, seed, ownsCanvas) {
     this.#canvas = canvas
@@ -75,11 +81,17 @@ class GradientGL {
     this.#currentUniformValues = { speed: 0, hueShift: 0, saturation: 0, lightness: 0 }
     this.#lastTime = null
     this.#elapsedTime = 0
+    const scale = ownsCanvas ? GradientGL.#SCALE : 1
+    this.#observer = new ResizeObserver(([{ contentBoxSize: [box] }]) => {
+      this.#size = [box.inlineSize, box.blockSize].map(v => Math.round(v * scale))
+    })
+    this.#observer.observe(canvas)
 
     this.#setupEventHandlers()
   }
 
   #setupEventHandlers() {
+    const { signal } = this.#abort
     this.#canvas.addEventListener('webglcontextlost', e => {
       if (!this.#isActive) return
       e.preventDefault()
@@ -88,11 +100,11 @@ class GradientGL {
       this.#program = null
       this.#uniforms = null
       if (this.#canvas) this.#canvas.width = 0
-    })
+    }, { signal })
 
     this.#canvas.addEventListener('webglcontextrestored', () => {
       if (this.#canvas) this.init()
-    })
+    }, { signal })
   }
 
   init() {
@@ -121,13 +133,9 @@ class GradientGL {
     this.#gl.shaderSource(shader, source)
     this.#gl.compileShader(shader)
 
-    const log = this.#gl.getShaderInfoLog(shader)
-    if (log)
-      throw new Error(
-        `${type === this.#gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'} shader compilation error: ${log}`,
-      )
-
-    return shader
+    if (this.#gl.getShaderParameter(shader, this.#gl.COMPILE_STATUS)) return shader
+    const kind = type === this.#gl.VERTEX_SHADER ? 'Vertex' : 'Fragment'
+    throw new Error(`${kind} shader compilation error: ${this.#gl.getShaderInfoLog(shader)}`)
   }
 
   #createProgram(vertexSource, fragmentSource) {
@@ -139,8 +147,8 @@ class GradientGL {
     this.#gl.attachShader(program, fragmentShader)
     this.#gl.linkProgram(program)
 
-    const log = this.#gl.getProgramInfoLog(program)
-    if (log) console.error('Program linking error:', log)
+    if (!this.#gl.getProgramParameter(program, this.#gl.LINK_STATUS))
+      throw new Error(`Program linking error: ${this.#gl.getProgramInfoLog(program)}`)
 
     this.#gl.detachShader(program, vertexShader)
     this.#gl.detachShader(program, fragmentShader)
@@ -232,15 +240,15 @@ class GradientGL {
     if (!this.#isActive || !this.#canvas || !this.#gl) return
 
     const { iResolution, iTime } = this.#uniforms
-    const { clientWidth, clientHeight } = this.#canvas
+    const [width, height] = this.#size
     this.#gl.useProgram(this.#program)
 
-    const resized = clientWidth && clientHeight
-      && (this.#canvas.width !== clientWidth || this.#canvas.height !== clientHeight)
+    const resized = width && height
+      && (this.#canvas.width !== width || this.#canvas.height !== height)
     if (resized) {
-      this.#canvas.width = clientWidth
-      this.#canvas.height = clientHeight
-      this.#gl.viewport(0, 0, clientWidth, clientHeight)
+      this.#canvas.width = width
+      this.#canvas.height = height
+      this.#gl.viewport(0, 0, width, height)
     }
 
     const seconds = time / 1000
@@ -257,27 +265,24 @@ class GradientGL {
   }
 
   #render() {
-    const frame = () => {
-      if (!this.#isActive || !this.#canvas || !this.#gl) {
-        return
-      }
+    const frame = now => {
+      if (!this.#isActive || !this.#canvas || !this.#gl) return
+      if (!this.#canvas.isConnected) return this.destroy()
 
-      if (!this.#canvas.isConnected) {
-        this.destroy()
-        return
-      }
+      requestAnimationFrame(frame)
+      if (now - (this.#lastTime ?? -Infinity) < GradientGL.#FRAME_MS) return
 
-      const currentTime = performance.now()
-      this.#updateTime(currentTime)
+      this.#updateTime(now)
       this.#updateInternalUniforms(this.#elapsedTime)
       this.#gl.drawArrays(this.#gl.TRIANGLE_STRIP, 0, 4)
-      requestAnimationFrame(frame)
     }
     requestAnimationFrame(frame)
   }
 
   destroy(preserveCanvas) {
     this.#isActive = false
+    this.#observer?.disconnect()
+    this.#abort.abort()
     if (this.#program && this.#gl) this.#gl.deleteProgram(this.#program)
     const reuse = this.#canvas === preserveCanvas
     if (this.#ownsCanvas && !reuse) {
